@@ -1,0 +1,64 @@
+body {
+    color: rgba(255, 255, 255, 0.863);
+    background-image:
+        linear-gradient(to bottom, rgba(37, 38, 41, 0.75), rgba(37, 38, 41, 0.95)),
+        url("tile3.png");
+    background: rgb(37, 38, 41, );
+    background-repeat: repeat;
+
+    font-family: Consolas;
+
+    margin-top: 0;
+    margin-bottom: 0;
+
+    max-width: 600px;
+    margin-right: auto;
+    margin-left: auto;
+    text-align: justify;
+}
+
+model-viewer {
+    width: 400;
+    height: 400;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.sidenav {
+    height: 100%;
+    width: 100px;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: #111;
+    overflow-x: hidden;
+    padding-top: 20px;
+}
+
+.sidenav a {
+    padding: 0px 0px 0px 10px;
+    text-decoration: none;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+}
+
+.sidenav a:hover {
+    color: #f1f1f1;
+}
+
+
+div.transbox {
+    background-color: rgba(0, 0, 0, 0.404);
+    border: 2px solid black;
+}
+div.transbox p {
+    margin: 5%;
+    color: #ffffff;
+  }
+
+
+h1 {
+    text-align: center;
+}
