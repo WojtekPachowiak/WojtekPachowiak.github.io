@@ -2,7 +2,7 @@ body {
     color: rgba(255, 255, 255, 0.863);
     background-image:
         linear-gradient(to bottom, rgba(37, 38, 41, 0.75), rgba(37, 38, 41, 0.95)),
-        url("tile3.png");
+        url("../img/tile3.png");
     background: rgb(37, 38, 41, );
     background-repeat: repeat;
 
