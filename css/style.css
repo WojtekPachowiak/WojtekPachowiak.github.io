@@ -1,9 +1,24 @@
+@font-face {
+    font-family: Quinquefive;
+    src: url('Quinquefive-0Wonv.ttf');
+}
+@font-face {
+    font-family: absender;
+    src: url(absender1.ttf);
+}
+@font-face {
+    font-family: Alien-Encounters;
+    src: url(Alien-Encounters-Bold.ttf);
+}
+@font-face {
+    font-family: DS-DIGIB;
+    src: url(DS-DIGIB.TTF);
+}
+
 body {
     color: rgba(255, 255, 255, 0.863);
-    background-image:
-        linear-gradient(to bottom, rgba(37, 38, 41, 0.75), rgba(37, 38, 41, 0.95)),
-        url("../img/tile3.png");
-    background: rgb(37, 38, 41, );
+
+    background: rgb(37, 38, 41 );
     background-repeat: repeat;
 
     font-family: Consolas;
@@ -30,22 +45,30 @@ model-viewer {
     position: fixed;
     z-index: 1;
     top: 0;
-    left: 0;
-    background-color: #111;
+    left: 10;
+    background-color: rgba(0, 0, 0, 0.466);
     overflow-x: hidden;
     padding-top: 20px;
+    border: 2px solid black;
+
 }
 
 .sidenav a {
     padding: 0px 0px 0px 10px;
     text-decoration: none;
-    font-size: 25px;
-    color: #818181;
+    text-shadow: 2px 2px #cea32d;
+    font-size:25px;
+    font-family: Consolas;
+    color: #ffffff;
     display: block;
 }
 
 .sidenav a:hover {
-    color: #f1f1f1;
+    color: #525252;
+    position: relative;
+    padding-right: 20px;
+    top: var(--sidenav-a-top);
+    left: var(--sidenav-a-left);
 }
 
 
