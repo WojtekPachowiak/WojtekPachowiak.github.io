@@ -1,2 +1,1 @@
-wesbite template:
-https://github.com/kunaal438/image-popup/blob/master/img/arrow.png
+my website! I'm a random css generator :O
