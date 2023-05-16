@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "caman": "^4.1.2"
+  },
+  "name": "wojtekpachowiak.github.io",
+  "description": "my website! I'm a random css generator :O",
+  "version": "1.0.0",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^4.3.6"
+  }
+}
