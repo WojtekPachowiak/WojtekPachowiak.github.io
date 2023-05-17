@@ -11,6 +11,11 @@
 
 
 .container .image-container .cell {
+
+  /* prevent blue selection to appear when clicking images or videos */
+  -webkit-tap-highlight-color: transparent;
+
+
   position: relative;
 
   /* box-shadow: 0 5px 15px black; */
