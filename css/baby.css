@@ -1,37 +1,29 @@
 .baby {
-    display: table;
-
-    margin: auto;
-    /* border: 1px solid red; */
-
-    aspect-ratio: 1;
-
+    display: flex;
+    flex-direction: column;
+    /* margin-left: 10vw; */
+    /* margin-right: 10vw; */
+    /* margin: auto; */
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .baby img, figcaption {
-    display: block;
-
-    margin-left: auto;
-    margin-right: auto;
+    /* display: block; */
+    margin: auto;
+    min-width: 100%;
+    max-width: 100%;
 }
 
 .baby img {
-    height: 70vh;
-
-    margin-top: 10%;
-
-    
-    
-    /* border: 1px solid blue; */
-
+    height: 80vh;
 }
 
 .baby figcaption {
     font-family: Monospace, Times, serif;
     text-align: center;
-    font-size: xx-large;
+    font-size: 3vh;
     letter-spacing: 0.5em;
-    /* border: 1px solid green; */
 
 
 }
