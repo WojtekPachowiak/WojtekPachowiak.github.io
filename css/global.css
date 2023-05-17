@@ -3,3 +3,9 @@
   --row-size: 5;
   --row-size-mobile: 3;
 }
+
+@media only screen and (hover: none) and (pointer: coarse) {
+  :root {
+    --row-size: var(--row-size-mobile);
+  }
+}

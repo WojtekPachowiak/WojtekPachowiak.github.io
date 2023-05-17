@@ -3,11 +3,7 @@
   grid-template-columns: repeat(var(--row-size), 1fr);
 }
 
-@media only screen and (hover: none) and (pointer: coarse) {
-  .container .image-container {
-    --rowsize: var(--row-size-mobile);
-  }
-}
+
 
 
 .container .image-container .cell {
@@ -71,22 +67,24 @@
 
 /* //////////////////////////////////////////////////////////////////////////////////////////////// */
 
-.container .popup-image {
+.popup-image {
   display: none;
   position: fixed;
   top: 0;
   left: 0;
   height: 100%;
   width: 100%;
+  
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(10px);
   z-index: 100;
-  /* border: 3px solid red; */
+
+  border: 3px solid red;
 
 }
 
 /* "X" button */
-/* .container .popup-image span {
+/* .popup-image span {
     position: absolute;
     top: 0;
     right: 10px;
@@ -98,7 +96,7 @@
   } */
 
 /* popup image centered container  */
-.container .popup-image .cell {
+.popup-image .cell {
   display: block;
   position: absolute;
   top: 50%;
@@ -118,7 +116,7 @@
 }
 
 /* image inside popup image container */
-.container .popup-image .cell .media {
+.popup-image .cell .media {
   max-width: 100%;
   max-height: 100%;
   margin: auto;
@@ -138,7 +136,7 @@
 }
 
 /* for text under images in popup image container */
-/* .container .popup-image .image p {
+/* .popup-image .image p {
     display:table-cell;
     background-color: transparent;
     color: #fff;
