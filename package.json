@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "bootstrap": "^5.2.3",
     "caman": "^4.1.2"
   },
   "name": "wojtekpachowiak.github.io",
@@ -7,11 +8,14 @@
   "version": "1.0.0",
   "main": "index.html",
   "scripts": {
+    "start": "vite",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "vite": "^4.3.6"
+    "sass": "^1.62.1",
+    "vite": "^4.3.8"
   }
+  
 }

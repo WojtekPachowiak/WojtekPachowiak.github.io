@@ -1,11 +1,11 @@
 
 @font-face {
     font-family: angelic;
-    src: url("/fonts/ANGELIC.TTF");
+    src: url("assets/fonts/ANGELIC.TTF");
     }
 
     /* Set the width of the paragraph and justify the text */
-    p {
+    /* p {
         
         color: rgb(180, 180, 180);
 
@@ -15,4 +15,4 @@
 
     p normal_font{
         font-family: Helvetica;
-    }
+    } */
