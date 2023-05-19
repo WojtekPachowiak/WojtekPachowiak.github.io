@@ -1,0 +1,6 @@
+
+
+.navbar-icon img{
+    filter: invert(66%) sepia(43%) saturate(0%) hue-rotate(215deg) brightness(120%) contrast(103%);
+    transform: scale(0.7,0.7)
+}
