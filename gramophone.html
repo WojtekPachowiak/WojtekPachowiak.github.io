@@ -23,7 +23,8 @@
 
 
     <div>
-        <img id="my_face" src="myface/my_face_closed.jpg" class="face_gramophone"></img>
+        <img id="my_face" style="-webkit-tap-highlight-color: transparent;" src="myface/my_face_closed.jpg"
+            class="face_gramophone"></img>
     </div>
 
 
@@ -45,6 +46,11 @@
             }
 
         });
+
+        audio.onended = function () {
+            my_face.src = "myface/my_face_closed.jpg";
+
+        };
 
     </script>
 

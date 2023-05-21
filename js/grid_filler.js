@@ -2,17 +2,19 @@
 
 
 let cell_paths = [
+    "image/kategoriia.png",
+    "image/vinyl3.png",
     "image/grainy_black_white_sunset_2.png",
+    "image/pantera_fluid.png",
     "image/demon.jpg",
     "image/preman.jpg",
     "image/dog.jpg",
+    "image/starman.jpg",
     "image/gravyard.png",
     "image/morrigan.png",
     "image/dojo.png",
-    "image/pantera_fluid.png",
     "image/slyszalas.png",
     "image/benten_guwno.png",
-    "image/starman.jpg",
     "image/desert_giants.jpg",
     "image/gonnn.jpg",
     "image/steve_mao.jpg",
