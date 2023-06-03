@@ -2,31 +2,30 @@
 
 
 let cell_paths = [
-    "image/kategoriia.png",
-    "image/vinyl3.png",
-    "image/grainy_black_white_sunset_2.png",
-    "image/pantera_fluid.png",
-    "image/demon.jpg",
-    "image/preman.jpg",
-    "image/dog.jpg",
-    "image/starman.jpg",
-    "image/gravyard.png",
-    "image/morrigan.png",
-    "image/dojo.png",
-    "image/slyszalas.png",
-    "image/benten_guwno.png",
-    "image/desert_giants.jpg",
-    "image/gonnn.jpg",
-    "image/steve_mao.jpg",
-    "image/plnscp.jpg",
-    "image/mundo.png",
-    "video/jablon.mp4",
-    "image/cherry_island.jpg",
-    "image/cherry_island_2.jpg",
-    "image/mountain_temple.jpg",
-    "image/krystal_halo.jpg",
-    "video/rotating_one.mp4#t=6.0",
-    "image/potwur.jpg",
+    "image/kategoriia",
+    "image/vinyl3",
+    "image/grainy_black_white_sunset_2",
+    "image/pantera_fluid",
+    "image/demon",
+    "image/oldman_bus",
+    "image/dog",
+    "image/starman",
+    "image/gravyard",
+    "image/morrigan",
+    "image/dojo",
+    "image/slyszalas",
+    "image/benten_guwno",
+    "image/desert_giants",
+    "image/gonnn",
+    "image/steve_mao",
+    "image/plnscp",
+    "video/jablon",
+    "image/cherry_island",
+    "image/cherry_island_2",
+    "image/mountain_temple",
+    "image/krystal_halo",
+    "video/rotating_one#t=6.0",
+    "image/potwur",
     
 ];
 
@@ -40,6 +39,13 @@ cell_paths.forEach(path => {
 
     let content;
     if (path.startsWith("video")) {
+        if (path.split("#").length > 1) {
+            // add time offset to video source
+            path = path.split("#")[0] + ".mp4" + "#" + path.split("#")[1];
+        }
+        else{ 
+            path = path + ".mp4";
+        }
         content =
             `
             <img class="video-icon" src="icons/play_arrow_FILL0_wght400_GRAD0_opsz48.svg"></span>
@@ -54,7 +60,7 @@ cell_paths.forEach(path => {
     else if (path.startsWith("image")) {
         content =
             `
-      <img class="media" src="${path}" alt="" />
+      <img class="media" src="${path}.jpg" alt="" />
       `;
     }
     else {
