@@ -18,41 +18,85 @@
             width: 100%;
             height: 100%;
             cursor: pointer;
+            z-index: 100;
+        }
+
+        .arrow_nose {
+            position: absolute; 
+            top: 57%;
+            left: 69%;
+            width: 10%;
+
+            z-index: 200;
+            opacity: 0.5;
+            visibility: visible;
+            rotate: -45deg;
+
+        }
+
+        .arrow_nose_bg{
+            position: absolute;
+            transform: translate(50%, 50%);
+
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 50%;
+            pointer-events: none;
+            
         }
     </style>
 
 
+
     <div>
-        <img id="my_face" style="-webkit-tap-highlight-color: transparent;" src="myface/my_face_closed.jpg"
+        <img id="my_face" style="-webkit-tap-highlight-color: transparent;" src="image/myface/my_face_closed.jpg"
             class="face_gramophone"></img>
+        <div class="arrow_nose_bg">
+            <img id="arrow" class="arrow_nose shake-constant shake-vertical" style="-webkit-tap-highlight-color: transparent;"
+            src="icons/curoserwindows.svg"></img>
+        </div>
+
     </div>
+
 
 
 
     <script>
         //Get element my_face and switch it to my_face_open on click
         let my_face = document.getElementById("my_face");
+        let arrow = document.getElementById("arrow");
+
 
         let audio = new Audio('sound/drakengard1_lalalala_vhsed.mp3');
 
         my_face.addEventListener("click", function () {
+            // if arrow is visible, disable it
             if (my_face.src.split("/")[my_face.src.split("/").length - 1] == "my_face_open.jpg") {
-                my_face.src = "myface/my_face_closed.jpg";
+                my_face.src = "image/myface/my_face_closed.jpg";
                 audio.pause();
+                arrow.style.visibility = "visible";
 
+                
+                
             } else {
-                my_face.src = "myface/my_face_open.jpg";
+                my_face.src = "image/myface/my_face_open.jpg";
                 audio.play();
+                arrow.style.visibility = "hidden";
             }
 
+            
         });
 
         audio.onended = function () {
-            my_face.src = "myface/my_face_closed.jpg";
-
+            my_face.src = "image/myface/my_face_closed.jpg";
+            arrow.style.visibility = "visible";
         };
 
     </script>
+
+
+
 
 </body>
 
