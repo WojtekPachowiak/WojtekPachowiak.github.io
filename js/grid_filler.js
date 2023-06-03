@@ -48,7 +48,7 @@ cell_paths.forEach(path => {
         }
         content =
             `
-            <img class="video-icon" src="icons/play_arrow_FILL0_wght400_GRAD0_opsz48.svg"></span>
+            <img class="video-icon" src="icons/play_arrow_FILL0_wght100_GRAD-25_opsz48.svg"></span>
             <video class="media">
             <source src="${path}" type="video/mp4">
             
@@ -60,7 +60,7 @@ cell_paths.forEach(path => {
     else if (path.startsWith("image")) {
         content =
             `
-      <img class="media" src="${path}.jpg" alt="" />
+      <img class="media" loading="lazy" src="${path}.jpg" alt="" />
       `;
     }
     else {
