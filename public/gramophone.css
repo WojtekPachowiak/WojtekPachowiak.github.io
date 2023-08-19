@@ -1,0 +1,33 @@
+@import url(shared/shake.css);
+
+.face_gramophone {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    z-index: 100;
+}
+
+.arrow_nose {
+    position: absolute; 
+    top: 57%;
+    left: 69%;
+    width: 10%;
+
+    z-index: 200;
+    opacity: 0.5;
+    visibility: visible;
+    rotate: -45deg;
+
+}
+
+.arrow_nose_bg{
+    position: absolute;
+    transform: translate(50%, 50%);
+
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 50%;
+    pointer-events: none;
+    
+}

@@ -1,21 +1,18 @@
 {
-  "dependencies": {
-    "bootstrap": "^5.2.3",
-    "caman": "^4.1.2"
-  },
-  "name": "wojtekpachowiak.github.io",
-  "description": "my website! I'm a random css generator :O",
-  "version": "1.0.0",
-  "main": "index.html",
+  "name": "wojtekpachowial.github.io",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "start": "vite",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite public",
+    "preview": "vite build && vite preview",
+    "build": "vite build",
+    "spreview": "vite preview"
   },
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "sass": "^1.62.1",
-    "vite": "^4.3.8"
+    "vite": "^4.4.5"
+  },
+  "dependencies": {
+    "three": "^0.155.0"
   }
-  
 }

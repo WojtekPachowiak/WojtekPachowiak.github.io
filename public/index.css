@@ -1,0 +1,48 @@
+
+
+body{
+    margin: 0;
+}
+
+ul {
+    position: absolute;
+    
+    
+    padding: 0;
+    /* font-size: 25vh; */
+    /* letter spacing */
+    /* letter-spacing: 0.1em; */
+    list-style-type: none;
+    font-family: "TiltWarp-Regular-VariableFont_XROT,YROT.ttf", Courier, monospace;
+    /* font-weight: 500; */
+    /* overflow: hidden; */
+
+}
+
+li:hover {
+    /* opacity: 0.3; */
+    background-color: white;
+    filter: invert();
+
+}
+
+a {
+    text-decoration: none;
+    color: black;
+    -webkit-tap-highlight-color: transparent;
+
+}
+
+
+
+
+.header{
+    transform: scaleX(-1.0);
+    text-align: center;
+
+    transition: 0.2s ease-out ;
+
+}
+.header:hover{
+    transform: scaleY(1.2) skew(-70deg, 0deg) ;
+}

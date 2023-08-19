@@ -1,0 +1,2 @@
+vite build
+vite preview
