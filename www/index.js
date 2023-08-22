@@ -19,6 +19,12 @@ import WebGL from "three/addons/capabilities/WebGL.js";
 
 import headersFont from "/resources/fonts/helvetiker_regular.typeface.json?url";
 
+// if mobile device
+if (matchMedia("(pointer:coarse)").matches) {
+  alert("Mobile devices not supported yet. Sorry! :(")
+  throw "Mobile devices not supported yet. Sorry! :(";
+}
+
 if (WebGL.isWebGL2Available() === false) {
   document.body.appendChild(WebGL.getWebGL2ErrorMessage());
 }
