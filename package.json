@@ -4,13 +4,12 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite public",
-    "preview": "vite build && vite preview",
+    "dev": "vite www",
     "build": "vite build",
-    "spreview": "vite preview"
+    "preview": "vite preview"
   },
   "devDependencies": {
-    "vite": "^4.4.5"
+    "vite": "^4.4.9"
   },
   "dependencies": {
     "three": "^0.155.0"

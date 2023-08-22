@@ -10,8 +10,13 @@
   :root {
     --row-size: var(--row-size-mobile);
   }
+
 }
 
+body {
+  margin: 1px;
+  /* gradient */
+}
 /* //////////////////////////////////////////////////////////////////////// */
 
 .container {
@@ -25,7 +30,29 @@
 
   position: relative;
   cursor: pointer;
-  padding: 1%;
+  padding: 1px;
+}
+
+.cell-frame {
+  -webkit-box-shadow: inset 0px 0px 0px 1px rgba(121, 121, 121, 0.493);
+  -moz-box-shadow: inset 0px 0px 0px 1px rgba(121, 121, 121, 0.493);
+  box-shadow: inset 0px 0px 0px 1px rgba(121, 121, 121, 0.493);
+  margin: 1px;
+}
+
+
+
+.welcome {
+  text-align: center;
+  /* center vertically */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  font-family: monospace;
+  /* scale font size */
+
 }
 
 .container .cell div {
@@ -40,6 +67,24 @@
   transition: 0.1s linear;
 }
 
+.container .cell .media-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 5px;
+  /* background: rgba(0, 0, 0, 0.5); */
+  color: rgb(255, 255, 255);
+  opacity: 0.8;
+  font-family: monospace;
+  /* font-size: 1.5rem; */
+  font-weight: bold;
+  /* text-align: center; */
+  text-shadow: 0px 0px 3px #000000;
+  z-index: 1000;
+  display: none;
+}
+
 .container .cell .video-icon {
   position: absolute;
   top: 50%;
@@ -51,7 +96,10 @@
   width: 50%;
   height: 50%;
   /* text-shadow: 0px 0px 2px #000000; */
-  z-index: 1000;
+  z-index: 1;
+
+  /* invisibility to clicks */
+  pointer-events: none;
 }
 
 .container .cell .media:hover {
@@ -86,7 +134,7 @@
 
   /* makesthe object fit the parent container */
   object-fit: contain;
-  height: 98vh;
+  height: 99vh;
   width: 100%;
 
   background-color: transparent;

@@ -1,6 +1,6 @@
-import myFaceClosed from '/assets/image/myface/my_face_closed.jpg'
-import myFaceOpen from '/assets/image/myface/my_face_open.jpg'
-import lalala from '/assets/sound/drakengard1_lalalala_vhsed.mp3'
+import myFaceClosed from '/resources/image/myface/my_face_closed.jpg'
+import myFaceOpen from '/resources/image/myface/my_face_open.jpg'
+import lalala from '/resources/sound/drakengard1_lalalala_vhsed.mp3'
  
  
  //Get element my_face and switch it to my_face_open on click

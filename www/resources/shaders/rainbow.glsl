@@ -93,7 +93,9 @@ void main(void) {
     vec3 final1 = vec3(randn_brighter * pnoise * b);
     vec3 final2 = vec3(randn_brighter * pnoise + b);
 
-    gl_FragColor = vec4(mix(final1,final2,sin(time*0.1)*0.25+0.25), 1.0);
+    vec3 out_col =  mix(final1, final2, sin(time * 0.1) * 0.25 + 0.25);
+    out_col = clamp(out_col, 0., 1.);
+    gl_FragColor = vec4(out_col, 1.0);
 
     // gl_FragColor = vec4(vec3(noised_pos.x),0.);
 
