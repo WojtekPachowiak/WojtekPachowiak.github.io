@@ -9,6 +9,7 @@ export default defineConfig({
         main: resolve(__dirname, "index.html"),
         about: resolve(__dirname, "about.html"),
         art: resolve(__dirname, "art.html"),
+        horror: resolve(__dirname, "gramophone.html"),
       },
     },
   },
