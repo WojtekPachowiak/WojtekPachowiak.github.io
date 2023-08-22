@@ -20,6 +20,7 @@ body {
 /* //////////////////////////////////////////////////////////////////////// */
 
 .container {
+  overflow: hidden;
   display: grid;
   grid-template-columns: repeat(var(--row-size), 1fr);
 }
