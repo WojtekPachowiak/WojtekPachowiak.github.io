@@ -17,8 +17,7 @@ import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import { FXAAShader } from "three/addons/shaders/FXAAShader.js";
 import WebGL from "three/addons/capabilities/WebGL.js";
 
-import HelvetikerFontPath from "three/examples/fonts/helvetiker_regular.typeface.json";
-
+import headersFont from "/resources/fonts/helvetiker_regular.typeface.json?url";
 
 if (WebGL.isWebGL2Available() === false) {
   document.body.appendChild(WebGL.getWebGL2ErrorMessage());
@@ -71,14 +70,8 @@ plane_mesh.layers.set(layers.background);
 scene.add(plane_mesh);
 
 // camera
-const camera = new THREE.OrthographicCamera(
-  -1,
-  1,
-  1,
-  -1,
-  0.001,
-  1000
-);
+const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.001, 1000);
+
 camera.position.set(0, 0, 10);
 // const camera = new THREE.PerspectiveCamera(
 //   45,
@@ -91,130 +84,127 @@ scene.add(camera);
 
 function drawItem(text, positionY, link) {
   const loader = new FontLoader();
-  loader.load(
-    "/resources/fonts/helvetiker_regular.typeface.json",
-    function (response) {
-      let font = response;
-      let textGeo = new TextGeometry(text, {
-        size: 0.4,
-        height: 0.01,
-        curveSegments: 12,
-        // bevelEnabled : true,
-        // bevelThickness: 0.01,
-        // bevelSize: 0.01,
-        // // bevelOffset: 0.1,
-        // bevelSegments: 10,
+  loader.load(headersFont, function (response) {
+    let font = response;
+    let textGeo = new TextGeometry(text, {
+      size: 0.4,
+      height: 0.01,
+      curveSegments: 12,
+      // bevelEnabled : true,
+      // bevelThickness: 0.01,
+      // bevelSize: 0.01,
+      // // bevelOffset: 0.1,
+      // bevelSegments: 10,
 
-        font: font,
+      font: font,
 
-        //   curveSegments: 12,
-      });
-      textGeo.computeBoundingBox();
-      textGeo.center();
-      const centerOffset =
-        -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+      //   curveSegments: 12,
+    });
+    textGeo.computeBoundingBox();
+    textGeo.center();
+    const centerOffset =
+      -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
-      // text
-      const textMaterial = new THREE.MeshStandardMaterial({
-        // color: 0xffff00,
-        transparent: true,
-        emissive: "white",
-        // depthWrite: false,
-        // depthTest: false,
-        // depthFunc: THREE.AlwaysDepth,
-        // colorWrite: false,
-        // clipIntersection: false,
-        // forceSinglePass: true,
-        // blending: THREE.MaxEquation,
-        // blendEquation: THREE.MaxEquation,
-        // blendEquationAlpha: THREE.MaxEquation,
-        // blendSrcAlpha: THREE.OneFactor,
-      });
-      // material.blendEquation = THREE.AddEquation; //default
-      // material.blendSrc = THREE.SrcAlphaFactor; //default
-      // material.blendDst = THREE.OneMinusSrcAlphaFactor; //default
-      // material.depthWrite = false;
+    // text
+    const textMaterial = new THREE.MeshStandardMaterial({
+      // color: 0xffff00,
+      transparent: true,
+      emissive: "white",
+      // depthWrite: false,
+      // depthTest: false,
+      // depthFunc: THREE.AlwaysDepth,
+      // colorWrite: false,
+      // clipIntersection: false,
+      // forceSinglePass: true,
+      // blending: THREE.MaxEquation,
+      // blendEquation: THREE.MaxEquation,
+      // blendEquationAlpha: THREE.MaxEquation,
+      // blendSrcAlpha: THREE.OneFactor,
+    });
+    // material.blendEquation = THREE.AddEquation; //default
+    // material.blendSrc = THREE.SrcAlphaFactor; //default
+    // material.blendDst = THREE.OneMinusSrcAlphaFactor; //default
+    // material.depthWrite = false;
 
-      let amount = 2.0;
-      textMaterial.onBeforeCompile = function (shader) {
-        shader.uniforms.time = { value: 0 };
-        shader.uniforms.resolution = {
-          value: new THREE.Vector2(
-            window.innerWidth * window.devicePixelRatio,
-            window.innerHeight * window.devicePixelRatio
-          ),
-        };
-        const sss = `
+    // let amount = 2.0;
+    // textMaterial.onBeforeCompile = function (shader) {
+    //   shader.uniforms.time = { value: 0 };
+    //   shader.uniforms.resolution = {
+    //     value: new THREE.Vector2(
+    //       window.innerWidth * window.devicePixelRatio,
+    //       window.innerHeight * window.devicePixelRatio
+    //     ),
+    //   };
+    //   const sss = `
 
-              float randd(vec2 c) {
-          return fract(sin(dot(c.xy, vec2(12.9898, 78.233))) * 43758.5453);
-      }
+    //           float randd(vec2 c) {
+    //       return fract(sin(dot(c.xy, vec2(12.9898, 78.233))) * 43758.5453);
+    //   }
 
-              float noise(vec2 p, float freq) {
-                  float unit =2000. / freq;
-                  vec2 ij = floor(p / unit);
-                  vec2 xy = mod(p, unit) / unit;
-                //xy = 3.*xy*xy-2.*xy*xy*xy;
-                  xy = .5 * (1. - cos(3.14 * xy));
-                  float a = randd((ij + vec2(0., 0.)));
-                  float b = randd((ij + vec2(1., 0.)));
-                  float c = randd((ij + vec2(0., 1.)));
-                  float d = randd((ij + vec2(1., 1.)));
-                  float x1 = mix(a, b, xy.x);
-                  float x2 = mix(c, d, xy.x);
-                  return mix(x1, x2, xy.y);
-              }
-      #define NUM_OCTAVES 5
-      float remap(float value, float inputMin, float inputMax, float outputMin, float outputMax) {
-          return outputMin + ((outputMax - outputMin) / (inputMax - inputMin)) * (value - inputMin);
-      }
-              float fbm(vec2 x, float freq) {
-                  float v = 0.0;
-                  float a = 0.5;
-                  vec2 shift = vec2(100);
-                // Rotate to reduce axial bias
-                  mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
-                  for(int i = 0; i < NUM_OCTAVES; ++i) {
-                      v += a * noise(vec2(x), freq);
-                      x = rot * x * 2.0 + shift;
-                      a *= 0.5;
-                  }
-                  return v;
-              }
-              `;
-        shader.vertexShader =
-          "uniform float time;\nuniform float resolution;\n" +
-          sss +
-          shader.vertexShader;
-        shader.vertexShader = shader.vertexShader.replace(
-          "#include <begin_vertex>",
-          [
-            "vec3 transformed = mat3(1,0,0,0,1,0,0,0,1) * vec3( position ) ;",
-            // "vNormal = vNormal * m;",
-          ].join("\n")
-        );
+    //           float noise(vec2 p, float freq) {
+    //               float unit =2000. / freq;
+    //               vec2 ij = floor(p / unit);
+    //               vec2 xy = mod(p, unit) / unit;
+    //             //xy = 3.*xy*xy-2.*xy*xy*xy;
+    //               xy = .5 * (1. - cos(3.14 * xy));
+    //               float a = randd((ij + vec2(0., 0.)));
+    //               float b = randd((ij + vec2(1., 0.)));
+    //               float c = randd((ij + vec2(0., 1.)));
+    //               float d = randd((ij + vec2(1., 1.)));
+    //               float x1 = mix(a, b, xy.x);
+    //               float x2 = mix(c, d, xy.x);
+    //               return mix(x1, x2, xy.y);
+    //           }
+    //   #define NUM_OCTAVES 5
+    //   float remap(float value, float inputMin, float inputMax, float outputMin, float outputMax) {
+    //       return outputMin + ((outputMax - outputMin) / (inputMax - inputMin)) * (value - inputMin);
+    //   }
+    //           float fbm(vec2 x, float freq) {
+    //               float v = 0.0;
+    //               float a = 0.5;
+    //               vec2 shift = vec2(100);
+    //             // Rotate to reduce axial bias
+    //               mat2 rot = mat2(cos(0.5), sin(0.5), -sin(0.5), cos(0.50));
+    //               for(int i = 0; i < NUM_OCTAVES; ++i) {
+    //                   v += a * noise(vec2(x), freq);
+    //                   x = rot * x * 2.0 + shift;
+    //                   a *= 0.5;
+    //               }
+    //               return v;
+    //           }
+    //           `;
+    //   shader.vertexShader =
+    //     "uniform float time;\nuniform float resolution;\n" +
+    //     sss +
+    //     shader.vertexShader;
+    //   shader.vertexShader = shader.vertexShader.replace(
+    //     "#include <begin_vertex>",
+    //     [
+    //       "vec3 transformed = mat3(1,0,0,0,1,0,0,0,1) * vec3( position ) ;",
+    //       // "vNormal = vNormal * m;",
+    //     ].join("\n")
+    //   );
 
-        textMaterial.userData.shader = shader;
-      };
+    //   textMaterial.userData.shader = shader;
+    // };
 
-      // Make sure WebGLRenderer doesnt reuse a single program
+    // // Make sure WebGLRenderer doesnt reuse a single program
 
-      textMaterial.customProgramCacheKey = function () {
-        return amount.toFixed(1);
-      };
+    // textMaterial.customProgramCacheKey = function () {
+    //   return amount.toFixed(1);
+    // };
 
-      let mesh = new THREE.Mesh(textGeo, textMaterial);
+    let mesh = new THREE.Mesh(textGeo, textMaterial);
 
-      mesh.position.set(0, positionY, 0.4);
-      // mesh.lookAt(camera.position);
-      // mesh.rotation.set(0.4, 0.0, 0.0);
-      // mesh.scale.set(1., 2., 1.);
-      mesh.type = "text";
-      mesh.link = link;
+    mesh.position.set(0, positionY, 0.4);
+    // mesh.lookAt(camera.position);
+    // mesh.rotation.set(0.4, 0.0, 0.0);
+    // mesh.scale.set(1., 2., 1.);
+    mesh.type = "text";
+    mesh.link = link;
 
-      scene.add(mesh);
-    }
-  );
+    scene.add(mesh);
+  });
 }
 drawItem("ART", 0.5, "art.html");
 drawItem("ABT", 0, "about.html");
@@ -279,7 +269,7 @@ finalComposer.addPass(mixPass);
 // /////////////////////////////////////////////////
 
 // oribtal controls
-const controls = new OrbitControls(camera, renderer.domElement);
+// const controls = new OrbitControls(camera, renderer.domElement);
 
 // // light
 // // directional
@@ -293,7 +283,7 @@ const controls = new OrbitControls(camera, renderer.domElement);
 
 // raycast
 const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
+const pointer = new THREE.Vector2(-999, -999);
 
 //////////////////
 // ANIMATE
@@ -318,7 +308,7 @@ function animate() {
     bbox.getSize(size);
     let intersects = raycaster.ray.intersectsBox(bbox);
     // if intersects and cursor inside canvas
-    if (intersects ) {
+    if (intersects) {
       // text.material.emissive.set("#ffffff");
       text.material.emissiveIntensity = 30;
       text.material.opacity = 0.8;
@@ -337,7 +327,6 @@ function animate() {
       // text.material.emissive.set("#000000");
       text.material.emissiveIntensity = 1;
       text.scale.set(1.0, 1.0, 1.0);
-
 
       text.material.opacity = 0.1;
       // text.material.transparent = true;
@@ -402,6 +391,8 @@ function animate() {
   bloomComposer.render();
   camera.layers.set(0);
   finalComposer.render();
+
+
 }
 animate();
 
@@ -414,25 +405,30 @@ function onPointerMove(event) {
   pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
 
+window.addEventListener("touchend", onDocumentTouchEnd, false);
+function onDocumentTouchEnd(event) {
+  event.preventDefault();
+
+  pointer.x = (event.changedTouches[0].clientX / window.innerWidth) * 2 - 1;
+  pointer.y = -(event.changedTouches[0].clientY / window.innerHeight) * 2 + 1;
+}
+
 window.addEventListener("click", function handleClick() {
   console.log("element clicked");
   clicked = true;
 });
 
 // onresize
-window.onresize = () => {
+function updateViewport() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(
-    window.innerWidth,
-    window.innerHeight,
-    window.devicePixelRatio
-  );
+  renderer.setSize(window.innerWidth, window.innerHeight, window.devicePixelRatio);
+
   // plane_mesh.scale.set(window.innerWidth / window.innerHeight, 1, 1);
-  // plane_material.uniforms.resolution.value = new THREE.Vector2(
-  //   window.innerWidth * window.devicePixelRatio,
-  //   window.innerHeight * window.devicePixelRatio
-  // );
+  plane_material.uniforms.resolution.value = new THREE.Vector2(
+    window.innerWidth * window.devicePixelRatio,
+    window.innerHeight * window.devicePixelRatio
+  );
 
   bloomComposer.setSize(
     window.innerWidth * window.devicePixelRatio,
@@ -442,7 +438,9 @@ window.onresize = () => {
     window.innerWidth * window.devicePixelRatio,
     window.innerHeight * window.devicePixelRatio
   );
-};
+
+}
+window.onresize = updateViewport;
 
 // <ul>
 //   <li>

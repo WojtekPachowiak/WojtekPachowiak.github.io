@@ -1,54 +1,55 @@
-let paths = [
-  "/resources/image/kategoriia",
-  "/resources/image/vinyl3",
-  "/resources/image/grainy_black_white_sunset_2",
-  "/resources/image/pantera_fluid",
-  "/resources/image/demon",
-  "/resources/image/oldman_bus",
-  "/resources/image/dog",
-  "/resources/image/starman",
-  "/resources/image/gravyard",
-  "/resources/image/morrigan",
-  "/resources/image/dojo",
-  "/resources/image/slyszalas",
-  "/resources/image/benten_guwno",
-  "/resources/image/desert_giants",
-  "/resources/image/gonnn",
-  "/resources/image/steve_mao",
-  "/resources/image/plnscp",
-  "/resources/video/jablon",
-  "/resources/image/cherry_island",
-  "/resources/image/cherry_island_2",
-  "/resources/image/mountain_temple",
-  "/resources/image/krystal_halo",
-  "/resources/video/rotating_one#t=6.0",
-  "/resources/image/potwur",
-];
+import kategoriia from "/resources/image/kategoriia.jpg";
+import vinyl3 from "/resources/image/vinyl3.jpg";
+import grainy_black_white_sunset_2 from "/resources/image/grainy_black_white_sunset_2.jpg";
+import pantera_fluid from "/resources/image/pantera_fluid.jpg";
+import demon from "/resources/image/demon.jpg";
+import oldman_bus from "/resources/image/oldman_bus.jpg";
+import dog from "/resources/image/dog.jpg";
+import starman from "/resources/image/starman.jpg";
+import gravyard from "/resources/image/gravyard.jpg";
+import morrigan from "/resources/image/morrigan.jpg";
+import dojo from "/resources/image/dojo.jpg";
+import slyszalas from "/resources/image/slyszalas.jpg";
+import benten_guwno from "/resources/image/benten_guwno.jpg";
+import desert_giants from "/resources/image/desert_giants.jpg";
+import gonnn from "/resources/image/gonnn.jpg";
+import steve_mao from "/resources/image/steve_mao.jpg";
+import plnscp from "/resources/image/plnscp.jpg";
+import jablon from "/resources/video/jablon.mp4";
+import cherry_island from "/resources/image/cherry_island.jpg";
+import cherry_island_2 from "/resources/image/cherry_island_2.jpg";
+import mountain_temple from "/resources/image/mountain_temple.jpg";
+import krystal_halo from "/resources/image/krystal_halo.jpg";
+import rotating_one from "/resources/video/rotating_one.mp4";
+import potwur from "/resources/image/potwur.jpg";
+
+import playIcon from "/resources/icons/play_arrow_FILL0_wght100_GRAD-25_opsz48.svg";
+
 let images = [
-  ["/resources/image/kategoriia", "kategoriia"],
-  ["/resources/image/vinyl3", "vinyl3"],
-  ["/resources/image/grainy_black_white_sunset_2", "grainy_black_white_sunset_2"],
-  ["/resources/image/pantera_fluid", "pantera_fluid"],
-  ["/resources/image/demon", "demon"],
-  ["/resources/image/oldman_bus", "oldman_bus"],
-  ["/resources/image/dog", "dog"],
-  ["/resources/image/starman", "starman"],
-  ["/resources/image/gravyard", "gravyard"],
-  ["/resources/image/morrigan", "morrigan"],
-  ["/resources/image/dojo", "dojo"],
-  ["/resources/image/slyszalas", "slyszalas"],
-  ["/resources/image/benten_guwno", "benten_guwno"],
-  ["/resources/image/desert_giants", "desert_giants"],
-  ["/resources/image/gonnn", "gonnn"],
-  ["/resources/image/steve_mao", "steve_mao"],
-  ["/resources/image/plnscp", "plnscp"],
-  ["/resources/video/jablon", "jablon"],
-  ["/resources/image/cherry_island", "cherry_island"],
-  ["/resources/image/cherry_island_2", "cherry_island_2"],
-  ["/resources/image/mountain_temple", "mountain_temple"],
-  ["/resources/image/krystal_halo", "krystal_halo"],
-  ["/resources/video/rotating_one", "rotating_one"],
-  ["/resources/image/potwur", "potwur"],
+  [kategoriia, "kategoriia"],
+  [vinyl3, "vinyl3"],
+  [grainy_black_white_sunset_2, "grainy_black_white_sunset_2"],
+  [pantera_fluid, "pantera_fluid"],
+  [demon, "demon"],
+  [oldman_bus, "oldman_bus"],
+  [dog, "dog"],
+  [starman, "starman"],
+  [gravyard, "gravyard"],
+  [morrigan, "morrigan"],
+  [dojo, "dojo"],
+  [slyszalas, "slyszalas"],
+  [benten_guwno, "benten_guwno"],
+  [desert_giants, "desert_giants"],
+  [gonnn, "gonnn"],
+  [steve_mao, "steve_mao"],
+  [plnscp, "plnscp"],
+  [jablon, "jablon"],
+  [cherry_island, "cherry_island"],
+  [cherry_island_2, "cherry_island_2"],
+  [mountain_temple, "mountain_temple"],
+  [krystal_halo, "krystal_halo"],
+  [rotating_one, "rotating_one", "6.0"],
+  [potwur, "potwur"],
 ];
 
 let grid = document.getElementsByClassName("container")[0];
@@ -58,16 +59,14 @@ images.forEach((img) => {
   cell.className = "cell";
 
   let content;
-  if (path.includes("/video/")) {
-    if (path.split("#").length > 1) {
+  if (path.endsWith(".mp4")) {
+    if (img.length == 3) {
       // add time offset to video source
-      path = path.split("#")[0] + ".mp4" + "#" + path.split("#")[1];
-    } else {
-      path = path + ".mp4";
-    }
+      path = path + "#t=" + img[2];
+    } 
     content = `
             <div>
-            <img class="video-icon" src="resources/icons/play_arrow_FILL0_wght100_GRAD-25_opsz48.svg"></span>
+            <img class="video-icon" src="${playIcon}"></span>
             <video class="media">
             <source src="${path}" type="video/mp4">
             
@@ -78,24 +77,28 @@ images.forEach((img) => {
             </div>
       
       `;
-  } else if (path.includes("/image/")) {
+  } else if (path.endsWith(".jpg")) {
     content = `
         <div>
-        <img class="media" loading="lazy" src="${path}.jpg" alt="image" />
+        <img class="media" loading="lazy" src="${path}" alt="image" />
         <span class="media-title">${img[1]}</span>
         </div>
       `;
   } else {
     throw "Unknown path type";
   }
+
+  if (matchMedia("(pointer:fine)").matches) {
+    console.log("fine pointer");
+    // on hover show title
+    cell.onmouseover = () => {
+      cell.getElementsByClassName("media-title")[0].style.display = "block";
+    };
+    cell.onmouseout = () => {
+      cell.getElementsByClassName("media-title")[0].style.display = "none";
+    };
+  }
   
-  // on hover show title
-  cell.onmouseover = () => {
-    cell.getElementsByClassName("media-title")[0].style.display = "block";
-  };
-  cell.onmouseout = () => {
-    cell.getElementsByClassName("media-title")[0].style.display = "none";
-  };
 
   cell.innerHTML = content;
   grid.appendChild(cell);

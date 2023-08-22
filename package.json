@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite www",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "vite build www",
+    "test": "vite build www --minify false && vite preview www"
+    
   },
   "devDependencies": {
     "vite": "^4.4.9"
