@@ -1,6 +1,7 @@
 vec2 pos;
 uniform float time;
 uniform vec2 resolution;
+uniform float zoom;
 
 #define     PI 3.14159265358979323846
 
@@ -65,9 +66,10 @@ float fbm(vec2 x, float freq) {
 
 void main(void) {
 
-    vec2 pos = 2.0 * gl_FragCoord.xy / resolution.y -
-        vec2(resolution.x / resolution.y, 1.0);
 
+    vec2 pos = 2.0 * gl_FragCoord.xy / resolution.y -
+        vec2(resolution.x / resolution.y, 1.0) + vec2(sin(time*0.3), cos(time*0.5)) *0.02;
+    
     vec2 pos_zoom_in_out = pos * remap(sin(0.5 * time), -1., 1., 0.5, sin(time * 0.001)+1.);
     vec2 translation =  vec2(0.1 * sin(time * 2.), 0.3 * sin(time));
     
@@ -76,7 +78,7 @@ void main(void) {
     
     vec2 noised_pos = pos + pNoise(pos*time, 100)*20.;
 
-
+    
     float pnoise_freq = 10000.;
     float pnoise_translation = 10000.;
     float pnoise = fbm(pos + translation * -0.01 , pnoise_freq);
@@ -95,6 +97,7 @@ void main(void) {
 
     vec3 out_col =  mix(final1, final2, sin(time * 0.1) * 0.25 + 0.25);
     out_col = clamp(out_col, 0., 1.);
+    out_col = mix(out_col, 1.-out_col, step(0.5,1.-zoom) ) ;
     gl_FragColor = vec4(out_col, 1.0);
 
     // gl_FragColor = vec4(vec3(noised_pos.x),0.);

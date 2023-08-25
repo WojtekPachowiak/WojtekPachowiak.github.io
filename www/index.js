@@ -17,15 +17,24 @@ import { OutlinePass } from "three/examples/jsm/postprocessing/OutlinePass.js";
 import { FXAAShader } from "three/addons/shaders/FXAAShader.js";
 import WebGL from "three/addons/capabilities/WebGL.js";
 
-import headersFont from "/resources/fonts/helvetiker_regular.typeface.json?url";
+// import headersFont from "/resources/fonts/Mental Health Demo_Regular?url";
+// import headersFont from "/resources/fonts/Essential Economy Demo_Bold?url";
+import headersFont from "/resources/fonts/GHOAS_Regular?url";
+// import headersFont from "/resources/fonts/Hurimate_Regular?url";
+// import headersFont from "/resources/fonts/Barbie Doll_Regular?url";
+
+let yOffset = 0.12;
+let globalYOffset = 0.7;
+let uppercase = true;
+let rot = [0.0, 0.0, 0.0];
+let opacity = 0.3;
+let fontSize = 0.07;
 
 // if mobile device
 if (matchMedia("(pointer:coarse)").matches) {
-  alert("Mobile devices not supported yet. Sorry! :(")
+  alert("Mobile devices not supported yet. Sorry! :(");
   throw "Mobile devices not supported yet. Sorry! :(";
 }
-
-
 
 if (WebGL.isWebGL2Available() === false) {
   document.body.appendChild(WebGL.getWebGL2ErrorMessage());
@@ -68,6 +77,7 @@ const plane_material = new THREE.ShaderMaterial({
         window.innerHeight * window.devicePixelRatio
       ),
     },
+    zoom: { value: 1 },
   },
   fragmentShader: backgroundShader,
 });
@@ -96,8 +106,8 @@ function drawItem(text, positionY, link) {
   loader.load(headersFont, function (response) {
     let font = response;
     let textGeo = new TextGeometry(text, {
-      size: 0.4,
-      height: 0.01,
+      size: fontSize,
+      height: 0.0,
       curveSegments: 12,
       // bevelEnabled : true,
       // bevelThickness: 0.01,
@@ -110,7 +120,7 @@ function drawItem(text, positionY, link) {
       //   curveSegments: 12,
     });
     textGeo.computeBoundingBox();
-    textGeo.center();
+    // textGeo.center();
     const centerOffset =
       -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
@@ -205,19 +215,26 @@ function drawItem(text, positionY, link) {
 
     let mesh = new THREE.Mesh(textGeo, textMaterial);
 
-    mesh.position.set(0, positionY, 0.4);
+    mesh.position.set(-0.95, positionY, 0.4);
     // mesh.lookAt(camera.position);
-    // mesh.rotation.set(0.4, 0.0, 0.0);
-    // mesh.scale.set(1., 2., 1.);
+    mesh.rotation.set(rot[0], rot[1], rot[2]);
+    mesh.scale.set(1, 1, 1);
     mesh.type = "text";
     mesh.link = link;
+    mesh.material.opacity = opacity;
 
     scene.add(mesh);
   });
 }
-drawItem("ART", 0.5, "art.html");
-drawItem("ABT", 0, "about.html");
-drawItem("HOR", -0.5, "gramophone.html");
+
+[
+  ["art", yOffset, "art.html"],
+  ["about", 0, "about.html"],
+  ["horror", -yOffset, "gramophone.html"],
+].forEach((item) => {
+  const text = uppercase ? item[0].toUpperCase() : item[0];
+  drawItem(text, item[1] + globalYOffset, item[2]);
+});
 
 // efects
 const renderScene = new RenderPass(scene, camera);
@@ -293,7 +310,10 @@ finalComposer.addPass(mixPass);
 // raycast
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2(-999, -999);
+let pointer_velocity = new THREE.Vector2(0, 0);
 
+let timer = 0;
+let zoom = 1.0;
 //////////////////
 // ANIMATE
 //////////////////
@@ -311,6 +331,12 @@ function animate() {
   let texts = scene.children.filter((child) => child.type == "text");
   document.body.style.cursor = "default";
 
+  // distance to left top corner interpolate mouse
+  let invert = Math.sqrt(
+    Math.pow(pointer.x + 1, 2) + Math.pow(pointer.y - 1, 2)
+  );
+
+  let timer_grow = false;
   texts.forEach((text) => {
     let bbox = new THREE.Box3().setFromObject(text);
     let size = new THREE.Vector3();
@@ -319,12 +345,21 @@ function animate() {
     // if intersects and cursor inside canvas
     if (intersects) {
       // text.material.emissive.set("#ffffff");
-      text.material.emissiveIntensity = 30;
+      text.material.emissiveIntensity += 5;
+      // clamp
+      text.material.emissiveIntensity = Math.min(
+        text.material.emissiveIntensity,
+        50.0
+      );
       text.material.opacity = 0.8;
       // skew text
       // text.rotation.set(0.4, 0.0, 0.0);
-      text.scale.set(1.1, 1.1, 1.1);
+      text.scale.set(text.scale.x + 0.01, 1, 1.0);
 
+      text.scaled = true;
+      text.madeEmmisive = true;
+
+      timer_grow = true;
       // text.material.transparent = false;
       text.layers.set(layers.text);
       document.body.style.cursor = "pointer";
@@ -334,10 +369,26 @@ function animate() {
       }
     } else {
       // text.material.emissive.set("#000000");
-      text.material.emissiveIntensity = 1;
-      text.scale.set(1.0, 1.0, 1.0);
 
-      text.material.opacity = 0.1;
+      if (text.scaled) {
+        if (text.scale.x <= 1.0) {
+          text.scaled = false;
+          text.scale.set(1, 1, 1.0);
+        } else {
+          text.scale.set(text.scale.x - 0.1 * Math.log(text.scale.x), 1, 1.0);
+        }
+      }
+      if (text.madeEmmisive) {
+        if (text.material.opacity <= opacity) {
+          text.madeEmmisive = false;
+          text.material.opacity = opacity;
+        } else {
+          text.material.opacity =
+            text.material.opacity - 0.01*Math.exp(text.material.opacity);
+        }
+      }
+      text.material.emissiveIntensity = 1.;
+      // text.material.opacity = opacity;
       // text.material.transparent = true;
       text.layers.set(layers.text);
     }
@@ -365,7 +416,7 @@ function animate() {
 
       // child.position.y +=
       //   Math.sin(child.id + Date.now() / 100 - start) * 0.00001;
-      //   const look =  camera.position;
+      // const look =  camera.position;
       // child.lookAt(look);
       // child.position.z =  0.4+ remap(
       //   Math.sin(child.id + Date.now() / 10000 - start),
@@ -400,10 +451,13 @@ function animate() {
   bloomComposer.render();
   camera.layers.set(0);
   finalComposer.render();
-
-
 }
 animate();
+
+
+
+
+//
 
 window.addEventListener("pointermove", onPointerMove);
 function onPointerMove(event) {
@@ -425,13 +479,19 @@ function onDocumentTouchEnd(event) {
 window.addEventListener("click", function handleClick() {
   console.log("element clicked");
   clicked = true;
+  zoom = zoom ==1.? 0.0 : 1.0
+  plane_material.uniforms.zoom.value = zoom;
 });
 
 // onresize
 function updateViewport() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight, window.devicePixelRatio);
+  renderer.setSize(
+    window.innerWidth,
+    window.innerHeight,
+    window.devicePixelRatio
+  );
 
   // plane_mesh.scale.set(window.innerWidth / window.innerHeight, 1, 1);
   plane_material.uniforms.resolution.value = new THREE.Vector2(
@@ -447,7 +507,6 @@ function updateViewport() {
     window.innerWidth * window.devicePixelRatio,
     window.innerHeight * window.devicePixelRatio
   );
-
 }
 window.onresize = updateViewport;
 
