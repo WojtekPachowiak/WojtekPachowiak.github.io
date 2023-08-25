@@ -10,18 +10,20 @@ import lalala from '/resources/sound/drakengard1_lalalala_vhsed.mp3'
 
  let audio = new Audio(lalala);
 
+ let isPlaying = false;
  my_face.addEventListener("click", function () {
      // if arrow is visible, disable it
-     if (my_face.src.split("/")[my_face.src.split("/").length - 1] == "my_face_open.jpg") {
-         my_face.src = myFaceClosed;
-         audio.pause();
-         arrow.style.visibility = "visible";
-
+     if (isPlaying) {
+        
+       my_face.src = myFaceClosed;
+       audio.pause();
+       arrow.style.visibility = "visible";
      } else {
-         my_face.src = myFaceOpen;
-         audio.play();
-         arrow.style.visibility = "hidden";
+       my_face.src = myFaceOpen;
+       audio.play();
+       arrow.style.visibility = "hidden";
      }
+     isPlaying = !isPlaying;
 
 
  });
