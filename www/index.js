@@ -23,12 +23,12 @@ import headersFont from "/resources/fonts/GHOAS_Regular?url";
 // import headersFont from "/resources/fonts/Hurimate_Regular?url";
 // import headersFont from "/resources/fonts/Barbie Doll_Regular?url";
 
-let yOffset = 0.12;
-let globalYOffset = 0.7;
+let yOffset = 0.15;
+let globalYOffset = 0.6;
 let uppercase = true;
 let rot = [0.0, 0.0, 0.0];
 let opacity = 0.3;
-let fontSize = 0.07;
+let fontSize = 0.1;
 
 // if mobile device
 if (matchMedia("(pointer:coarse)").matches) {
@@ -274,16 +274,18 @@ bloomComposer.addPass(bloomPass);
 
 // bloomComposer.addPass(outlinePass);
 
+const final_mat = new THREE.ShaderMaterial({
+  uniforms: {
+    baseTexture: { value: null },
+    bloomTexture: { value: bloomComposer.renderTarget2.texture },
+    invert : {value:0}
+  },
+  vertexShader: bloomVertexShader,
+  fragmentShader: bloomFragmentShader,
+  defines: {},
+})
 const mixPass = new ShaderPass(
-  new THREE.ShaderMaterial({
-    uniforms: {
-      baseTexture: { value: null },
-      bloomTexture: { value: bloomComposer.renderTarget2.texture },
-    },
-    vertexShader: bloomVertexShader,
-    fragmentShader: bloomFragmentShader,
-    defines: {},
-  }),
+  final_mat,
   "baseTexture"
 );
 mixPass.needsSwap = true;
@@ -313,7 +315,7 @@ const pointer = new THREE.Vector2(-999, -999);
 let pointer_velocity = new THREE.Vector2(0, 0);
 
 let timer = 0;
-let zoom = 1.0;
+let zoom = 0.0;
 //////////////////
 // ANIMATE
 //////////////////
@@ -479,8 +481,9 @@ function onDocumentTouchEnd(event) {
 window.addEventListener("click", function handleClick() {
   console.log("element clicked");
   clicked = true;
-  zoom = zoom ==1.? 0.0 : 1.0
-  plane_material.uniforms.zoom.value = zoom;
+  
+  zoom = zoom == 1.? 0.0 : 1.0
+  final_mat.uniforms.invert.value  = zoom;
 });
 
 // onresize

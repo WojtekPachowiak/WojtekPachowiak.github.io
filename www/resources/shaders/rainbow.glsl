@@ -69,7 +69,8 @@ void main(void) {
 
     vec2 pos = 2.0 * gl_FragCoord.xy / resolution.y -
         vec2(resolution.x / resolution.y, 1.0) + vec2(sin(time*0.3), cos(time*0.5)) *0.02;
-    
+    pos += vec2(1.5,-1.);
+
     vec2 pos_zoom_in_out = pos * remap(sin(0.5 * time), -1., 1., 0.5, sin(time * 0.001)+1.);
     vec2 translation =  vec2(0.1 * sin(time * 2.), 0.3 * sin(time));
     
