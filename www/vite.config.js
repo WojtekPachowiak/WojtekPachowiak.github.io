@@ -10,6 +10,8 @@ export default defineConfig({
         about: resolve(__dirname, "about.html"),
         art: resolve(__dirname, "art.html"),
         horror: resolve(__dirname, "gramophone.html"),
+        sound: resolve(__dirname, "music.html")
+
       },
     },
   },

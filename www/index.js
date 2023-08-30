@@ -19,9 +19,19 @@ import WebGL from "three/addons/capabilities/WebGL.js";
 
 // import headersFont from "/resources/fonts/Mental Health Demo_Regular?url";
 // import headersFont from "/resources/fonts/Essential Economy Demo_Bold?url";
-import headersFont from "/resources/fonts/GHOAS_Regular?url";
+// import headersFont from "/resources/fonts/GHOAS_Regular?url";
+// import headersFont from "/resources/fonts/Bavex_Regular?url";
+import headersFont from "/resources/fonts/Raleway_Light?url";
+
+
 // import headersFont from "/resources/fonts/Hurimate_Regular?url";
 // import headersFont from "/resources/fonts/Barbie Doll_Regular?url";
+import audioLoop from "/resources/sound/www2.rb.mp3"
+
+// AUIDO
+let audio = new Audio(audioLoop);
+audio.loop = true;
+
 
 let yOffset = 0.15;
 let globalYOffset = 0.6;
@@ -88,8 +98,11 @@ const plane_mesh = new THREE.Mesh(plane_geometry, plane_material);
 plane_mesh.layers.set(layers.background);
 scene.add(plane_mesh);
 
+
+
 // camera
-const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.001, 1000);
+const aspect = window.innerWidth / window.innerHeight
+const camera = new THREE.OrthographicCamera(-aspect, aspect, 1, -1, 0.001, 1000);
 
 camera.position.set(0, 0, 10);
 // const camera = new THREE.PerspectiveCamera(
@@ -109,36 +122,13 @@ function drawItem(text, positionY, link) {
       size: fontSize,
       height: 0.0,
       curveSegments: 12,
-      // bevelEnabled : true,
-      // bevelThickness: 0.01,
-      // bevelSize: 0.01,
-      // // bevelOffset: 0.1,
-      // bevelSegments: 10,
-
       font: font,
-
-      //   curveSegments: 12,
     });
     textGeo.computeBoundingBox();
-    // textGeo.center();
-    const centerOffset =
-      -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
-
     // text
     const textMaterial = new THREE.MeshStandardMaterial({
-      // color: 0xffff00,
       transparent: true,
-      emissive: "white",
-      // depthWrite: false,
-      // depthTest: false,
-      // depthFunc: THREE.AlwaysDepth,
-      // colorWrite: false,
-      // clipIntersection: false,
-      // forceSinglePass: true,
-      // blending: THREE.MaxEquation,
-      // blendEquation: THREE.MaxEquation,
-      // blendEquationAlpha: THREE.MaxEquation,
-      // blendSrcAlpha: THREE.OneFactor,
+      emissive: "white"
     });
     // material.blendEquation = THREE.AddEquation; //default
     // material.blendSrc = THREE.SrcAlphaFactor; //default
@@ -215,10 +205,10 @@ function drawItem(text, positionY, link) {
 
     let mesh = new THREE.Mesh(textGeo, textMaterial);
 
-    mesh.position.set(-0.95, positionY, 0.4);
+    mesh.position.set(-0.95*aspect, positionY, 0.4);
     // mesh.lookAt(camera.position);
     mesh.rotation.set(rot[0], rot[1], rot[2]);
-    mesh.scale.set(1, 1, 1);
+    mesh.scale.set(1*aspect, 1, 1);
     mesh.type = "text";
     mesh.link = link;
     mesh.material.opacity = opacity;
@@ -228,13 +218,40 @@ function drawItem(text, positionY, link) {
 }
 
 [
-  ["art", yOffset, "art.html"],
-  ["about", 0, "about.html"],
-  ["horror", -yOffset, "gramophone.html"],
+  ["image", yOffset, "art.html"],
+  ["sound", 0, "music.html"],
+  ["about", -yOffset, "about.html"],
+  ["horror", -yOffset*2, "gramophone.html"],
 ].forEach((item) => {
   const text = uppercase ? item[0].toUpperCase() : item[0];
   drawItem(text, item[1] + globalYOffset, item[2]);
 });
+
+// // slider
+// const slider = new THREE.PlaneGeometry(1., 1);
+// const sliderHandle = new THREE.PlaneGeometry(1,1);
+// const brightness = 1.;
+// const height = 0.003;
+// const sliderLength = 0.3
+// const sliderMaterial = new THREE.MeshStandardMaterial({
+//   transparent: true,
+//   emissive: new THREE.Color(brightness,brightness,brightness),
+//   opacity: opacity
+// });
+// const sliderMesh = new THREE.Mesh(slider, sliderMaterial);
+
+// // sliderMesh.position.set(-0.6,-0.8,0);
+// sliderMesh.scale.set(sliderLength,height,1.)
+// const sliderHandleMesh = new THREE.Mesh(sliderHandle, sliderMaterial);
+// sliderHandleMesh.position.set(-0.94,-0.8,0);
+// sliderHandleMesh.scale.set(0.02, height, 1.)
+// // sliderHandleMesh.type = "sliderHandle"
+// scene.add(sliderMesh);
+// const c = sliderMesh.clone()
+// c.rotation.set(0,0,Math.PI/2)
+// scene.add(c);
+
+// scene.add(sliderHandleMesh);
 
 // efects
 const renderScene = new RenderPass(scene, camera);
@@ -265,20 +282,21 @@ const size = renderer.getDrawingBufferSize(new THREE.Vector2());
 const renderTarget = new THREE.WebGLRenderTarget(size.width, size.height, {
   samples: 4,
 });
+// const fxaaPass = new ShaderPass( FXAAShader );
+// fxaaPass.material.uniforms[ 'resolution' ].value.x = 1 / ( window.innerWidth * window.pixelRatio );
+// fxaaPass.material.uniforms[ 'resolution' ].value.y = 1 / ( window.innerHeight * window.pixelRatio );
 
 const bloomComposer = new EffectComposer(renderer);
 bloomComposer.renderToScreen = false;
 bloomComposer.addPass(renderScene);
 bloomComposer.addPass(bloomPass);
-// bloomComposer.addPass(fxaaPass);
-
 // bloomComposer.addPass(outlinePass);
 
 const final_mat = new THREE.ShaderMaterial({
   uniforms: {
     baseTexture: { value: null },
     bloomTexture: { value: bloomComposer.renderTarget2.texture },
-    invert : {value:0}
+    invert: { value: 0 }
   },
   vertexShader: bloomVertexShader,
   fragmentShader: bloomFragmentShader,
@@ -291,8 +309,10 @@ const mixPass = new ShaderPass(
 mixPass.needsSwap = true;
 
 const finalComposer = new EffectComposer(renderer);
+
 finalComposer.addPass(renderScene);
 finalComposer.addPass(mixPass);
+
 // finalComposer.addPass(outputPass);
 // /////////////////////////////////////////////////
 
@@ -315,7 +335,8 @@ const pointer = new THREE.Vector2(-999, -999);
 let pointer_velocity = new THREE.Vector2(0, 0);
 
 let timer = 0;
-let zoom = 0.0;
+let invert = 0.0;
+let invert_triggered = 0;
 //////////////////
 // ANIMATE
 //////////////////
@@ -329,16 +350,11 @@ function animate() {
 
   // update raycaster
   raycaster.setFromCamera(pointer, camera);
+
   // get texts
   let texts = scene.children.filter((child) => child.type == "text");
   document.body.style.cursor = "default";
 
-  // distance to left top corner interpolate mouse
-  let invert = Math.sqrt(
-    Math.pow(pointer.x + 1, 2) + Math.pow(pointer.y - 1, 2)
-  );
-
-  let timer_grow = false;
   texts.forEach((text) => {
     let bbox = new THREE.Box3().setFromObject(text);
     let size = new THREE.Vector3();
@@ -346,7 +362,7 @@ function animate() {
     let intersects = raycaster.ray.intersectsBox(bbox);
     // if intersects and cursor inside canvas
     if (intersects) {
-      // text.material.emissive.set("#ffffff");
+
       text.material.emissiveIntensity += 5;
       // clamp
       text.material.emissiveIntensity = Math.min(
@@ -354,28 +370,25 @@ function animate() {
         50.0
       );
       text.material.opacity = 0.8;
-      // skew text
-      // text.rotation.set(0.4, 0.0, 0.0);
-      text.scale.set(text.scale.x + 0.01, 1, 1.0);
+      text.scale.set(text.scale.x + 0.02, 1, 1.0);
 
       text.scaled = true;
       text.madeEmmisive = true;
+      invert_triggered = 1;
+      
 
-      timer_grow = true;
-      // text.material.transparent = false;
       text.layers.set(layers.text);
       document.body.style.cursor = "pointer";
       if (clicked) {
-        // fetch(text.link);
         window.location.href = text.link;
       }
     } else {
-      // text.material.emissive.set("#000000");
+
 
       if (text.scaled) {
-        if (text.scale.x <= 1.0) {
+        if (text.scale.x <= 1.0*aspect) {
           text.scaled = false;
-          text.scale.set(1, 1, 1.0);
+          text.scale.set(1*aspect, 1, 1);
         } else {
           text.scale.set(text.scale.x - 0.1 * Math.log(text.scale.x), 1, 1.0);
         }
@@ -386,64 +399,27 @@ function animate() {
           text.material.opacity = opacity;
         } else {
           text.material.opacity =
-            text.material.opacity - 0.01*Math.exp(text.material.opacity);
+            text.material.opacity - 0.01 * Math.exp(text.material.opacity);
         }
       }
       text.material.emissiveIntensity = 1.;
-      // text.material.opacity = opacity;
-      // text.material.transparent = true;
       text.layers.set(layers.text);
     }
   });
+  if (invert_triggered == 1){
+    invert += 0.1;
+  }
+  invert_triggered -= 0.1
+  if (invert_triggered < 0.2){
+    invert -= 0.1;
+  }
+  invert_triggered = Math.max(invert_triggered, 0.)
+  invert = Math.min(Math.max(0, invert),1.)
 
   //  update shader
   plane_material.uniforms.time.value = performance.now() / 1000;
+  final_mat.uniforms.invert.value = invert;
   // textMaterial.uniforms.time_wojtek.value = Date.now() / 1000 - start;
-  scene.traverse(function (child) {
-    if (child.type == "text") {
-      const shader = child.material.userData.shader;
-
-      if (shader) {
-        shader.uniforms.time.value = performance.now() / 1000;
-      }
-    }
-  });
-
-  //  update position of each text
-  scene.children.forEach((child) => {
-    if (child.type == "text") {
-      const centerOffset =
-        -0.5 *
-        (child.geometry.boundingBox.max.x - child.geometry.boundingBox.min.x);
-
-      // child.position.y +=
-      //   Math.sin(child.id + Date.now() / 100 - start) * 0.00001;
-      // const look =  camera.position;
-      // child.lookAt(look);
-      // child.position.z =  0.4+ remap(
-      //   Math.sin(child.id + Date.now() / 10000 - start),
-      //   -1,
-      //   1,
-      //   0,
-      //   0.1
-      // );
-      // child.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 0.005 * child.id/10 );
-      // child.rotateOnWorldAxis(
-      //   new THREE.Vector3(1, 0, 0),
-      //   (0.002 * child.id) / 10
-      // );
-
-      // child.scale.y =
-      //   0.4+
-      //   remap(
-      //     Math.sin(child.id + Date.now() / 10000 - start),
-      //     -1,
-      //     1,
-      //     -0.1,
-      //     0.1
-      //   );
-    }
-  });
 
   clicked = false;
   // RENDER //
@@ -468,6 +444,11 @@ function onPointerMove(event) {
 
   pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
   pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  // if (audio.paused){
+  //   audio.play();
+  // }
+  // audio.volume =0.7
 }
 
 window.addEventListener("touchend", onDocumentTouchEnd, false);
@@ -482,8 +463,6 @@ window.addEventListener("click", function handleClick() {
   console.log("element clicked");
   clicked = true;
   
-  zoom = zoom == 1.? 0.0 : 1.0
-  final_mat.uniforms.invert.value  = zoom;
 });
 
 // onresize
