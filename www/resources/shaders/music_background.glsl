@@ -68,17 +68,18 @@ void main(void) {
 
 
     vec2 pos = gl_FragCoord.xy / vec2(resolution.x, resolution.y);
-    pos = (pos-0.5)*2.;
-
+    pos = (pos.x-3.)*(pos-0.5)*2.;
+    pos*= 0.3;
+    // pos += vec2(1000.,10.);
     float pixelization = 10.;
     vec2 pos_pixelated = floor(pos * pixelization) / pixelization;
     
     // zoom
     // pos = pos*2.;
-    pos += vec2(sin(pos.y*3.)*0.1,0.);
+    pos += vec2(sin(time/5.+pos.y*2.)*0.1,0.);
     // pos = pos + vec2(pos_pixelated.y,0.);
     // pos += vec2(sin(time*0.01),0.);
-    vec3 col = vec3(fbm((vec2(pos.x) ), 30000.));
+    vec3 col = vec3(fbm((vec2(pos.x) ), 30000.+pos.y*15.));
 
 
 
@@ -111,7 +112,7 @@ void main(void) {
     // out_col = clamp(out_col, 0., 1.);
     // out_col = mix(out_col, 1.-out_col, step(0.5,1.-zoom) ) ;
 
-    col = smoothstep(vec3(0.4745, 0.5294, 0.9216),vec3(0.3961, 0.4588, 0.0235),col);
+    col = smoothstep(vec3(0.6549, 0.6706, 0.7922),vec3(0.0, 0.1451, 0.1137),col);
 
     gl_FragColor = vec4(col, 1.0);
 
