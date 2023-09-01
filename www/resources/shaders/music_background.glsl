@@ -71,59 +71,17 @@ void main(void) {
     pos = (pos.x-3.)*(pos-0.5)*2.;
     pos*= 0.3;
     // pos += vec2(1000.,10.);
-    float pixelization = 10.;
-    vec2 pos_pixelated = floor(pos * pixelization) / pixelization;
-    
+
     // zoom
     // pos = pos*2.;
-    pos += vec2(sin(time/5.+pos.y*2.)*0.1,0.);
+    float swim_upwards_speed = 0.01;
+    pos += vec2(sin(time/5.+pos.y*2.)*0.1,time*swim_upwards_speed);
     // pos = pos + vec2(pos_pixelated.y,0.);
     // pos += vec2(sin(time*0.01),0.);
     vec3 col = vec3(fbm((vec2(pos.x) ), 30000.+pos.y*15.));
-
-
-
-    // vec2 pos_zoom_in_out = pos * remap(sin(0.5 * time), -1., 1., 0.5, sin(time * 0.001)+1.);
-    // vec2 translation =  vec2(0.1 * sin(time * 2.), 0.3 * sin(time));
-    
-    // float pixelization = 100.;
-    // vec2 pos_pixelated = floor(pos_zoom_in_out * pixelization) / pixelization;
-    
-    // vec2 noised_pos = pos + pNoise(pos*time, 100)*20.;
-
-    
-    // float pnoise_freq = 10000.;
-    // float pnoise_translation = 10000.;
-    // float pnoise = fbm(pos + translation * -0.01 , pnoise_freq);
-
-    // float randn = rand(pos + sin(time));
-    // float randn_pixelated = rand(pos_pixelated + sin(time));
-    // float randn_offseted = rand(pos+2. + sin(time));
-
-    
-    // float square_noise_zoom = 10000. * pnoise ;
-    // float b = noise(pos_zoom_in_out + translation*pnoise, square_noise_zoom);
-    
-    // float randn_brighter = randn;
-    // vec3 final1 = vec3(randn_brighter * pnoise * b);
-    // vec3 final2 = vec3(randn_brighter * pnoise + b);
-
-    // vec3 out_col =  mix(final1, final2, sin(time * 0.1) * 0.25 + 0.25);
-    // out_col = clamp(out_col, 0., 1.);
-    // out_col = mix(out_col, 1.-out_col, step(0.5,1.-zoom) ) ;
 
     col = smoothstep(vec3(0.6549, 0.6706, 0.7922),vec3(0.0, 0.1451, 0.1137),col);
 
     gl_FragColor = vec4(col, 1.0);
 
-    // gl_FragColor = vec4(vec3(noised_pos.x),0.);
-
-    // pos = pos + pNoise(pos , 111);
-    // gl_FragColor = vec4(pos, 0.0,0.0);
-
-    // float d = sqrt(pos.x * pos.x +
-    //     pos.y * pos.y) * 10.0;
-
-    // gl_FragColor = vec4(1.0 + cos(time * 0.97 + d), 1.0 + cos(time * 0.59 + d), 1.0 + cos(-0.83 * time +
-    //     d), 2.0) / 2.0;
 }

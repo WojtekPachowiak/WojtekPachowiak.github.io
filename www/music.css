@@ -1,4 +1,215 @@
-body{
-    margin: 0;
+* {
+  /* global font is monospace*/
+  font-family: monospace;
+  /* dont focus */
+  outline: none;
+
+}
+
+
+body {
+  margin: 0;
+}
+
+
+
+
+#gradient-sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 300px;
+  height: 100%;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.9));
+  z-index: 1;
+}
+
+button {
+  background: none;
+  border: none;
+}
+
+/* ////////////////////////////////////////////////////// PLAYLIST ////////////////////////////////////////////////////// */
+
+/* playlist (scrollable on overflow, positioned absolutely on top of background) */
+#playlist {
+  position: fixed;
+  padding: 20px;
+  bottom:0;
+  top:0;
+  right:0;
+  height: auto;
+  width: 200px;
+  overflow-y: auto;
+  z-index: 2;
+
+}
+
+
+#playlist>ol{
+  padding: 0px;
+}
+#playlist>ol>li,
+#playlist>ol>li>button {
+
+  /* size of font */
+  font-size: 1.2em;
+
+}
+
+#playlist>ol>li {
+  /* background-color: rgba(255, 255, 255, 0.404); */
+}
+
+#playlist>ol>li>button {
+  /* font color */
+  color: rgba(255, 255, 255, 0.6);
+
+  /* shadow */
+  text-shadow: 0px 0px 3px rgb(0, 0, 0);
+
+
+}
+
+#playlist>ol>li>button:hover {
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+}
+
+
+
+
+/* ////////////////////////////////////////////////////// AUDIO PLAYER ////////////////////////////////////////////////////// */
+
+/* #audio-player is a timeline audio player topmost element.
+  all child elements are flexely positioned in the middle. 
+  from left to right:
+  #play-pause is a button to play/pause the audio. 
+  #loop is a button to loop the audio. it is located to the right of the play-pause button.
+  #current-time shows current time of the audio. it is located to the right of the loop button.
+  #timeline is a div that contains the timeline of the audio. it can be dragged like a slider. it is located to the right of current-time.
+  #max-time  show the total time of the audio. it is located to the right of the timeline.
+  #volume is a div that contains the volume button and slider (slider shows up when mouse hovers over volume button). it is located to the right of the max-time.
+
+  */
+
+#audio-player {
+  position: fixed;
+  bottom: 20px;
+  /* widrh 50% at the center */
+  width: 520px;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 40px;
+  background-color: rgba(0, 0, 0, 0.7);
+  /* border */
+  /* border: 5px solid  rgb(29, 29, 29); */
+  z-index: 1000;
+
+  /* corners */
+  border-radius: 50px;
+}
+#audio-player>*{
+  /* padding between flex elements */
+  padding: 0 5px;
+}
+
+#play-pause, #volume {
+  filter: invert(100%);
+  padding: 0 0px;
+}
+#loop{
+  filter: invert(100%) brightness(0.5);
+
+}
+
+#current-time, #max-time {
+  /* color white */
+  color: white;
+}
+
+
+
+/* //////////////////////////////// stye input slider ///////////////////////////// */
+
+
+#timeline-slider {
+ /* removing default appearance */
+ -webkit-appearance: none;
+ appearance: none;
+ /* creating a custom design */
+ width: 300px;
+ cursor: pointer;
+ outline: none;
+ /*  overflow: hidden;  remove this line*/
+
+ /* New additions */
+ height: 2px;
+ background: #555;
+}
+
+/* make place for thumb tighter */
+/* input[type=range]::-webkit-slider-runnable-track {
+  width: 98%;
+} */
+
+/* handle */
+#timeline-slider::-webkit-slider-thumb {
+  /* removing default appearance */
+  -webkit-appearance: none;
+  appearance: none;
+  /* creating a custom design */
+  height: 7px;
+  width: 3px;
+  background-color: #555;
+  /* border-radius: 50%; */
+  border: none;
+
+  /* box-shadow: -407px 0 0 400px #f50; emove this line */
+  transition: .2s ease-in-out;
+}
+
+
+
+
+/* ITEM NUMBERS */
+/* ol {
+    counter-reset: item;
+    list-style-type: none;
+    
   }
+
   
+  li {
+    display: block;
+  }
+
+  li:before {
+    content: counter(item) "  ";
+    counter-increment: item
+  } */
+
+
+/*////////////////////////////////////////////////////// SCROLLBAR /////////////////////////////////////////////////// */
+/* width */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  display: none;
+
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ffffff22;
+  /* height */
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #ffffff44;
+}

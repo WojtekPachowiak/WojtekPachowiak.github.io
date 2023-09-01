@@ -21,21 +21,16 @@ import WebGL from "three/addons/capabilities/WebGL.js";
 // import headersFont from "/resources/fonts/Essential Economy Demo_Bold?url";
 // import headersFont from "/resources/fonts/GHOAS_Regular?url";
 // import headersFont from "/resources/fonts/Bavex_Regular?url";
-import headersFont from "/resources/fonts/Raleway_Light?url";
+// import headersFont from "/resources/fonts/Raleway_Light?url";
+import headersFont from "/resources/fonts/Fira Mono_Regular?url";
+// import headersFont from "/resources/fonts/Fira Mono Medium_Regular?url";
 
 
-// import headersFont from "/resources/fonts/Hurimate_Regular?url";
-// import headersFont from "/resources/fonts/Barbie Doll_Regular?url";
-import audioLoop from "/resources/sound/www2.rb.mp3"
-
-// AUIDO
-let audio = new Audio(audioLoop);
-audio.loop = true;
 
 
 let yOffset = 0.15;
 let globalYOffset = 0.6;
-let uppercase = true;
+let uppercase = false;
 let rot = [0.0, 0.0, 0.0];
 let opacity = 0.3;
 let fontSize = 0.1;
@@ -370,7 +365,7 @@ function animate() {
         50.0
       );
       text.material.opacity = 0.8;
-      text.scale.set(text.scale.x + 0.02, 1, 1.0);
+      text.scale.set(1*aspect*1.05, 1*0.95, 1.0);
 
       text.scaled = true;
       text.madeEmmisive = true;
@@ -384,15 +379,16 @@ function animate() {
       }
     } else {
 
+      text.scale.set(1*aspect, 1, 1);
 
-      if (text.scaled) {
-        if (text.scale.x <= 1.0*aspect) {
-          text.scaled = false;
-          text.scale.set(1*aspect, 1, 1);
-        } else {
-          text.scale.set(text.scale.x - 0.1 * Math.log(text.scale.x), 1, 1.0);
-        }
-      }
+      // if (text.scaled) {
+      //   if (text.scale.x <= 1.0*aspect) {
+      //     text.scaled = false;
+      //     text.scale.set(1*aspect, 1, 1);
+      //   } else {
+      //     // text.scale.set(text.scale.x - 0.1 * Math.log(text.scale.x), 1, 1.0);
+      //   }
+      // }
       if (text.madeEmmisive) {
         if (text.material.opacity <= opacity) {
           text.madeEmmisive = false;
@@ -407,10 +403,10 @@ function animate() {
     }
   });
   if (invert_triggered == 1){
-    invert += 0.1;
+    invert += 0.5;
   }
   invert_triggered -= 0.1
-  if (invert_triggered < 0.2){
+  if (invert_triggered < 0.1){
     invert -= 0.1;
   }
   invert_triggered = Math.max(invert_triggered, 0.)
