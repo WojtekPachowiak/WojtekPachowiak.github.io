@@ -2,15 +2,25 @@ import * as THREE from "three";
 import backgroundShader from "./resources/shaders/music_background.glsl?raw";
 import WebGL from "three/addons/capabilities/WebGL.js";
 
+// buttons
+import volume from "./resources/icons/sound-player-timeline/volume.svg";
+import nosound from "./resources/icons/sound-player-timeline/nosound.svg";
+import play from "./resources/icons/sound-player-timeline/play.svg";
+import pause from "./resources/icons/sound-player-timeline/pause.svg";
+
+// tracks
 import sirene from "./resources/sound/sirene.mp3";
 
+if (matchMedia("(pointer:coarse)").matches) {
+  document.body.innerHTML = "";
+  
+  alert("Mobile devices not supported yet. Sorry! :(");
+  throw "Mobile devices not supported yet. Sorry! :(";
+}
 
 function initBackground() {
   // if mobile device
-  if (matchMedia("(pointer:coarse)").matches) {
-    alert("Mobile devices not supported yet. Sorry! :(");
-    throw "Mobile devices not supported yet. Sorry! :(";
-  }
+  
 
   if (WebGL.isWebGL2Available() === false) {
     document.body.appendChild(WebGL.getWebGL2ErrorMessage());
@@ -152,16 +162,16 @@ function initAudioPlayer(){
     }
     if (audio.paused) {
       audio.play();
-      document.querySelector("#play-pause button img").src = "./resources/icons/sound-player-timeline/pause.svg";
+      document.querySelector("#play-pause button img").src = pause;
     } else {
       audio.pause();
-      document.querySelector("#play-pause button img").src = "./resources/icons/sound-player-timeline/play.svg";
+      document.querySelector("#play-pause button img").src = play;
     }
   };
   
   // on audio end, change play button icon
   audio.onended = () => {
-    document.querySelector("#play-pause button img").src = "./resources/icons/sound-player-timeline/play.svg";
+    document.querySelector("#play-pause button img").src = play;
   };
   
   
@@ -239,14 +249,16 @@ function initAudioPlayer(){
   document.querySelector("#volume button").onclick = () => {
     if (audio.muted) {
       audio.muted = false;
-      document.querySelector("#volume button img").src = "./resources/icons/sound-player-timeline/volume.svg";
+      document.querySelector("#volume button img").src = volume;
     } else {
       audio.muted = true;
-      document.querySelector("#volume button img").src = "./resources/icons/sound-player-timeline/nosound.svg";
+      document.querySelector("#volume button img").src = nosound;
     }
   };
     
 }
+
+
 
 
 initBackground();
