@@ -22,10 +22,11 @@ import mountain_temple from "/resources/image/mountain_temple.jpg";
 import krystal_halo from "/resources/image/krystal_halo.jpg";
 import rotating_one from "/resources/video/rotating_one.mp4";
 import potwur from "/resources/image/potwur.jpg";
-
+import mefisto from "/resources/image/mefisto.jpg";
 import playIcon from "/resources/icons/play_arrow_FILL0_wght100_GRAD-25_opsz48.svg";
 
 let images = [
+  [mefisto, "mefisto"],
   [kategoriia, "kategoriia"],
   [vinyl3, "vinyl3"],
   [grainy_black_white_sunset_2, "grainy_black_white_sunset_2"],

@@ -5,7 +5,7 @@ import sys
 import os
 
 
-images_path = sys.argv[1]
+images_path = r"www\resources\image"
 
 #list all files in the directory
 for f in os.listdir(images_path):
