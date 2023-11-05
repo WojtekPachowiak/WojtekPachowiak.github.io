@@ -97,11 +97,11 @@ button {
   position: fixed;
   bottom: 20px;
   /* widrh 50% at the center */
-  width: 520px;
+  width: 90%;
   left: 50%;
   transform: translateX(-50%);
   height: 40px;
-  background-color: rgba(0, 0, 0, 0.7);
+  /* background-color: rgba(0, 0, 0, 0.7); */
   /* border */
   /* border: 5px solid  rgb(29, 29, 29); */
   z-index: 1000;
@@ -132,19 +132,22 @@ button {
 
 /* //////////////////////////////// stye input slider ///////////////////////////// */
 
+#timeline{
+  width: 100%;
+}
 
 #timeline-slider {
  /* removing default appearance */
  -webkit-appearance: none;
  appearance: none;
  /* creating a custom design */
- width: 300px;
+ width: 100%;
  cursor: pointer;
  outline: none;
  /*  overflow: hidden;  remove this line*/
 
  /* New additions */
- height: 2px;
+ height: 5px;
  background: #555;
 }
 
@@ -159,7 +162,7 @@ button {
   -webkit-appearance: none;
   appearance: none;
   /* creating a custom design */
-  height: 7px;
+  height: 15px;
   width: 3px;
   background-color: #555;
   /* border-radius: 50%; */

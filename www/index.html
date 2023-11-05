@@ -14,8 +14,69 @@
 
 
   
-<!--     
-    <ul>
+    
+
+    <style>
+      /* make menu in the top right corner on top of everything else */
+      .menu {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 10000;
+
+        /* font-family: monospace; */
+        font-size: 100px;
+        /* itelic */
+        font-style: italic;
+        
+
+      }
+
+      /* disable item circle from ul */
+      .menu li {
+        list-style-type: none;
+        /* padding: 50px; */
+      }
+
+      ul[class="menu"] {
+        margin: 50px;
+
+        /* make spacing between items smaller */
+        
+      }
+
+      /* make link text have no deafult formatting */
+      .menu a {
+        text-decoration: none;
+        color: white;
+
+        /* make the clickable text area smaller */
+        display: inline-block;
+        line-height: 1em;
+        text-shadow: none;
+        transition-delay: 0s;
+
+        transition: text-shadow 0.5s ease;
+      }
+
+      /* make text bloom on hover with easing and slowly fade on not hover*/
+      .menu a:hover {
+        text-shadow: 0 0 10px rgb(255, 255, 255);
+
+      }
+      
+      
+      
+
+      
+
+
+
+      
+
+      
+    </style>
+    <ul class="menu">
       <li>
         <a href="art.html">
           <div class="header">Art</div>
@@ -27,10 +88,10 @@
         </a>
       </li>
       <li>
-        <a href="gramophone.html">
-          <div class="header">Gramophone</div>
+        <a href="music.html">
+          <div class="header">Sound</div>
         </a>
       </li>
-    </ul> -->
+    </ul>
   </body>
 </html>

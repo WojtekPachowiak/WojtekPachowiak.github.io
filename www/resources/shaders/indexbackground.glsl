@@ -2,6 +2,7 @@ vec2 pos;
 uniform float time;
 uniform vec2 resolution;
 uniform float zoom;
+vec2 res = vec2(1920., 1080.);
 
 #define     PI 3.14159265358979323846
 
@@ -10,7 +11,7 @@ float rand(vec2 c) {
 }
 
 float noise(vec2 p, float freq) {
-    float unit = resolution.x / freq;
+    float unit = res.x / freq;
     vec2 ij = floor(p / unit);
     vec2 xy = mod(p, unit) / unit;
 	//xy = 3.*xy*xy-2.*xy*xy*xy;
@@ -65,40 +66,38 @@ float fbm(vec2 x, float freq) {
 }
 
 void main(void) {
-
-
-    vec2 pos = 2.0 * gl_FragCoord.xy / resolution.y -
-        vec2(resolution.x / resolution.y, 1.0) + vec2(sin(time*0.3), cos(time*0.5)) *0.02;
-    pos += vec2(1.5,-1.);
-
-    vec2 pos_zoom_in_out = pos * remap(sin(0.5 * time), -1., 1., 0.5, sin(time * 0.001)+1.);
-    vec2 translation =  vec2(0.1 * sin(time * 2.), 0.3 * sin(time));
+// - vec2( 1920. / 1080., 1.0);
+    vec2 pos = 2.0 * gl_FragCoord.xy / res.xy ;
+    pos.x *= res.x / res.y;
     
+    pos += vec2(1.5, -1.) + vec2(sin(time * 0.3), cos(time * 0.5)) * 0.02;
+
+    vec2 pos_zoom_in_out = pos * remap(sin(0.5 * time), -1., 1., 0.5, sin(time * 0.001) + 1.);
+    vec2 translation = vec2(0.1 * sin(time * 2.), 0.3 * sin(time));
+
     float pixelization = 100.;
     vec2 pos_pixelated = floor(pos_zoom_in_out * pixelization) / pixelization;
-    
-    vec2 noised_pos = pos + pNoise(pos*time, 100)*20.;
 
-    
+    vec2 noised_pos = pos + pNoise(pos * time, 100) * 20.;
+
     float pnoise_freq = 10000.;
     float pnoise_translation = 10000.;
-    float pnoise = fbm(pos + translation * -0.01 , pnoise_freq);
+    float pnoise = fbm(pos + translation * -0.01, pnoise_freq);
 
     float randn = rand(pos + sin(time));
     float randn_pixelated = rand(pos_pixelated + sin(time));
-    float randn_offseted = rand(pos+2. + sin(time));
+    float randn_offseted = rand(pos + 2. + sin(time));
 
-    
-    float square_noise_zoom = 10000. * pnoise ;
-    float b = noise(pos_zoom_in_out + translation*pnoise, square_noise_zoom);
-    
+    float square_noise_zoom = 10000. * pnoise;
+    float b = noise(pos_zoom_in_out + translation * pnoise, square_noise_zoom);
+
     float randn_brighter = randn;
     vec3 final1 = vec3(randn_brighter * pnoise * b);
     vec3 final2 = vec3(randn_brighter * pnoise + b);
 
-    vec3 out_col =  mix(final1, final2, sin(time * 0.1) * 0.25 + 0.25);
+    vec3 out_col = mix(final1, final2, sin(time * 0.1) * 0.25 + 0.25);
     out_col = clamp(out_col, 0., 1.);
-    out_col = mix(out_col, 1.-out_col, step(0.5,1.-zoom) ) ;
+    out_col = mix(out_col, 1. - out_col, step(0.5, 1. - zoom));
     gl_FragColor = vec4(out_col, 1.0);
 
     // gl_FragColor = vec4(vec3(noised_pos.x),0.);
