@@ -37,8 +37,8 @@ let fontSize = 0.1;
 
 // if mobile device
 if (matchMedia("(pointer:coarse)").matches) {
-  alert("Mobile devices not supported. Sorry! :(");
-  throw "Mobile devices not supported. Sorry! :(";
+  alert("Mobile devices not supported. Sorry! Only desktop :(");
+  throw "Mobile devices not supported. Sorry! Only desktop :(";
 }
 
 if (WebGL.isWebGL2Available() === false) {

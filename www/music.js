@@ -14,8 +14,8 @@ import sirene from "./resources/sound/sirene.mp3";
 if (matchMedia("(pointer:coarse)").matches) {
   document.body.innerHTML = "";
   
-  alert("Mobile devices not supported yet. Sorry! :(");
-  throw "Mobile devices not supported yet. Sorry! :(";
+  alert("Mobile devices not supported yet. Sorry! Only desktop :(");
+  throw "Mobile devices not supported yet. Sorry! Only desktop :(";
 }
 
 function initBackground() {
