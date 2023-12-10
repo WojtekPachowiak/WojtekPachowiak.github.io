@@ -107,7 +107,8 @@ button {
   z-index: 1000;
 
   /* corners */
-  border-radius: 50px;
+  /* border-radius: 5px; */
+  background-color: hsla(0, 0%, 0%, 0.7);
 }
 #audio-player>*{
   /* padding between flex elements */

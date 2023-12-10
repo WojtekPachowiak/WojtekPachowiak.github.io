@@ -114,7 +114,7 @@ body {
   position: fixed;
   top: 0;
   left: 0;
-  height: 100%;
+  height: 200%;
   width: 100%;
 
   background: rgba(255, 255, 255, 0.6);
@@ -128,16 +128,14 @@ body {
   max-height: 100%;
   margin: auto;
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 25%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
   /* makesthe object fit the parent container */
   object-fit: contain;
   height: 99vh;
   width: 100%;
-
   background-color: transparent;
 }
 

@@ -295,7 +295,7 @@ function animate() {
   });
 
   //  update shader
-  plane_material.uniforms.time.value = performance.now() / 1000;
+  plane_material.uniforms.time.value = performance.now() / 1000 +0;
 
   clicked = false;
   // RENDER //

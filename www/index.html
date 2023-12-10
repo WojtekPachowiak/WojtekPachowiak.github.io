@@ -23,23 +23,32 @@
         top: 0;
         left: 0;
         z-index: 10000;
-
-        /* font-family: monospace; */
-        font-size: 100px;
-        /* itelic */
-        font-style: italic;
         
+        /* padding-top: 10px; */
+        padding: 10px;
+        /* font-family: monospace; */
+        font-size: 50px;
+        font-family: 'Courier New', Courier, monospace;
+        /* itelic */
 
+        /* font-size: 1.5em; */
+        transform: scale(1.5, 1) translateX(0.5em);
+        
+        /* border-top: 1px solid rgba(255, 255, 255, 0.845);
+        border-left: 1px solid rgba(255, 255, 255, 0.845); */
+        background-color: rgba(0, 0, 0, 0.4); 
       }
 
       /* disable item circle from ul */
       .menu li {
         list-style-type: none;
+        
         /* padding: 50px; */
       }
 
       ul[class="menu"] {
         margin: 50px;
+        /* margin-top: 10px; */
 
         /* make spacing between items smaller */
         
@@ -48,34 +57,58 @@
       /* make link text have no deafult formatting */
       .menu a {
         text-decoration: none;
-        color: white;
+        color: rgba(255, 255, 255, 0.7);
 
         /* make the clickable text area smaller */
-        display: inline-block;
+        /* display: inline-block; */
         line-height: 1em;
         text-shadow: none;
         transition-delay: 0s;
-
-        transition: text-shadow 0.5s ease;
+        
+        /* transition: text-shadow 0.1s ease; */
       }
 
       /* make text bloom on hover with easing and slowly fade on not hover*/
       .menu a:hover {
-        text-shadow: 0 0 10px rgb(255, 255, 255);
+        /* text-shadow: 0 0 5px rgb(255, 255, 255); */
+        color: rgb(255, 255, 255);
 
       }
       
-      
-      
+      /* positional absolute relative to top left corner */
+      .lines{
+        /* position: absolute;
+        top: 30px;
+        left: 15px; */
+        z-index: 10000;
+        /* border-top: 1px solid rgba(255, 255, 255, 0.845); */
+        background-color: rgba(255, 255, 255, 0.845);
+        height: 1px;
+        /* border-left: 1px solid rgba(255, 255, 255, 0.845); */
+        /* width: 30%;
+        height: 30%; */
+        margin-top: 10px;
+        margin-bottom: 10px;
 
+      }
       
+      /* make circle in the bottom right corner */
+      .circle{
+        position: absolute;
+        top: 30px;
+        left: 30px;
+        z-index: 10000;
+        /* border-radius: 50%; */
+        border: 1px solid rgba(255, 255, 255, 0.845);
+        width: 50px;
+        height: 50px;
+      }
 
-
-
-      
-
-      
     </style>
+
+    <!-- <div class="lines"></div> -->
+    <!-- <div class="circle"></div> -->
+
     <ul class="menu">
       <li>
         <a href="art.html">
@@ -83,13 +116,20 @@
         </a>
       </li>
       <li>
+        <a href="music.html">
+          <div class="header">Sound</div>
+        </a>
+      </li>
+      <!-- separator -->
+      <div class="lines"></div>
+      <li>
         <a href="about.html">
           <div class="header">About</div>
         </a>
       </li>
       <li>
-        <a href="music.html">
-          <div class="header">Sound</div>
+        <a href="gramophone.html">
+          <div class="header">Contact</div>
         </a>
       </li>
     </ul>

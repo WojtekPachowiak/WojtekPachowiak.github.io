@@ -25,8 +25,10 @@ import potwur from "/resources/image/potwur.jpg";
 import mefisto from "/resources/image/mefisto.jpg";
 import playIcon from "/resources/icons/play_arrow_FILL0_wght100_GRAD-25_opsz48.svg";
 import sunsetmary6 from "/resources/image/sunsetmary6.jpg";
+import marystajenka from "/resources/image/marystajenka.jpg"
 
 let images = [
+  [marystajenka, "marystajenka"],
   [sunsetmary6, "sunsetmary6"],
   [mefisto, "mefisto"],
   [kategoriia, "kategoriia"],

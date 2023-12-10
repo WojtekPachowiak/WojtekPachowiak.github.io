@@ -82,16 +82,16 @@ void main(void) {
 
     float pnoise_freq = 10000.;
     float pnoise_translation = 10000.;
-    float pnoise = fbm(pos + translation * -0.01, pnoise_freq);
+    float pnoise = fbm(pos + translation * -0.01, pnoise_freq) ;
 
     float randn = rand(pos + sin(time));
     float randn_pixelated = rand(pos_pixelated + sin(time));
     float randn_offseted = rand(pos + 2. + sin(time));
 
     float square_noise_zoom = 10000. * pnoise;
-    float b = noise(pos_zoom_in_out + translation * pnoise, square_noise_zoom);
+    float b = noise(pos_zoom_in_out + translation * pnoise, square_noise_zoom) * 1.5;
 
-    float randn_brighter = randn;
+    float randn_brighter = randn*0.3;
     vec3 final1 = vec3(randn_brighter * pnoise * b);
     vec3 final2 = vec3(randn_brighter * pnoise + b);
 

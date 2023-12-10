@@ -74,13 +74,13 @@ void main(void) {
 
     // zoom
     // pos = pos*2.;
-    float swim_upwards_speed = 0.01;
+    float swim_upwards_speed = 0.3;
     pos += vec2(sin(time/5.+pos.y*2.)*0.1,time*swim_upwards_speed);
     // pos = pos + vec2(pos_pixelated.y,0.);
     // pos += vec2(sin(time*0.01),0.);
-    vec3 col = vec3(fbm((vec2(pos.x) ), 30000.+pos.y*15.));
+    vec3 col = vec3(fbm((vec2(pos.x) ), 30000.+pos.y*5.));
 
-    col = smoothstep(vec3(0.6549, 0.6706, 0.7922),vec3(0.0, 0.1451, 0.1137),col);
+    col = smoothstep(vec3(0.6549, 0.6706, 0.7922),vec3(0.0, 0.2451, 0.1137),col);
 
     gl_FragColor = vec4(col, 1.0);
 
