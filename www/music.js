@@ -8,9 +8,11 @@ import nosound from "./resources/icons/sound-player-timeline/nosound.svg";
 import play from "./resources/icons/sound-player-timeline/play.svg";
 import pause from "./resources/icons/sound-player-timeline/pause.svg";
 
-// tracks
-import sirene from "./resources/sound/sirene.mp3";
 
+// tracks
+import sirene2 from "./resources/sound/sirene2.mp3";
+import grimy_sheet_gonges from "./resources/sound/grimy_sheet_gonges.mp3";
+import nights_kurafiia from "./resources/sound/nights_kurafiia.mp3";
 if (matchMedia("(pointer:coarse)").matches) {
   document.body.innerHTML = "";
   
@@ -186,7 +188,9 @@ function initAudioPlayer(){
   
   
   const tracks = [
-    ["sirene", sirene],
+    ["nights_kurafiia", nights_kurafiia],
+    ["grimy_sheet_gonges", grimy_sheet_gonges],
+    ["sirene2", sirene2],
   ]
   // initial buttons triggering playing a track
   const playlist = document.querySelector("#playlist ol")
@@ -208,6 +212,7 @@ function initAudioPlayer(){
   
       // change audio source
       audio.src = track[1];
+
   
       // play audio
       audio.play();
