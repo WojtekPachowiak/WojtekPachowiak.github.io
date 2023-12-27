@@ -13,6 +13,9 @@ import pause from "./resources/icons/sound-player-timeline/pause.svg";
 import sirene2 from "./resources/sound/sirene2.mp3";
 import grimy_sheet_gonges from "./resources/sound/grimy_sheet_gonges.mp3";
 import nights_kurafiia from "./resources/sound/nights_kurafiia.mp3";
+import turetibrek from "./resources/sound/turetibrek.mp3";
+
+
 if (matchMedia("(pointer:coarse)").matches) {
   document.body.innerHTML = "";
   
@@ -188,6 +191,7 @@ function initAudioPlayer(){
   
   
   const tracks = [
+    ["turetibrek", turetibrek],
     ["nights_kurafiia", nights_kurafiia],
     ["grimy_sheet_gonges", grimy_sheet_gonges],
     ["sirene2", sirene2],
