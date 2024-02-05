@@ -16,12 +16,15 @@ import nights_kurafiia from "./resources/sound/nights_kurafiia.mp3";
 import turetibrek from "./resources/sound/turetibrek.mp3";
 
 
-if (matchMedia("(pointer:coarse)").matches) {
-  document.body.innerHTML = "";
+// if (matchMedia("(pointer:coarse)").matches) {
+//   document.body.innerHTML = "";
   
-  alert("Mobile devices not supported yet. Sorry! Only desktop :(");
-  throw "Mobile devices not supported yet. Sorry! Only desktop :(";
-}
+//   alert("Mobile devices not supported yet. Sorry! Only desktop :(");
+//   throw "Mobile devices not supported yet. Sorry! Only desktop :(";
+// }
+
+
+let dpi = 1;
 
 function initBackground() {
   // if mobile device
@@ -36,11 +39,18 @@ function initBackground() {
   renderer.setSize(
     window.innerWidth,
     window.innerHeight,
-    window.devicePixelRatio
+    dpi
   );
-  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setPixelRatio(dpi);
   document.body.appendChild(renderer.domElement);
-  renderer.domElement.style.width = "100%";
+  // renderer.domElement.style.width = "100%";
+// absolute position
+  renderer.domElement.style.position = "absolute";
+  renderer.domElement.style.top = "0";
+  renderer.domElement.style.left = "0";
+  renderer.domElement.style.zIndex = "-1";
+
+
   // scene
   const scene = new THREE.Scene();
   // shader background
@@ -50,8 +60,8 @@ function initBackground() {
       time: { value: 1 },
       resolution: {
         value: new THREE.Vector2(
-          window.innerWidth * window.devicePixelRatio,
-          window.innerHeight * window.devicePixelRatio
+          window.innerWidth * dpi,
+          window.innerHeight * dpi
         ),
       },
     },
@@ -75,6 +85,8 @@ function initBackground() {
     renderer.render(scene, camera);
   }
   animate();
+
+
   // onresize
   function updateViewport() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -82,12 +94,13 @@ function initBackground() {
     renderer.setSize(
       window.innerWidth,
       window.innerHeight,
-      window.devicePixelRatio
+      dpi
     );
+    renderer.setPixelRatio(dpi);
     // plane_mesh.scale.set(window.innerWidth / window.innerHeight, 1, 1);
     plane_material.uniforms.resolution.value = new THREE.Vector2(
-      window.innerWidth * window.devicePixelRatio,
-      window.innerHeight * window.devicePixelRatio
+      window.innerWidth * dpi,
+      window.innerHeight * dpi
     );
   }
   window.onresize = updateViewport;
@@ -196,6 +209,12 @@ function initAudioPlayer(){
     ["grimy_sheet_gonges", grimy_sheet_gonges],
     ["sirene2", sirene2],
   ]
+
+  // // push 60 copies of each track to the end of the array
+  // for (let i = 0; i < 60; i++) {
+  //   tracks.push(["turetibrek", turetibrek]);
+  // }
+
   // initial buttons triggering playing a track
   const playlist = document.querySelector("#playlist ol")
   const trackButtons = []
@@ -213,14 +232,12 @@ function initAudioPlayer(){
       });
       // make this button white
       button.style.color = "rgba(255, 255, 255, 1.0)";
-  
+
       // change audio source
       audio.src = track[1];
 
-  
       // play audio
       audio.play();
-  
     };
     li.appendChild(button);
     playlist.appendChild(li);

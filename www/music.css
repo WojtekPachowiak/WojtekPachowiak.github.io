@@ -38,7 +38,8 @@ button {
   bottom:0;
   top:0;
   right:0;
-  height: auto;
+  /* 100 height - 40px */
+  height: calc(100% - 40px);
   width: 250px;
   overflow-y: auto;
   z-index: 2;
@@ -95,9 +96,9 @@ button {
 
 #audio-player {
   position: fixed;
-  bottom: 20px;
+  bottom: 0;
   /* widrh 50% at the center */
-  width: 90%;
+  width: 100%;
   left: 50%;
   transform: translateX(-50%);
   height: 40px;
@@ -106,6 +107,7 @@ button {
   /* border: 5px solid  rgb(29, 29, 29); */
   z-index: 1000;
 
+  padding: 1px;
   /* corners */
   /* border-radius: 5px; */
   background-color: hsla(0, 0%, 0%, 0.7);
@@ -113,6 +115,7 @@ button {
 #audio-player>*{
   /* padding between flex elements */
   padding: 0 5px;
+  scale: 1;
 }
 
 #play-pause, #volume {
@@ -134,7 +137,7 @@ button {
 /* //////////////////////////////// stye input slider ///////////////////////////// */
 
 #timeline{
-  width: 100%;
+  width: 40%;
 }
 
 #timeline-slider {
@@ -148,7 +151,7 @@ button {
  /*  overflow: hidden;  remove this line*/
 
  /* New additions */
- height: 5px;
+ height: 2px;
  background: #555;
 }
 

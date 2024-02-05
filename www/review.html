@@ -1,0 +1,121 @@
+<html>
+  <head>
+    <link rel="stylesheet" href="about.css" />
+    <!-- utf-8 -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no shrink-to-fit=no"
+    />
+    <link rel="icon" type="image/x-icon" href="resources/icons/asuka.ico" />
+
+    <link rel="stylesheet" href="index.css" />
+  </head>
+
+  <body class="bg-white font-[Georgia]  leading-none">
+      <!-- top bar for filtering video games, movies, books, etc. /////////////////////////////////////////////////////////////////////////////// -->
+      <!-- <div
+        class="fixed bottom-0 z-50 w-96 -translate-x-1/2  left-1/2"
+      >
+        <div class="w-full">
+          <div
+            class="grid  grid-cols-3 my-2 bg-white border border-1 border-gray-500 shadow rounded-lg"
+            role="group"
+          >
+            <button
+              type="button"
+              class="text-lg  text-gray-900 hover:bg-gray-200"
+            >
+              games
+            </button>
+            <button
+              type="button"
+              class="text-lg  text-gray-900 hover:bg-gray-200  bg-gray-300 "
+            >
+              movies
+            </button>
+            <button
+              type="button"
+              class="text-lg  text-gray-900 hover:bg-gray-200  "
+            >
+              books
+            </button>
+          </div>
+        </div>
+      </div> -->
+
+      <!-- GRID //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
+      <div class="columns-1 sm:columns-2xs gap-2 space-y-2 m-4 ">
+        <!-- cards -->
+        <div
+          id="card"
+          class=" bg-white border border-gray-300 border-1 shadow  break-inside-avoid-column rounded-lg 
+ " 
+        >
+        <div class="overflow-hidden rounded-t " >
+          <img id="image"
+            class="hover:scale-110 transition duration-500"
+            src="https://www.metalgearinformer.com/wp-content/uploads/2020/06/Metal-Gear-Solid-Peace-Walker-Kaz-and-Snake.jpg"
+            alt=""
+          />
+
+        </div>
+
+          <div class="p-5">
+              <h5 id="title"
+                class="mb-2 text-xl font-bold tracking-tight text-gray-800"
+              >
+                title
+              </h5>
+            <p class="mb-3 text-gray-700 ">
+              
+            </p>
+            <!-- align right -->
+            <p id="date" class="text-gray-300 text-sm text-left">
+                date
+            </p>
+            
+          </div>
+        </div>
+      </div>
+
+      <script>
+        let s = [
+          ["https://www.metalgearinformer.com/wp-content/uploads/2020/06/Metal-Gear-Solid-Peace-Walker-Kaz-and-Snake.jpg", "Metal Gear Solid: Peace Walker (2010)", 230204],
+          ["https://preview.redd.it/slice-of-life-distilled-to-its-purest-essence-yokohama-v0-ztratc35wswa1.png?width=632&format=png&auto=webp&s=7d4db0fe98b399f17c62d594e51997cbda8cd58c", "Yokohama Kaidashi Kikō OVA (1998)", 230204],
+          ["https://cdn.kanobu.ru/anime/images/137/6154d680-afb0-46c6-a308-265f2ffe8f7b.webp","A Wind Named Amnesia (1993)", "240204"],
+          ["https://m.media-amazon.com/images/M/MV5BOTE3Zjg1MTYtNjcxYS00NzY3LWIwM2EtYzg1YjcyZDcyMTc5XkEyXkFqcGdeQXVyMTA3OTEzNzA0._V1_.jpg", "Penguin's Memory: Shiawase Monogatari (1985)", 230204],
+
+        ];
+        // clone cards and change the image, title, and date
+        for (let i = 0; i < s.length; i++) {
+          let card = document.getElementById("card");
+          let clone = card.cloneNode(true);
+          // query by ids
+          clone.querySelector("#image").src = s[i][0];
+          clone.querySelector("#title").textContent = s[i][1];
+          clone.querySelector("#date").textContent = s[i][2];
+
+          card.parentNode.appendChild(clone);
+        }
+
+        // remove the original card
+        document.getElementById("card").remove();
+
+      </script>
+
+    <!-- <script>
+      // dupliacte "card" 9 times, but change the image each time
+      for (let i = 0; i < 9; i++) {
+        let card = document.getElementById("card");
+        let clone = card.cloneNode(true);
+        clone.querySelector("img").src =
+          i > 4
+            ? "/resources/image/reviews/penguin memories.jpg"
+            : "/resources/image/reviews/penguin memories2.jpg";
+        // add to the same parent as the original card
+        card.parentNode.appendChild(clone);
+      }
+    </script> -->
+  </body>
+</html>

@@ -6,7 +6,7 @@ import lalala from '/resources/sound/drakengard1_lalalala_vhsed.mp3'
  //Get element my_face and switch it to my_face_open on click
  let my_face = document.getElementById("my_face");
  let arrow = document.getElementById("arrow");
-
+let textbox = document.getElementById("text-box");
 
  let audio = new Audio(lalala);
 
@@ -18,10 +18,12 @@ import lalala from '/resources/sound/drakengard1_lalalala_vhsed.mp3'
        my_face.src = myFaceClosed;
        audio.pause();
        arrow.style.visibility = "visible";
+       textbox.style.visibility = "hidden";
      } else {
        my_face.src = myFaceOpen;
        audio.play();
        arrow.style.visibility = "hidden";
+        textbox.style.visibility = "visible";
      }
      isPlaying = !isPlaying;
 
@@ -31,4 +33,5 @@ import lalala from '/resources/sound/drakengard1_lalalala_vhsed.mp3'
  audio.onended = function () {
      my_face.src = myFaceClosed;
      arrow.style.visibility = "visible";
+      textbox.style.visibility = "hidden";
  };

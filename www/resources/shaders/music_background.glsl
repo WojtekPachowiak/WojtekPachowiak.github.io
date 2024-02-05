@@ -10,7 +10,7 @@ float rand(vec2 c) {
 }
 
 float noise(vec2 p, float freq) {
-    float unit = resolution.x / freq;
+    float unit = 1920. / freq; // ARBITRARY
     vec2 ij = floor(p / unit);
     vec2 xy = mod(p, unit) / unit;
 	//xy = 3.*xy*xy-2.*xy*xy*xy;
@@ -66,16 +66,20 @@ float fbm(vec2 x, float freq) {
 
 void main(void) {
 
+    vec2 res = resolution;
+    vec2 pos = 2.0 * gl_FragCoord.xy / res.xy;
+    pos.x *= res.x / res.y;
 
-    vec2 pos = gl_FragCoord.xy / vec2(resolution.x, resolution.y);
-    pos = (pos.x-3.)*(pos-0.5)*2.;
-    pos*= 0.3;
+    // vec2 pos = gl_FragCoord.xy / vec2(resolution.x, resolution.y);
+    // pos = *(pos-0.5)*2.;
+    pos*= 0.3; 
     // pos += vec2(1000.,10.);
 
+    float curviness = 4.;
     // zoom
     // pos = pos*2.;
     float swim_upwards_speed = 0.3;
-    pos += vec2(sin(time/5.+pos.y*2.)*0.1,time*swim_upwards_speed);
+    pos += vec2(sin(time/5.+pos.y*curviness)*0.1,time*swim_upwards_speed);
     // pos = pos + vec2(pos_pixelated.y,0.);
     // pos += vec2(sin(time*0.01),0.);
     vec3 col = vec3(fbm((vec2(pos.x) ), 30000.+pos.y*5.));

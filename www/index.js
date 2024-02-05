@@ -18,37 +18,30 @@ let uppercase = false;
 let rot = [0.0, 0.0, 0.0];
 let opacity = 1.;
 let fontSize = 0.1;
+let dpi = 1;
 
 
-
-// if mobile device
-if (matchMedia("(pointer:coarse)").matches) {
-  alert("Mobile devices not supported. Sorry! Only desktop :(");
-  throw "Mobile devices not supported. Sorry! Only desktop :(";
-}
 
 if (WebGL.isWebGL2Available() === false) {
   document.body.appendChild(WebGL.getWebGL2ErrorMessage());
 }
 
 
-// Layers
-const layers = {
-  background: 0,
-  text: 1,
-};
-
 // renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-
 renderer.setSize(
   window.innerWidth,
   window.innerHeight,
-  window.devicePixelRatio
+  dpi
 );
-renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setPixelRatio(dpi);
 document.body.appendChild(renderer.domElement);
 renderer.domElement.style.width = "100%";
+renderer.domElement.style.position = "absolute";
+renderer.domElement.style.top = "0";
+renderer.domElement.style.left = "0";
+renderer.domElement.style.zIndex = "-1";
+
 
 // scene
 const scene = new THREE.Scene();
@@ -60,8 +53,8 @@ const plane_material = new THREE.ShaderMaterial({
     time: { value: 1 },
     resolution: {
       value: new THREE.Vector2(
-        window.innerWidth * window.devicePixelRatio,
-        window.innerHeight * window.devicePixelRatio
+        window.innerWidth * dpi,
+        window.innerHeight * dpi
       ),
     },
     zoom: { value: 1 },
@@ -71,8 +64,6 @@ const plane_material = new THREE.ShaderMaterial({
 plane_material.depthWrite = false;
 
 const plane_mesh = new THREE.Mesh(plane_geometry, plane_material);
-// plane_mesh.scale.set(window.innerWidth / window.innerHeight, 1, 1);
-plane_mesh.layers.set(layers.background);
 scene.add(plane_mesh);
 
 
@@ -82,64 +73,18 @@ const aspect = window.innerWidth / window.innerHeight
 const camera = new THREE.OrthographicCamera(-aspect, aspect, 1, -1, 0.001, 1000);
 
 camera.position.set(0, 0, 10);
-// const camera = new THREE.PerspectiveCamera(
-//   45,
-//   window.innerWidth / window.innerHeight,
-//   0.001,
-//   1000
-// );
-// camera.position.set(0, 0, 1);
 scene.add(camera);
 
-function drawItem(text, positionY, link) {
-  const loader = new FontLoader();
-  loader.load(headersFont, function (response) {
-    let font = response;
-    let textGeo = new TextGeometry(text, {
-      size: fontSize,
-      height: 0.0,
-      curveSegments: 12,
-      font: font,
-    });
-    textGeo.computeBoundingBox();
-    // text
-    const textMaterial = new THREE.MeshStandardMaterial({
-      transparent: true,
-      emissive: "white"
-    });
-    
 
-    let mesh = new THREE.Mesh(textGeo, textMaterial);
-
-    mesh.position.set(-0.95*aspect, positionY, 0.4);
-    // mesh.lookAt(camera.position);
-    mesh.rotation.set(rot[0], rot[1], rot[2]);
-    mesh.scale.set(1*aspect, 1, 1);
-    mesh.type = "text";
-    mesh.link = link;
-    mesh.material.opacity = opacity;
-
-    scene.add(mesh);
-  });
-}
-
-[
-  // ["image", yOffset, "art.html"],
-  // ["sound", 0, "music.html"],
-  // ["about", -yOffset, "about.html"],
-  // ["horror", -yOffset*2, "gramophone.html"],
-].forEach((item) => {
-  const text = uppercase ? item[0].toUpperCase() : item[0];
-  drawItem(text, item[1] + globalYOffset, item[2]);
-});
-
-
-// renderer.autoClear = false;
+// MAIN LOOP
 function animate() {
   requestAnimationFrame(animate);
 
   plane_material.uniforms.time.value = performance.now() / 1000 +0;
-
+  plane_material.uniforms.resolution.value.set(
+    window.innerWidth * dpi,
+    window.innerHeight * dpi
+  );
 
   renderer.clear();
   renderer.render(scene, camera);
@@ -156,8 +101,9 @@ function updateViewport() {
   renderer.setSize(
     window.innerWidth,
     window.innerHeight,
-    window.devicePixelRatio
+    dpi
   );
+  renderer.setPixelRatio(dpi);
 
 }
 window.onresize = updateViewport;
