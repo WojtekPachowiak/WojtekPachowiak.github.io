@@ -13,14 +13,11 @@ import headersFont from "/resources/fonts/Fira Mono_Regular?url";
 // import headersFont from "/resources/fonts/Fira Mono Medium_Regular?url";
 
 
-let globalYOffset = 0.6;
-let uppercase = false;
-let rot = [0.0, 0.0, 0.0];
-let opacity = 1.;
-let fontSize = 0.1;
+
 let dpi = 1;
 
-
+let w = 1827; 
+let h = 959;
 
 if (WebGL.isWebGL2Available() === false) {
   document.body.appendChild(WebGL.getWebGL2ErrorMessage());
@@ -53,8 +50,8 @@ const plane_material = new THREE.ShaderMaterial({
     time: { value: 1 },
     resolution: {
       value: new THREE.Vector2(
-        window.innerWidth * dpi,
-        window.innerHeight * dpi
+        w * dpi,
+        h * dpi
       ),
     },
     zoom: { value: 1 },
@@ -82,8 +79,8 @@ function animate() {
 
   plane_material.uniforms.time.value = performance.now() / 1000 +0;
   plane_material.uniforms.resolution.value.set(
-    window.innerWidth * dpi,
-    window.innerHeight * dpi
+    w * dpi,
+    h * dpi
   );
 
   renderer.clear();
