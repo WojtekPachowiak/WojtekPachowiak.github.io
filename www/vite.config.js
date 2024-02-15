@@ -12,6 +12,7 @@ export default defineConfig({
         horror: resolve(__dirname, "gramophone.html"),
         sound: resolve(__dirname, "music.html"),
         diary: resolve(__dirname, "review.html"),
+        camera_tracking: resolve(__dirname, "camera_tracking.html"),
 
       },
     },

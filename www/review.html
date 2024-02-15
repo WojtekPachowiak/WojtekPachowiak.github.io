@@ -12,7 +12,11 @@
     <link rel="stylesheet" href="index.css" />
   </head>
 
-  <body class="bg-white font-[Georgia]  leading-none">
+  <body class="  font-[Georgia]  leading-none">
+    <!-- put image as background. stretch it -->
+    
+
+
       <!-- top bar for filtering video games, movies, books, etc. /////////////////////////////////////////////////////////////////////////////// -->
       <!-- <div
         class="fixed bottom-0 z-50 w-96 -translate-x-1/2  left-1/2"
@@ -45,16 +49,16 @@
       </div> -->
 
       <!-- GRID //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-      <div class="columns-1 sm:columns-2xs gap-2 space-y-2 m-4 ">
+      <div class="columns-1 sm:columns-2xs gap-2 space-y-2 m-4  ">
         <!-- cards -->
         <div
           id="card"
-          class=" bg-white border border-gray-300 border-1 shadow  break-inside-avoid-column rounded-lg 
+          class=" bg-black bg-opacity-30	shadow   break-inside-avoid-column rounded-lg  transition duration-500 group
  " 
         >
-        <div class="overflow-hidden rounded-t " >
+        <div class="overflow-hidden rounded-t-lg " >
           <img id="image"
-            class="hover:scale-110 transition duration-500"
+            class="group-hover:scale-110 transition duration-500"
             src="https://www.metalgearinformer.com/wp-content/uploads/2020/06/Metal-Gear-Solid-Peace-Walker-Kaz-and-Snake.jpg"
             alt=""
           />
@@ -63,7 +67,7 @@
 
           <div class="p-5">
               <h5 id="title"
-                class="mb-2 text-xl font-bold tracking-tight text-gray-800"
+                class="mb-2 text-xl font-bold tracking-tight text-gray-300"
               >
                 title
               </h5>
@@ -71,7 +75,7 @@
               
             </p>
             <!-- align right -->
-            <p id="date" class="text-gray-300 text-sm text-left">
+            <p id="date" class="text-gray-500 text-sm text-left">
                 date
             </p>
             
@@ -104,6 +108,13 @@
 
       </script>
 
+
+    <div
+    class="fixed top-0 left-0  w-full h-full bg-cover bg-center bg-gradient-to-b from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% brightness-[0.3] hue-rotate-[140deg]	"
+    style="z-index: -1000;"
+    ></div>
+    
+    
     <!-- <script>
       // dupliacte "card" 9 times, but change the image each time
       for (let i = 0; i < 9; i++) {
