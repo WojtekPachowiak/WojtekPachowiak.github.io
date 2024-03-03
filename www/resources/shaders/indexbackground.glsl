@@ -4,13 +4,15 @@ uniform vec2 resolution;
 uniform float zoom;
 
 #define     PI 3.14159265358979323846
+#define ZOOM 1.5
+
 
 float rand(vec2 c) {
     return fract(sin(dot(c.xy, vec2(12.9898, 78.233))) * 43758.5453);
 }
 
 float noise(vec2 p, float freq) {
-    float unit = 1920. / freq; // THIS IS EXTREMELY ARBITRARY, IDK WHY IT WORKS
+    float unit = 1920.0 / freq ; // THIS IS EXTREMELY ARBITRARY, IDK WHY IT WORKS
     vec2 ij = floor(p / unit);
     vec2 xy = mod(p, unit) / unit;
 	//xy = 3.*xy*xy-2.*xy*xy*xy;
@@ -66,7 +68,7 @@ float fbm(vec2 x, float freq) {
 
 void main(void) {
 // - vec2( 1920. / 1080., 1.0);
-    vec2 res = resolution;
+    vec2 res = resolution * ZOOM;
     vec2 pos = 2.0 * gl_FragCoord.xy / res.xy ;
     pos.x *= res.x / res.y;
     

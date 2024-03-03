@@ -53,12 +53,11 @@
         <!-- cards -->
         <div
           id="card"
-          class=" bg-black bg-opacity-30	shadow   break-inside-avoid-column rounded-lg  transition duration-500 group
- " 
+          class=" bg-black bg-opacity-30	shadow   break-inside-avoid-column rounded-lg   hover:-translate-y-1 hover:shadow-lg "
+ 
         >
         <div class="overflow-hidden rounded-t-lg " >
           <img id="image"
-            class="group-hover:scale-110 transition duration-500"
             src="https://www.metalgearinformer.com/wp-content/uploads/2020/06/Metal-Gear-Solid-Peace-Walker-Kaz-and-Snake.jpg"
             alt=""
           />
@@ -67,15 +66,15 @@
 
           <div class="p-5">
               <h5 id="title"
-                class="mb-2 text-xl font-bold tracking-tight text-gray-300"
+                class="text-xl font-bold tracking-tight text-gray-300"
               >
                 title
               </h5>
-            <p class="mb-3 text-gray-700 ">
+            <p id="desc" class="mb-3 text-gray-300 text-opacity-70">
               
             </p>
             <!-- align right -->
-            <p id="date" class="text-gray-500 text-sm text-left">
+            <p id="date" class="text-gray-300 text-opacity-50 text-sm text-right">
                 date
             </p>
             
@@ -85,11 +84,11 @@
 
       <script>
         let s = [
-          ["https://www.metalgearinformer.com/wp-content/uploads/2020/06/Metal-Gear-Solid-Peace-Walker-Kaz-and-Snake.jpg", "Metal Gear Solid: Peace Walker (2010)", 230204],
-          ["https://preview.redd.it/slice-of-life-distilled-to-its-purest-essence-yokohama-v0-ztratc35wswa1.png?width=632&format=png&auto=webp&s=7d4db0fe98b399f17c62d594e51997cbda8cd58c", "Yokohama Kaidashi Kikō OVA (1998)", 230204],
-          ["https://cdn.kanobu.ru/anime/images/137/6154d680-afb0-46c6-a308-265f2ffe8f7b.webp","A Wind Named Amnesia (1993)", "240204"],
-          ["https://m.media-amazon.com/images/M/MV5BOTE3Zjg1MTYtNjcxYS00NzY3LWIwM2EtYzg1YjcyZDcyMTc5XkEyXkFqcGdeQXVyMTA3OTEzNzA0._V1_.jpg", "Penguin's Memory: Shiawase Monogatari (1985)", 230204],
-
+          ["https://assetsio.reedpopcdn.com/450-fs7tx5.jpg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp", "Metal Gear Rising: Revengeance (2013)", 2402],
+          ["https://www.metalgearinformer.com/wp-content/uploads/2020/06/Metal-Gear-Solid-Peace-Walker-Kaz-and-Snake.jpg", "Metal Gear Solid: Peace Walker (2010)", 2402, "woohoo"],
+          ["https://preview.redd.it/slice-of-life-distilled-to-its-purest-essence-yokohama-v0-ztratc35wswa1.png?width=632&format=png&auto=webp&s=7d4db0fe98b399f17c62d594e51997cbda8cd58c", "Yokohama Kaidashi Kikō OVA (1998)", 2402, "aaaaaaaaaa"],
+          ["https://cdn.kanobu.ru/anime/images/137/6154d680-afb0-46c6-a308-265f2ffe8f7b.webp","A Wind Named Amnesia (1993)", 2402, "eoeoooo"],
+          ["https://m.media-amazon.com/images/M/MV5BOTE3Zjg1MTYtNjcxYS00NzY3LWIwM2EtYzg1YjcyZDcyMTc5XkEyXkFqcGdeQXVyMTA3OTEzNzA0._V1_.jpg", "Penguin's Memory: Shiawase Monogatari (1985)", 2402, "ooooo"],
         ];
         // clone cards and change the image, title, and date
         for (let i = 0; i < s.length; i++) {
@@ -99,6 +98,10 @@
           clone.querySelector("#image").src = s[i][0];
           clone.querySelector("#title").textContent = s[i][1];
           clone.querySelector("#date").textContent = s[i][2];
+          // if (s[i][3] != undefined){
+          //   clone.querySelector("#desc").textContent = s[i][3];
+          // }
+
 
           card.parentNode.appendChild(clone);
         }

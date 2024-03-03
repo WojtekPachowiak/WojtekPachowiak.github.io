@@ -13,7 +13,7 @@ export default defineConfig({
         sound: resolve(__dirname, "music.html"),
         diary: resolve(__dirname, "review.html"),
         camera_tracking: resolve(__dirname, "camera_tracking.html"),
-
+        islandgame: resolve(__dirname, "island_game/index.html"),
       },
     },
   },

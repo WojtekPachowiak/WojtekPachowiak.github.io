@@ -45,14 +45,28 @@
                   Diary
                 </a>
               </li>
+              <li id="separator" class="my-2  border-t-0 bg-white opacity-50  h-0.5 scale-y-50"></li>              
+
               <li>
                 <a href="camera_tracking.html">
-                  Exhibit
+                  Camera
+                </a>
+              </li>
+
+              <li>
+                <a href="mouse_fun.html">
+                  Mouse
+                </a>
+              </li>
+
+              <li>
+                <a href="island_game/index.html">
+                  Island
                 </a>
               </li>
               <!-- separator -->
               <!-- <div class="lines"></div> -->
-              <li class="my-2  border-t-0 bg-white opacity-100  h-0.5 scale-y-100"></li>              
+              <li id="separator" class="my-2  border-t-0 bg-white opacity-50  h-0.5 scale-y-50"></li>              
               <li>
                 <a href="about.html">
                   About
@@ -75,7 +89,10 @@
       const menulist = document.querySelectorAll("#menu-list li")
       console.log("menulist", menulist)
       menulist.forEach((item) => {
-        item.classList.add( "text-white", "text-4xl","xs:text-5xl","font-['Courier_New']", "opacity-70", "hover:opacity-100", "transition", "delay-0", "z-index-100")
+        if (item.id === "separator") {
+          return
+        }
+        item.classList.add( "text-white", "text-xl","font-['Courier_New']", "opacity-70", "hover:opacity-100", "transition", "delay-0", "z-index-100")
         // add style text-shadow: 1px 1px 2px pink on hover;
         item.addEventListener("mouseover", (e) => {
           e.target.style.textShadow = "0px 0px 3px white"
