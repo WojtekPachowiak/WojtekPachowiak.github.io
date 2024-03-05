@@ -3,11 +3,10 @@ import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
 import { g } from "./globals.js";
+import * as THREE from "three";
 
-
-
-function initMainComposer() {
-    
+export function initPostProcessing() {
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
   const ps1PostprocShader = {
     name: "ps1PostprocShader",
@@ -56,7 +55,16 @@ function initMainComposer() {
                         vec3 dither(vec3 color, vec2 p){
                             //extrapolate 16bit color float to 16bit integer space
                             color*=255.;
-    
+
+
+                            // return vec3(p.x,p.y,0.);
+                            // return debug checkerboard
+                            // if (mod(p.x, 4.) > 2. && mod(p.y, 4.) > 2.){
+                            //     return vec3(1.);
+                            // }else{
+                            //     return vec3(0.);
+                            // }
+
                             //get dither value from dither table (by indexing it with column and row offsets)
                             int col = int(mod(p.x, 4.));
                             int row= int(mod(p.y, 4.));
@@ -83,41 +91,46 @@ function initMainComposer() {
                             return color;
                         }
     
-    
+                        vec2 pixelate(vec2 uv, vec2 res){
+                          return floor(uv  * res ) / res;
+                        }
+
                         void main() {
     
                             vec2 pos = gl_FragCoord.xy / uResolution.y;
     
+                            float aspect = uResolution.x / uResolution.y;
                             //pixelate
                             
                             vec2 uv = vUv;
-                            uv = floor(uv  * uResolution ) / uResolution;
+                            uv = pixelate(uv, uResolution);
     
                             // sample tex
-                            vec4 texel_wa = texture2D( tDiffuse, uv ).rgba;
+                            vec4 texel_wa = texture2D( tDiffuse, uv).rgba;
                             vec3 texel = texel_wa.rgb;
                             float opacity = texel_wa.a;
 
                             
                             //scaling gl_FragCoord makes it so that the same value from dither table is used for each pixel in a block (texel)
-                            texel = dither(texel, uv*uResolution);
+                            texel = dither(texel, uv *uResolution );
                             
                             // posterize
-                            float posterize = 256.0;
-                            texel = floor(texel * posterize) / posterize;
-                            
-                            // clamp black and white
+                            // float posterize = 128.0;
+                            // texel = floor(texel * posterize) / posterize;
                             
                             
                             
-                            texel = clamp(texel, 5./255., 255./255.);
+                            
+
+                            // checked that empirically: in Silent Hill in almost completely black scene the lowest value is 0.09 (but in menu it's 0.0!)
+                            texel = clamp(texel, 0.09, 1.0);
                             
                             
                             // convert top and bottom of the screen with black bars with height of uBlackBarsT each
-                            float a =1.0;
-                            if (vUv.y < uBlackBarsT || vUv.y > (1. - uBlackBarsT)) {
-                                texel = vec3(1./255.);
-                            }
+                            // float a =1.0;
+                            // if (vUv.y < uBlackBarsT || vUv.y > (1. - uBlackBarsT)) {
+                            //     texel = vec3(0.0);
+                            // }
 
                             // just color alpha
                             // gl_FragColor = vec4(vec3(opacity), 1.0 );
@@ -131,56 +144,140 @@ function initMainComposer() {
                         `,
   };
 
-    g.POSTPROCESSING_COMPOSERS.MAIN = new EffectComposer(g.RENDERER);
+  //////////////////////////////////////////////////////////////////////////////////////////////
 
-    const renderPass = new RenderPass(g.SCENE, g.CAMERA);
-    g.POSTPROCESSING_COMPOSERS.MAIN.addPass(renderPass);
-  renderPass.renderToScreen = false;
-
-  const ps1Pass = new ShaderPass(ps1PostprocShader);
-  ps1Pass.renderToScreen = false;
-  g.POSTPROCESSING_COMPOSERS.MAIN.addPass(ps1Pass);
-
-  const outputPass = new OutputPass();
-  outputPass.renderToScreen = false;
-  g.POSTPROCESSING_COMPOSERS.MAIN.addPass(outputPass);
-
-  g.POSTPROCESSING_PASSES.PS1 = ps1Pass;
-}
-
-function initUIComposer() {
-    const CopyShader = {
-      uniforms: {
-        tDiffuse: { value: null },
-      },
-      vertexShader: /* glsl */ `
+  const CopyShader = {
+    uniforms: {
+      tDiffuse: { value: null },
+      // uMainTexture: { value: null },
+    },
+    vertexShader: /* glsl */ `
             varying vec2 vUv;
             void main() {
                 vUv = uv;
                 gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
             }`,
-      fragmentShader: /* glsl */ `
+    fragmentShader: /* glsl */ `
             uniform sampler2D tDiffuse;
+            // uniform sampler2D uMainTexture;
+            
             varying vec2 vUv;
             void main() {
-                vec4 tex = texture2D( tDiffuse, vUv );
-                gl_FragColor = vec4(vec3(tex.a,0.,tex.a), tex.a);
+                // vec4 mainTex = texture2D( uMainTexture, vUv );
+                vec4 uiTex = texture2D( tDiffuse, vUv );
+                // discard if alpha is 0
+                // if (uiTex.a < 0.5) discard;
+                gl_FragColor = uiTex;
+                // gl_FragColor = vec4(vec3(uiTex.a,0.,uiTex.a), uiTex.a);
             }`,
-    };
+  };
 
-    g.POSTPROCESSING_COMPOSERS.UI = new EffectComposer(g.RENDERER);
-    
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
+  const AdditiveBlendShader = {
+    name: "AdditiveBlendShader",
+
+    uniforms: {
+      tDiffuse: { value: null },
+      tDiffuseBelow: { value: null },
+      mixRatio: { value: 1.0 },
+    },
+
+    vertexShader: /* glsl */ `
+
+		varying vec2 vUv;
+
+		void main() {
+
+			vUv = uv;
+			gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+		}`,
+
+    fragmentShader: /* glsl */ `
+
+		uniform float mixRatio;
+
+		uniform sampler2D tDiffuse;
+		uniform sampler2D tDiffuseBelow;
+
+		varying vec2 vUv;
+
+		void main() {
+
+			vec4 texelAbove = texture2D( tDiffuse, vUv );
+			vec4 texelBelow = texture2D( tDiffuseBelow, vUv );
+			gl_FragColor = texelAbove + texelBelow ;
+			// gl_FragColor = vec4(vec3(texelAbove.a), 1.0) ;
+			gl_FragColor = mix( texelAbove, texelBelow, 1.-texelAbove.a );
+
+
+		}`,
+  };
+
+  //////////////////////////////////////////////////////////////////////////////////////////////
+
+  const size = g.RENDERER.getDrawingBufferSize(new THREE.Vector2());
+    const renderTarget = new THREE.WebGLRenderTarget(
+        size.width,
+        size.height,
+        {
+            minFilter: THREE.NearestFilter,
+            magFilter: THREE.NearestFilter,
+            // format: THREE.RGBAFormat,
+            // stencilBuffer: false,
+            // samples: 8
+        }
+        );
+
+  {
+    g.POSTPROCESSING_COMPOSERS.MAIN = new EffectComposer(
+      g.RENDERER,
+      renderTarget
+    );
+    // g.POSTPROCESSING_COMPOSERS.MAIN.renderToScreen = false;
     const renderPass = new RenderPass(g.SCENE, g.CAMERA);
-    g.POSTPROCESSING_COMPOSERS.UI.addPass(renderPass);
-
+    const ps1Pass = new ShaderPass(ps1PostprocShader);
     const copyPass = new ShaderPass(CopyShader);
-    g.POSTPROCESSING_COMPOSERS.UI.addPass(copyPass);
-    
     const outputPass = new OutputPass();
-    g.POSTPROCESSING_COMPOSERS.UI.addPass(outputPass);
+
+    
+    g.POSTPROCESSING_COMPOSERS.MAIN.addPass(renderPass);
+    g.POSTPROCESSING_COMPOSERS.MAIN.addPass(ps1Pass);
+    g.POSTPROCESSING_COMPOSERS.MAIN.addPass(copyPass);
+    g.POSTPROCESSING_COMPOSERS.MAIN.addPass(outputPass);
+
+    g.POSTPROCESSING_PASSES.PS1 = ps1Pass;
+  }
+  {
+      g.POSTPROCESSING_COMPOSERS.UI = new EffectComposer(
+        g.RENDERER,
+        renderTarget.clone()
+      );
+      g.POSTPROCESSING_COMPOSERS.UI.renderToScreen = true;
+    const renderPass = new RenderPass(g.SCENE, g.CAMERA);
+    const copyPass = new ShaderPass(CopyShader);
+    const addBlendPass = new ShaderPass(AdditiveBlendShader);
+
+    //pass in resulting renderTarget texture from ppoRGB
+    addBlendPass.uniforms.tDiffuseBelow.value =
+      g.POSTPROCESSING_COMPOSERS.MAIN.renderTarget1.texture;
+
+    g.POSTPROCESSING_COMPOSERS.UI.addPass(renderPass);
+    g.POSTPROCESSING_COMPOSERS.UI.addPass(copyPass);
+    g.POSTPROCESSING_COMPOSERS.UI.addPass(addBlendPass);
+    g.POSTPROCESSING_COMPOSERS.UI.addPass(new OutputPass());
+
+  }
+
+
+  // g.POSTPROCESSING_COMPOSERS.UI.addPass(new OutputPass());
 }
 
-export function initPostProcessing() {
-    initMainComposer();
-    initUIComposer();
-}
+
+
+
+// export function renderWithPostProcessing() {
+//   g.POSTPROCESSING_COMPOSERS.MAIN.render();
+//   g.POSTPROCESSING_COMPOSERS.UI.render();
+// }

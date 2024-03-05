@@ -12,7 +12,9 @@ import { playerUpdate, initPlayer } from "./player.js";
 import { initDebugHelpers } from "./debug_helpers.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { initText } from "./text.js";
-import { initPostProcessing } from "./postprocessing.js";
+import {
+  initPostProcessing,
+} from "./postprocessing.js";
 
 
 // create GUI
@@ -45,22 +47,22 @@ initDebugHelpers();
 animate();
 
 function initThree() {
-  // g.RENDERER
   g.RENDERER = new THREE.WebGLRenderer({ antialias: false });
-  g.RENDERER.setSize(window.innerWidth, window.innerHeight, g.DPI);
-  g.RENDERER.toneMapping = THREE.NoToneMapping;
-
+  // g.RENDERER.setSize(g.SCREEN.TARGET_Y_RESOLUTION * g.SCREEN.ASPECT_RATIO, g.SCREEN.TARGET_Y_RESOLUTION, false);
+  g.RENDERER.setSize(window.innerWidth, window.innerHeight);
   g.RENDERER.setPixelRatio(g.DPI);
   document.body.appendChild(g.RENDERER.domElement);
   g.RENDERER.domElement.style.width = "100%";
+  g.RENDERER.domElement.style.height = "100%";
   g.RENDERER.domElement.style.position = "absolute";
   g.RENDERER.domElement.style.top = "0";
   g.RENDERER.domElement.style.left = "0";
   g.RENDERER.domElement.style.zIndex = "-1";
-
+  // set image-rendering: pixelated;
+  // g.RENDERER.domElement.style.imageRendering = "pixelated";
 
   // colorspace
-  // g.RENDERER.outputColorSpace = THREE.LinearSRGBColorSpace ;
+  g.RENDERER.outputColorSpace = THREE.LinearSRGBColorSpace ;
 
   //clock
   g.CLOCK = new THREE.Clock();
@@ -117,22 +119,22 @@ function initThree() {
   // scene.background = textureEquirec;
 
   // light
-  const dirLight = new THREE.DirectionalLight(g.FOG_COLOR, 2);
-  dirLight.position.set(10, 30, 10);
+  const dirLight = new THREE.DirectionalLight(g.FOG_COLOR, g.LIGHTS.GLOBAL_DIRECTIONAL_INTENSITY);
+  dirLight.position.set(0, 30, 0);
   scene.add(dirLight);
   g.LIGHTS.DIRECTIONAL = dirLight;
 
   // const hemiLight = new THREE.HemisphereLight(g.FOG_COLOR, 0x9e9e9e, 1);
   // scene.add(hemiLight);
 
-  const ambientLight = new THREE.AmbientLight(0x777777, 3);
+  const ambientLight = new THREE.AmbientLight(g.FOG_COLOR, g.LIGHTS.GLOBAL_AMBIENT_INTENSITY);
   scene.add(ambientLight);
   g.LIGHTS.AMBIENT = ambientLight;
 
   // spotlight flashlight
   const spotLight = new THREE.SpotLight(
     0xffffff,
-    3.6,
+    g.LIGHTS.FLASHLIGHT_INTENSITY,
     10,
     Math.PI * 0.1,
     0.9,
@@ -192,11 +194,13 @@ function init3DModels() {
           if (child.material.map) {
             console.log(child.name, "has", child.material.map);
             map = child.material.map.clone();
-            map.minFilter = THREE.LinearFilter;
+            map.minFilter = THREE.NearestFilter;
             map.magFilter = THREE.NearestFilter;
+            // color space
+            map.encoding = THREE.LinearEncoding;
             const mat = g.MATERIALS.PS1.clone();
             mat.map = map;
-            map.minFilter = THREE.LinearFilter;
+            map.minFilter = THREE.NearestFilter;
             map.magFilter = THREE.NearestFilter;
             g.MATERIALS.PS1.map = map;
             child.material = g.MATERIALS.PS1;
@@ -277,29 +281,29 @@ function animate() {
   // controls.update( clock.getDelta() );
 }
 
-g.RENDERER.setClearColor(0xc22929, 0);
+
+// const clearColor = new THREE.Color(0xc22929);
 g.RENDERER.autoClear = false;
-const clearColor = new THREE.Color(0xffffff);
+g.RENDERER.setClearColor(0xf700ff, 0.0);
 
 function render(){
   g.CAMERA.layers.set(0);
   g.SCENE.background = new THREE.Color(g.FOG_COLOR);
-  // g.RENDERER.clear();
+  // // g.RENDERER.clear();
+  // // fog
+  // g.RENDERER.setClearColor(g.FOG_COLOR, 1.0);
+  // // render to texture and pass this texture to the next pass
   g.POSTPROCESSING_COMPOSERS.MAIN.render();
-  // console.log(".getClearAlpha", g.RENDERER.getClearAlpha());
-  // console.log(".getClearColor", g.RENDERER.getClearColor(clearColor));
-
+  // // g.RENDERER.clearDepth();
   
-  
-
-  // g.RENDERER.setClearColor(0x00f7ff, 0);
-  // g.RENDERER.autoClear = false;
   g.CAMERA.layers.set(1);
   g.SCENE.background = null;
-  // g.POSTPROCESSING_COMPOSERS.UI.render();
+  // g.RENDERER.clear(true, false, false);
+  g.POSTPROCESSING_COMPOSERS.UI.render();
+  
 
 
-g.RENDERER.render(g.SCENE, g.CAMERA);
+// g.RENDERER.render(g.SCENE, g.CAMERA);
 }
 
 function updateCutscene() {
@@ -454,18 +458,18 @@ function projectDecal(intrsct) {
 function updateViewport() {
   g.CAMERA.aspect = window.innerWidth / window.innerHeight;
   g.CAMERA.updateProjectionMatrix();
-  g.RENDERER.setSize(window.innerWidth, window.innerHeight, g.DPI);
-  g.RENDERER.setPixelRatio(g.DPI);
-
+  
   g.SCREEN.RESOLUTION.set(
     g.SCREEN.TARGET_Y_RESOLUTION * g.CAMERA.aspect,
     g.SCREEN.TARGET_Y_RESOLUTION
-  );
-  
-  g.POSTPROCESSING_PASSES.PS1.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
-  if (g.MATERIALS.PS1.userData.shader) {
-    g.MATERIALS.PS1.userData.shader.uniforms.uResolution.value =
-      g.SCREEN.RESOLUTION;
-  }
+    );
+    
+    g.POSTPROCESSING_PASSES.PS1.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
+    if (g.MATERIALS.PS1.userData.shader) {
+      g.MATERIALS.PS1.userData.shader.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
+    }
+    
+    g.RENDERER.setSize(window.innerWidth, window.innerHeight);
+    g.RENDERER.setPixelRatio(g.DPI);
 }
 window.onresize = updateViewport;

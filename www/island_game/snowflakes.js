@@ -22,10 +22,10 @@ export function snowflakesInit() {
                     varying float alpha;
                     uniform float uOpacity;
                     void main() {
-                        vec2 xy = gl_PointCoord.xy - vec2(0.5);
+                        vec2 xy = gl_PointCoord.xy - vec2(0.4);
                         // pixelate
-                        float pixelSize = 3.0 *2.0;
-                        xy = floor(xy * pixelSize) / pixelSize ;
+                        // float pixelSize = 3.0 *2.0;
+                        // xy = floor(xy * pixelSize) / pixelSize ;
                         
                         float ll = length(xy);
                         vec3 color = vec3(0.9);

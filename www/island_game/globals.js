@@ -25,6 +25,7 @@ export const g = {
     COLLIDABLES: [],
     INTERACTABLES: [],
   },
+  RENDER_TARGET: null,
 
   RAYCASTER: new THREE.Raycaster(),
   MOUSE: new THREE.Vector2(),
@@ -57,7 +58,7 @@ export const g = {
     SPAWN_VELOCITY_MAX_SPEED: 3,
     DYING_DURATION: 0.5,
     OPACITY: 0.1,
-    SIZE: 40,
+    SIZE: 20,
     NUM: 1000,
     GEOMETRY: null,
   },
@@ -100,9 +101,15 @@ export const g = {
 
   MAIN_LOOP_CALLBACKS: {},
 
+
+  LIGHTS: {
+    GLOBAL_AMBIENT_INTENSITY: 0.5,
+    GLOBAL_DIRECTIONAL_INTENSITY: 0.5,
+    FLASHLIGHT_INTENSITY: 0.5,
+  },
   // three.js internal vars
   SCENE: null,
-  SCENE_TEXT : null,
+  SCENE_TEXT: null,
   RENDERER: null,
   CAMERA: null,
   CAMERA_FAR: 100,
@@ -110,14 +117,12 @@ export const g = {
   ORBIT_CONTROLS: null,
   WORLD_AXES_HELPER: null,
 
-  FOG_COLOR: 0x83817d,
+  FOG_COLOR: 0x9b9b9b,
   FOG: null,
 
-
-  POSTPROCESSING_COMPOSERS:{
+  POSTPROCESSING_COMPOSERS: {
     UI: null,
     MAIN: null,
-    
   },
   POSTPROCESSING_PASSES: {
     PS1: null,
@@ -137,7 +142,7 @@ export const g = {
   },
 };
 
-g.PLAYER.COLLIDER.translate(new THREE.Vector3(0, 10, 0));
+g.PLAYER.COLLIDER.translate(new THREE.Vector3(9, 13, 15));
 g.SOUNDS.FOOTSTEP.volume = 0.05;
 // let dpi = 1;
 // // let w = 1827;

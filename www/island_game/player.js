@@ -1,5 +1,4 @@
 import {g} from "./globals.js";
-import * as THREE from "three";
 
 
 
