@@ -16,6 +16,8 @@
     "vite": "^4.4.9"
   },
   "dependencies": {
+    "jszip": "^3.10.1",
+    "tesseract.js": "^5.0.5",
     "three": "^0.155.0",
     "troika-three-text": "^0.49.0"
   }

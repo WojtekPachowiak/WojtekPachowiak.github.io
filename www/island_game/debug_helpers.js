@@ -32,8 +32,10 @@ export function initDebugHelpers() {
       // toggle postprocessing
       if (g.POSTPROCESSING_PASSES.PS1.enabled) {
         g.POSTPROCESSING_PASSES.PS1.enabled = false;
+        g.POSTPROCESSING_PASSES.PS1_UI.enabled = false;
       } else {
         g.POSTPROCESSING_PASSES.PS1.enabled = true;
+        g.POSTPROCESSING_PASSES.PS1_UI.enabled = true;
       }
     }
 
@@ -131,8 +133,6 @@ export function initDebugHelpers() {
     // on press "9" toggle cutscene
     if (event.code === "Digit9") {
       g.CUTSCENE.ACTIVE = !g.CUTSCENE.ACTIVE;
-      const text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-      
     }
 
   });

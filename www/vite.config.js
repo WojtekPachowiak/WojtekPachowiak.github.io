@@ -14,6 +14,10 @@ export default defineConfig({
         diary: resolve(__dirname, "review.html"),
         camera_tracking: resolve(__dirname, "camera_tracking.html"),
         islandgame: resolve(__dirname, "island_game/index.html"),
+        spritesheet_cutter: resolve(
+          __dirname,
+          "spritesheet_cutter/index.html"
+        ),
       },
     },
   },

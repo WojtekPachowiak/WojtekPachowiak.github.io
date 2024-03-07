@@ -1,0 +1,45 @@
+  <p class="text-2xl font-bold">Settings</p>
+    <div class="flex flex-col items-center justify-center">
+        <label for="frameWidth">Frame width</label>
+        <input type="number" id="frameWidth" name="frameWidth" class="w-20" />
+    </div>
+
+    <div class="flex flex-col items-center justify-center">
+        <label for="frameHeight">Frame height</label>
+        <input type="number" id="frameHeight" name="frameHeight" class="w-20" />
+    </div>
+
+
+    <!-- Padding -->
+    <div class="flex flex-row items-center justify-center">
+        <div>
+            <label for="padding">Padding</label>
+        </div>
+        <div class="flex flex-col items-center justify-center p-1">
+            <input type="number" id="padding" name="padding" class="w-20" />
+        </div>
+        <div class="flex flex-col items-center justify-center p-1">
+            <input type="number" id="padding" name="padding" class="w-20" />
+        </div>
+    </div>
+
+    <!-- Cutting -->
+    <div class="flex flex-row items-center justify-center">
+        <div>
+            <label for="cut">Cut</label>
+        </div>
+        <div class="flex flex-col items-center justify-center p-1">
+            <input type="number" id="cut" name="cut" class="w-20" />
+        </div>
+        <div class="flex flex-col items-center justify-center p-1">
+            <input type="number" id="cut" name="cut" class="w-20" />
+        </div>
+    </div>
+
+    <!-- <div class="flex flex-col items-center justify-center">
+        <label for="outputFormat">Output format</label>
+        <select id="outputFormat" name="outputFormat" class="w-20">
+            <option value="images">Images</option>
+            <option value="json">.json</option>
+        </select>
+    </div> -->
