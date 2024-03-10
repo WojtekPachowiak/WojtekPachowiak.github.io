@@ -1,11 +1,8 @@
 import {g} from "./globals.js";
 
 
-export function checkMouseIntersects(objects) {
-  g.RAYCASTER.setFromCamera(g.MOUSE, g.CAMERA);
-  const intersects = g.RAYCASTER.intersectObjects(objects, false);
-  return intersects.length > 0 ? intersects[0] : null;
-}
+
+
 
 
 export function initInput(){
@@ -40,6 +37,13 @@ export function initInput(){
   document.addEventListener("mousemove", (event) => {
     g.MOUSE.x = (event.clientX / g.RENDERER.domElement.clientWidth) * 2 - 1;
     g.MOUSE.y = -(event.clientY / g.RENDERER.domElement.clientHeight) * 2 + 1;
+
+    // const cursor = document.getElementById("cursor-custom");
+    // if (cursor) {
+    //   // cursor.style.left = event.clientX + "px";
+    //   // cursor.style.top = event.clientY + "px";
+    // }
   });
 
 }
+

@@ -68,6 +68,7 @@ g.SNOWFLAKES.GEOMETRY = new THREE.BufferGeometry();
 
   const snowflakesPoints = new THREE.Points(g.SNOWFLAKES.GEOMETRY, snowflakeMaterial);
   snowflakesPoints.frustumCulled = false;
+  // snowflakesPoints.layers.set(g.LAYERS.SNOWFLAKES);
   g.SCENE.add(snowflakesPoints);
 }
 

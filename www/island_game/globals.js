@@ -1,8 +1,12 @@
 import * as THREE from "three";
-import { Capsule } from "three/addons/math/Capsule.js";
 import soundFootstep from "./assets/footsteps_sand.mp3";
 
+
+const textureLoader = new THREE.TextureLoader();
+
 export const g = {
+  DEBUG_MODE: false,
+
   SCREEN: {
     DPI: 1,
     TARGET_Y_RESOLUTION: 256,
@@ -10,7 +14,7 @@ export const g = {
     RESOLUTION: new THREE.Vector2(),
   },
 
-  GRAVITY: 30,
+  GRAVITY: 5,
 
   CLOCK: null,
   FPS: 60,
@@ -25,24 +29,20 @@ export const g = {
   },
   RENDER_TARGET: null,
 
-  RAYCASTER: null,
-
   MOUSE: new THREE.Vector2(),
   PLAYER: {
+    OBJECT: null,
+    START_POSITION: new THREE.Vector3(9, 13, 15),
     MOVE_STOP_DAMPING: 0.1,
     MOVE_STOP_DAMPING_THRESHOLD: 0.008,
     MOUSE_SENSITIVITY: 0.2,
     LOOK_AROUND_SPEED: 1,
-    COLLIDER: new Capsule(
-      new THREE.Vector3(0, 0.35, 0),
-      new THREE.Vector3(0, 1, 0),
-      0.35
-    ),
+    COLLIDER: null,
     VELOCITY: new THREE.Vector3(),
     DIRECTION: new THREE.Vector3(),
-    JUMP_SPEED: 5,
-    JUMP_DAMPING: 0.0001,
-    MOVE_SPEED: 10,
+    JUMP_SPEED: 30,
+    JUMP_DAMPING: 0.01,
+    MOVE_SPEED: 2,
     JUMP_COOLDOWN: 0.6,
     JUMP_COOLDOWN_TIMER: new THREE.Clock({ autoStart: true }),
     ON_FLOOR: false,
@@ -67,42 +67,35 @@ export const g = {
   LAYERS: {
     DEFAULT: 0,
     TEXT: 1,
+    SNOWFLAKES: 2,
   },
 
-  CUTSCENE: {
+  CUTSCENES: null,
+  CUTSCENE: null,
+  CUTSCENE_GLOBAL_STATE: {
     ACTIVE: false,
-    DATA: {
-      DURATION: 8,
-      TIMES: [0.2, 2.0, 5.0],
-      TEXT: [
-        "Hello, this is a test",
-        "I didn't want to scare you, but here I am. Doing fine.",
-        "Shall we go?",
-      ],
-      CAMERA_POSITIONS: [
-        new THREE.Vector3(8.14, 6.61, 13.34),
-        new THREE.Vector3(8.14, 7.61, 13.34),
-        new THREE.Vector3(8.14, 8.61, 13.34),
-      ],
-      CAMERA_TARGETS: [
-        new THREE.Vector3(11.14, 5.61, 11.34),
-        new THREE.Vector3(11.14, 5.61, 11.34),
-        new THREE.Vector3(11.14, 5.61, 11.34),
-      ],
-      CURRENT_KEYFRAME: -1,
-    },
-    BLACK_BARS_T: 0,
-    BLACK_BARS_HEIGHT: 0.15,
-    BLACK_BARS_SPEED: 0.25,
+    KEYFRAME: 0,
     TIME: 0,
   },
-  BOTTOM_TEXT: null,
-  BOTTOM_TEXT_SETTINGS: {
-    BLINKING: true,
-    SIZE : "80px",
-    HEIGHT : 60,
-    GRADIENT_SPREAD : 19,
-    
+
+  CURSOR: null,
+  CURSOR_DEFAUTL_OPACITY: 0.1,
+  CURSOR_HOVER_OPACITY: 0.5,
+
+  UI: {
+    FULLSCREEN_QUAD: null,
+    TEXTURE: null,
+    CANVAS: null,
+
+    TEXT: {
+      TEXT: "Silent Hill 1",
+      BLINKING: true,
+      BLINKING_RATE: 0.5,
+      TEXT_T: 1,
+      SIZE: 70,
+      HEIGHT: 120,
+      GRADIENT_SPREAD: 19,
+    },
   },
 
   MAIN_LOOP_CALLBACKS: {},
@@ -117,6 +110,7 @@ export const g = {
   RENDERER: null,
   CAMERA: null,
   CAMERA_FAR: 100,
+  CAMERA_LAST_ORIENTATION: new THREE.Euler(),
   OCTREE: null,
   ORBIT_CONTROLS: null,
   WORLD_AXES_HELPER: null,
@@ -140,8 +134,29 @@ export const g = {
   SOUNDS: {
     FOOTSTEP: new Audio(soundFootstep),
   },
+
+  TEXTURES: {
+    BLOOD: textureLoader.load("./assets/blood.png"),
+    FOOTSTEP: textureLoader.load("./assets/footstep.png"),
+    FOOTSTEP_NOALPHA: textureLoader.load("./assets/footstep_noalpha.png"),
+  },
+
+  PHYSICS: {
+    GRAVITY: -9.8,
+    RAPIER: null,
+    WORLD: null,
+    CHARACTER_CONTROLLER : null,
+  },
 };
 
-g.PLAYER.COLLIDER.translate(new THREE.Vector3(9, 13, 15));
 g.SOUNDS.FOOTSTEP.volume = 0.05;
+
+
+
+
+export const m = {
+  OBJECT_NAME_TO_POSITION: new Map(),
+
+
+};
 

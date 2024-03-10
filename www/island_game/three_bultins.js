@@ -17,6 +17,8 @@ export function initThree() {
   g.RENDERER.domElement.style.top = "0";
   g.RENDERER.domElement.style.left = "0";
   g.RENDERER.domElement.style.zIndex = "-1";
+  // disable cursor
+  g.RENDERER.domElement.style.cursor = "none";
   // set image-rendering: pixelated;
   // g.RENDERER.domElement.style.imageRendering = "pixelated";
 
@@ -68,6 +70,8 @@ export function initThree() {
   // fog
   g.FOG = new THREE.Fog(g.FOG_COLOR, 1, 20);
   scene.fog = g.FOG;
+  scene.background = new THREE.Color(g.FOG_COLOR);
+  
   // scene.fog = new THREE.FogExp2( g.FOG_COLOR, 0.05 );
 
   // sky cubemap

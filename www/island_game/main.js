@@ -1,30 +1,63 @@
-import * as THREE from "three";
 import WebGL from "three/addons/capabilities/WebGL.js";
 import { g } from "./globals.js";
 import { snowflakesInit, snowflakesUpdate } from "./snowflakes.js";
 import { initMaterials } from "./materials.js";
 import { playerUpdate, initPlayer } from "./player.js";
 import { initDebugHelpers } from "./debug_helpers.js";
-import { initText } from "./text.js";
-import {
-  initPostProcessing,
-} from "./postprocessing.js";
+import { initUI, resizeUI, renderUI } from "./ui.js";
+import { initPostProcessing } from "./postprocessing.js";
 import { initThree } from "./three_bultins.js";
 import { init3DModels } from "./models3d.js";
-import { updateCutscene } from "./cutscenes.js";
-import { checkMouseIntersects, initInput } from "./input.js";
+import { updateCutscene, initCutscenes } from "./cutscenes.js";
+import { initInput } from "./input.js";
+import { screenspaceRaycast } from "./raycast.js";
 import { projectDecal } from "./decals.js";
-
 
 if (WebGL.isWebGL2Available() === false) {
   document.body.appendChild(WebGL.getWebGL2ErrorMessage());
 }
 
+async function initPhysics() {
+  return new Promise((resolve, reject) => {
+    import("@dimforge/rapier3d")
+      .then((RAPIER) => {
+        const gravity = { x: 0.0, y: g.PHYSICS.GRAVITY, z: 0.0 };
+        g.PHYSICS.WORLD = new RAPIER.World(gravity);
+
+        const characterController = g.PHYSICS.WORLD.createCharacterController(0.01);
+        // Change the character controller’s up vector to the positive Z axis.
+        characterController.setUp({ x: 0.0, y: 0.0, z: 1.0 });
+        // Don’t allow climbing slopes larger than 45 degrees.
+        characterController.setMaxSlopeClimbAngle((45 * Math.PI) / 180);
+        // Automatically slide down on slopes smaller than 30 degrees.
+        characterController.setMinSlopeSlideAngle((30 * Math.PI) / 180);
+        // Autostep if the step height is smaller than 0.5, its width is larger than 0.2,
+        // and allow stepping on dynamic bodies.
+        characterController.enableAutostep(0.5, 0.2, true);
+        // Disable autostep.
+        characterController.disableAutostep();
+        // Snap to the ground if the vertical distance to the ground is smaller than 0.5.
+        characterController.enableSnapToGround(0.5);
+        // Disable snap-to-ground.
+        characterController.disableSnapToGround();
+        g.PHYSICS.CHARACTER_CONTROLLER = characterController;
+
+
+        g.PHYSICS.RAPIER = RAPIER;
+        resolve();
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+await initPhysics();
 initThree();
-initMaterials();  
+initMaterials();
 init3DModels();
 initPlayer();
-initText();
+initUI();
 initInput();
 snowflakesInit();
 initPostProcessing();
@@ -32,18 +65,11 @@ updateViewport();
 initDebugHelpers();
 animate();
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
 
 // MAIN LOOP
 function animate() {
@@ -56,12 +82,13 @@ function animate() {
   playerUpdate(g.DELTA_TIME);
   snowflakesUpdate(g.DELTA_TIME);
 
-  let intersection = checkMouseIntersects(g.OBJECT_GROUPS.INTERACTABLES);
+  let intersection = screenspaceRaycast(g.MOUSE, g.OBJECT_GROUPS.INTERACTABLES);
   if (intersection && intersection.distance < 2) {
     // change pointer image
-    document.body.style.cursor = "pointer";
+    console.log("hovering over interactable");
+    document.getElementById("cursor-custom").style.opacity = g.CURSOR_HOVER_OPACITY;
   } else {
-    document.body.style.cursor = "default";
+    document.getElementById("cursor-custom").style.opacity = g.CURSOR_DEFAUTL_OPACITY;
   }
 
   // call all main loop callbacks (its a dict of functions)
@@ -69,7 +96,11 @@ function animate() {
     g.MAIN_LOOP_CALLBACKS[key]();
   }
 
-  updateCutscene();
+  if (g.CUTSCENE !== null) {
+    updateCutscene();
+  }
+
+  g.PHYSICS.WORLD.step();
 
   // g.RENDERER.clear();
   //g.RENDERER.render(scene, g.CAMERA);
@@ -81,75 +112,59 @@ function animate() {
     g.TIME_SINCE_LAST_FRAME += g.DELTA_TIME;
   }
 
+  // after 5 seconds, change text
+  // if (g.TIME > 5) {
+  //   g.UI.TEXT = "Hello, world!";
+  //   console.log("changing text");
+  //   redrawText();
+  // }
+
   // controls.update( clock.getDelta() );
 }
-
 
 // const clearColor = new THREE.Color(0xc22929);
 g.RENDERER.autoClear = false;
 g.RENDERER.setClearColor(0xf700ff, 0.0);
 
-function render(){
-  g.CAMERA.layers.set(0);
-  g.SCENE.background = new THREE.Color(g.FOG_COLOR);
-  // // g.RENDERER.clear();
-  // // fog
-  // g.RENDERER.setClearColor(g.FOG_COLOR, 1.0);
-  // // render to texture and pass this texture to the next pass
+function render() {
+  // g.CAMERA.layers.set(g.LAYERS.DEFAULT);
+  // g.SCENE.background = new THREE.Color(g.FOG_COLOR);
   g.POSTPROCESSING_COMPOSERS.MAIN.render();
-  // // g.RENDERER.clearDepth();
-  
-  // g.CAMERA.layers.set(1);
+
   // g.SCENE.background = null;
-  // // g.RENDERER.clear(true, false, false);
-  // g.POSTPROCESSING_COMPOSERS.UI.render();
-  
+  // g.CAMERA.layers.set(g.LAYERS.TEXT);
+  // g.RENDERER.render(g.SCENE, g.CAMERA);
 
-  g.CUTSCENE.TEXT.render(g.RENDERER);
-
-
-// g.RENDERER.render(g.SCENE, g.CAMERA);
+  renderUI();
 }
 
-
 ////////////////////////////////////////////////////////////////////////////////////////
-
-
-window.addEventListener("pointerup", function () {
-  let intersection;
-
-  intersection = checkMouseIntersects(g.OBJECT_GROUPS.DECALABLES);
-
-  if (intersection) {
-    projectDecal(intersection);
-  }
-});
 
 
 // onresize
 function updateViewport() {
   g.CAMERA.aspect = window.innerWidth / window.innerHeight;
   g.CAMERA.updateProjectionMatrix();
-  
+
   g.SCREEN.RESOLUTION.set(
     g.SCREEN.TARGET_Y_RESOLUTION * g.CAMERA.aspect,
     g.SCREEN.TARGET_Y_RESOLUTION
-    );
-    
+  );
 
-    
-    /////////////////////// UPDATE UNIFORMS
-    // > PS1 Material
-    if (g.MATERIALS.PS1.userData.shader) {
-      g.MATERIALS.PS1.userData.shader.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
-    }
-    // > PS1_UI Postprocessing
-    // g.POSTPROCESSING_PASSES.PS1_UI.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
-    // > PS1_MAIN Postprocessing
-    g.POSTPROCESSING_PASSES.PS1.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
+  resizeUI();
 
-    
-    g.RENDERER.setSize(window.innerWidth, window.innerHeight);
-    g.RENDERER.setPixelRatio(g.DPI);
+  /////////////////////// UPDATE UNIFORMS
+  // > PS1 Material
+  if (g.MATERIALS.PS1.userData.shader) {
+    g.MATERIALS.PS1.userData.shader.uniforms.uResolution.value =
+      g.SCREEN.RESOLUTION;
+  }
+  // > PS1_UI Postprocessing
+  // g.POSTPROCESSING_PASSES.PS1_UI.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
+  // > PS1_MAIN Postprocessing
+  g.POSTPROCESSING_PASSES.PS1.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
+
+  g.RENDERER.setSize(window.innerWidth, window.innerHeight);
+  g.RENDERER.setPixelRatio(g.DPI);
 }
 window.onresize = updateViewport;

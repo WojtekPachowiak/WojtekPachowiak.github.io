@@ -1,6 +1,8 @@
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { g } from "./globals.js";
 import * as THREE from "three";
+import { VertexNormalsHelper } from "three/addons/helpers/VertexNormalsHelper.js";
+
 
 export function init3DModels() {
   // 3d models
@@ -22,10 +24,11 @@ export function init3DModels() {
         console.log(child.name);
 
         if (child.isMesh) {
+          child.layers.set(g.LAYERS.DEFAULT);
           if (child.name === "land") {
             g.OBJECT_GROUPS.DECALABLES.push(child);
             // set layer
-            // child.layers.set(2);
+            
           }
           if (child.name !== "water") {
             g.OBJECT_GROUPS.COLLIDABLES.push(child);
@@ -58,7 +61,7 @@ export function init3DModels() {
           }
         }
       });
-      console.log(gltf.scene);
+
       g.SCENE.add(gltf.scene);
 
       // add to octree, but exclude "water" object

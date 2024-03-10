@@ -10,7 +10,6 @@
     <link rel="icon" type="image/x-icon" href="../resources/icons/asuka.ico" />
 
     <link rel="stylesheet" href="../index.css" />
-    <link rel="stylesheet" href="c.css" />
 
 
   </head>
@@ -23,32 +22,81 @@
 
  -->
 
-<body style="overflow: hidden; ">
+<body style="overflow: hidden">
     <!-- <div class="fixed bottom-0 right-0  w-1/2 h-1/2  m-5  " > -->
     <!-- <canvas  id="output_canvas" class="h-1/8 w-1/8  absolute bottom-0 right-0 z-10 scale-x-[-1] m-5 pointer-events-none	"></canvas> -->
 
     <!-- </div> -->
     
-    <script type="module" src="main.js"></script>
 
 
-
+    
+    
+    
     <style>
       #debugMouseDrawer {
         position: absolute;
         top: 10px;
-        width: 300px;
-        height: 300px;
+        left: 10px;
+        /* width: 300px; */
+        /* height: 100%; */
         padding: 20px;
         z-index: 1000;
-        text-align: left;
+        /* text-align: left; */
         color: white;
         z-index: 100;
-        display:block;
-}
-    </style>
-    <div id="debugMouseDrawer"></div>
+        display:none;
+        /* pointer-events: none; */
+        background-color: rgba(0, 0, 0, 0.2);
+        font-family:monospace;
 
+        /* enable vertical scrolling */
+        overflow-y: auto;
+        max-height: 100%;
+
+      }
+
+      h1 {
+        font-size: 20px;
+        color: rgb(255, 145, 0);
+        margin: 0;
+        padding: 0;
+      }
+      td:nth-child(1) {
+        padding-right: 10px;
+        color: aquamarine;
+      }
+
+      #cursor-custom {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        z-index: 1000;
+        pointer-events: none;        
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+        
+        /* blend mode */
+        opacity: 0.1;
+
+        image-rendering: pixelated  ;
+        /* display: none; */
+      }
+
+      
+      
+    </style>
+
+
+    <div id="debugMouseDrawer"></div>
+    <div id="cursor-custom">
+      <!-- crosshair rects -->
+      <div style="position: absolute; width: 2px; height: 8px; background-color: rgb(255, 255, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div>
+      <div style="position: absolute; width: 8px; height: 2px; background-color: rgb(255, 255, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div>
+    </div>
+
+    <script type="module" src="main.js"></script>
 
 </body>
 
