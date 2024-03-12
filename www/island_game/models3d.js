@@ -13,22 +13,16 @@ export function init3DModels() {
   // dracoLoader.setDecoderPath( '/examples/jsm/libs/draco/' );
   // loader.setDRACOLoader( dracoLoader );
 
-  // Load a glTF resource
   loader.load(
-    // resource URL
     "./assets/island_scene.glb",
-    // called when the resource is loaded
     function (gltf) {
-      // traverse and assign standard material
       gltf.scene.traverse(function (child) {
-        console.log(child.name);
-
+        // console.log(child.name);
         if (child.isMesh) {
           child.layers.set(g.LAYERS.DEFAULT);
+
           if (child.name === "land") {
             g.OBJECT_GROUPS.DECALABLES.push(child);
-            // set layer
-            
           }
           if (child.name !== "water") {
             g.OBJECT_GROUPS.COLLIDABLES.push(child);
@@ -50,25 +44,40 @@ export function init3DModels() {
             mat.map = map;
             map.minFilter = THREE.NearestFilter;
             map.magFilter = THREE.NearestFilter;
-            g.MATERIALS.PS1.map = map;
-            child.material = g.MATERIALS.PS1;
+            // g.MATERIALS.PS1.map = map;
+            child.material = mat;
+            child.material.map = map;
           } else {
             child.material = g.MATERIALS.PS1;
           }
 
-          if (map) {
-            child.material.map = map;
-          }
         }
       });
 
       g.SCENE.add(gltf.scene);
 
-      // add to octree, but exclude "water" object
-      console.log(gltf);
-      let s = gltf.scene.clone();
-      s.children = s.children.filter((child) => child.name !== "water");
-      g.OCTREE.fromGraphNode(s);
+      // iterate over children and add to physical world
+      for (let obj of g.OBJECT_GROUPS.COLLIDABLES) {
+          const geometry = obj.geometry;
+          let colliderDesc = g.PHYSICS.RAPIER.ColliderDesc.trimesh(
+            geometry.attributes.position.array,
+            geometry.index.array
+          );
+          g.PHYSICS.WORLD.createCollider(colliderDesc);
+          const rigidBody = g.PHYSICS.WORLD.createRigidBody(
+            g.PHYSICS.RAPIER.RigidBodyDesc.fixed()
+          );
+          g.PHYSICS.WORLD.createCollider(colliderDesc, rigidBody);
+
+          
+          // translate, scale and rotate the collider to match the object
+          rigidBody.setTranslation({x: obj.position.x, y: obj.position.y, z: obj.position.z}, true);
+          rigidBody.setRotation({w: obj.quaternion.w, x: obj.quaternion.x, y: obj.quaternion.y, z: obj.quaternion.z}, true);
+
+          // save reference
+          obj.userData.rigidBody = rigidBody;
+      }
+
     },
     // called while loading is progressing
     function (xhr) {

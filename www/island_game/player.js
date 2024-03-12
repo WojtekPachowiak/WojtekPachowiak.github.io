@@ -6,9 +6,8 @@ import { projectFootstepDecal } from "./decals.js";
 /**
  * Player class (overrides Capsule just so that Octree can work)
  */
-class Player extends Capsule {
+class Player{
   constructor() {
-    super(new THREE.Vector3(0, 0.35, 0), new THREE.Vector3(0, 1, 0), 0.35);
 
     this.group = new THREE.Group();
     g.SCENE.add(this.group);
@@ -37,6 +36,40 @@ class Player extends Capsule {
     this.velocity = new THREE.Vector3();
     this.bobTimer = 0;
     this.bobActive = false;
+
+    // setup physics
+    let colliderDesc = g.PHYSICS.RAPIER.ColliderDesc.capsule(
+      g.PLAYER.COLLIDER_RADIUS,
+      1 / 2
+    );
+
+    // Or create the collider and attach it to a rigid-body.
+    this.rigidBody = g.PHYSICS.WORLD.createRigidBody(
+      g.PHYSICS.RAPIER.RigidBodyDesc.kinematicPositionBased()
+        .lockRotations() // prevent rotations along all axes.
+        // .setCcdEnabled(true)
+      // .setLinearDamping(0.5)
+      // // The rigid body rotation, given as a quaternion.
+      // // Default: no rotation.
+      // .setRotation({ w: 1.0, x: 0.0, y: 0.0, z: 0.0})
+      // // The linear velocity of this body.
+      // // Default: zero velocity.
+      // .setLinvel(1.0, 3.0, 4.0)
+      // // The angular velocity of this body.
+      // // Default: zero velocity.
+      // .setAngvel({ x: 3.0, y: 0.0, z: 1.0 })
+      // // The scaling factor applied to the gravity affecting the rigid-body.
+      // // Default: 1.0
+      // .setGravityScale(0.5)
+      // // Whether or not this body can sleep.
+      // // Default: true
+      // .setCanSleep(true)
+      // // Whether or not CCD is enabled for this rigid-body.
+      // // Default: false
+      .setTranslation(10, 10, 10 )
+    );
+    this.collider = g.PHYSICS.WORLD.createCollider(colliderDesc, this.rigidBody);
+    console.log(this.rigidBody);
   }
 
   get position() {
@@ -81,64 +114,45 @@ class Player extends Capsule {
   }
 
   translate(x, y, z) {
-    super.translate(new THREE.Vector3(x, y, z));
-    this.group.position.x += x;
-    this.group.position.y += y;
-    this.group.position.z += z;
+    const nextPos = g.PLAYER.OBJECT.rigidBody.translation();
+    nextPos.x += x;
+    nextPos.y += y;
+    nextPos.z += z;
+    // console.log("nextPos", nextPos);
+    g.PLAYER.OBJECT.rigidBody.setNextKinematicTranslation(
+      new g.PHYSICS.RAPIER.Vector3(nextPos.x, nextPos.y, nextPos.z)
+    );
+    g.PLAYER.OBJECT.group.position.copy(g.PLAYER.OBJECT.rigidBody.translation());
   }
 }
 
 export function initPlayer() {
   // init player as group object and parent capsule and stick to it
   g.PLAYER.OBJECT = new Player();
-  g.PLAYER.OBJECT.translate(10, 10, 10);
+  // g.PLAYER.OBJECT.setTranslation(10, 30, 10);
 
 }
 
-function playerCollisions() {
-  const result = g.OCTREE.capsuleIntersect(g.PLAYER.OBJECT);
-
-  g.PLAYER.ON_FLOOR = false;
-  if (result) {
-    g.PLAYER.ON_FLOOR = result.normal.y > 0;
-    // if (!g.PLAYER.ON_FLOOR) {
-    //   g.PLAYER.OBJECT.velocity.addScaledVector(
-    //     result.normal,
-    //     -result.normal.dot(g.PLAYER.OBJECT.velocity)
-    //   );
-    // }
-
-    if (g.PLAYER.ON_FLOOR){
-      g.PLAYER.OBJECT.velocity.y = 0;
-    }
-
-    if (result.depth > 0){
-      g.PLAYER.OBJECT.translate(
-        ...result.normal.multiplyScalar(result.depth).multiply(new THREE.Vector3(0, 1, 0))
-      );
-
-    }
-
-
-
-    // result.normal.multiplyScalar(result.depth);
-    // g.PLAYER.OBJECT.translate(...result.normal);
-  }
+function updateCamera() {
+  g.CAMERA.position.copy(g.PLAYER.OBJECT.collider.translation());
+  g.CAMERA.position.y += 1.5;
+  g.CAMERA.position.y += Math.sin(g.PLAYER.OBJECT.bobTimer * 5) * 0.1;
+  g.CAMERA.rotation.copy(g.PLAYER.OBJECT.rotation);
 }
 
 export function playerUpdate(deltaTime) {
+  g.PLAYER.OBJECT.velocity.set(0, 0, 0);
+
   detectControls(deltaTime);
 
   playerMove(deltaTime);
-  playerCollisions();
-  footstep();
-  // bob(deltaTime);
+  // playerCollisions();
+  // footstep();
+  bob(deltaTime);
 
 
   if (g.PLAYER.CONTROL_TYPE === "FPS") {
-    g.CAMERA.position.copy(g.PLAYER.OBJECT.end);
-    g.CAMERA.rotation.copy(g.PLAYER.OBJECT.rotation);
-    g.CAMERA.position.y += Math.sin(g.PLAYER.OBJECT.bobTimer * 5) * 0.01;
+    updateCamera();
   } else if (g.PLAYER.CONTROL_TYPE === "ORBIT") {
     g.ORBIT_CONTROLS.update();
   } else {
@@ -158,28 +172,33 @@ export function setPlayerControlType(controlType) {
   }
 }
 
+
+
 function playerMove(deltaTime) {
+  // add gravity
+  g.PLAYER.OBJECT.velocity.y += g.PHYSICS.GRAVITY * deltaTime;
 
-  let damping = 0.5;
+  g.PHYSICS.CHARACTER_CONTROLLER.computeColliderMovement(
+    g.PLAYER.OBJECT.collider, // The collider we would like to move.
+    g.PLAYER.OBJECT.velocity // The movement we would like to apply if there wasn’t any obstacle.
+  );
+  let correctedMovement = g.PHYSICS.CHARACTER_CONTROLLER.computedMovement();
+  // console.log("correctedMovement", correctedMovement);
 
-  if (!g.PLAYER.ON_FLOOR) {
-    g.PLAYER.OBJECT.velocity.y -= g.GRAVITY * deltaTime;
+  // After the collider movement calculation is done, we can read the
+  // collision events.
+  // console.log("numComputedCollisions", g.PHYSICS.CHARACTER_CONTROLLER.numComputedCollisions());
+  for (let i = 0; i < g.PHYSICS.CHARACTER_CONTROLLER.numComputedCollisions(); i++) {
+    let collision = g.PHYSICS.CHARACTER_CONTROLLER.computedCollision(i);
+    // console.log("collision:" + i, collision);
     
-    // small air resistance
-    // damping *= g.PLAYER.JUMP_DAMPING;
-
+    // check if collision normal is within g.PLAYER.MAX_SLOPE_ANGLE of up
+    let normal = new THREE.Vector3(collision.normal1.x, collision.normal1.y, collision.normal1.z);
+    let angle = g.PLAYER.OBJECT.up.angleTo(normal);
+    g.PLAYER.ON_FLOOR = angle < g.PLAYER.MAX_ON_FLOOR_ANGLE;
   }
 
-  let deltaPosition = g.PLAYER.OBJECT.velocity.clone();
-  // if delta position small enough, then stop
-  // if (deltaPosition.length() < g.PLAYER.MOVE_STOP_DAMPING_THRESHOLD) {
-  //   deltaPosition = deltaPosition.multiplyScalar(g.PLAYER.MOVE_STOP_DAMPING);
-  // }
-  g.PLAYER.OBJECT.translate(...deltaPosition);
-
-  // damping
-  g.PLAYER.OBJECT.velocity.x *= (damping );
-  g.PLAYER.OBJECT.velocity.z *= (damping );
+  g.PLAYER.OBJECT.translate(correctedMovement.x, correctedMovement.y, correctedMovement.z);
 
 }
 
@@ -207,12 +226,12 @@ function bob(deltaTime) {
 }
 
 function footstep() {
-  // if (g.PLAYER.ON_FLOOR) {
-  //   projectFootstepDecal(
-  //     g.PLAYER.OBJECT.position,
-  //     g.PLAYER.OBJECT.up.clone().multiplyScalar(-1)
-  //   );
-  // }
+  if (g.PLAYER.ON_FLOOR) {
+    projectFootstepDecal(
+      g.PLAYER.OBJECT.position,
+      g.PLAYER.OBJECT.up.clone().multiplyScalar(-1)
+    );
+  }
 
   if (g.PLAYER.OBJECT.velocity.length() > 1 && g.PLAYER.ON_FLOOR) {
     // if moved, then play footstep sound
@@ -230,17 +249,15 @@ function detectControls(deltaTime) {
     (g.PLAYER.ON_FLOOR ? g.PLAYER.MOVE_SPEED : g.PLAYER.MOVE_SPEED * 0.25);
 
   if (g.KEY_STATES["KeyW"]) {
-    g.PLAYER.OBJECT.velocity.add(
-      g.PLAYER.OBJECT.forward.multiplyScalar(speedDelta)
-    );
+    g.PLAYER.OBJECT.velocity = g.PLAYER.OBJECT.forward.multiplyScalar(speedDelta);
+      
+    
 
     // g.CAMERA.rotation.x += g.PLAYER.LOOK_AROUND_SPEED * deltaTime;
   }
 
   if (g.KEY_STATES["KeyS"]) {
-    g.PLAYER.OBJECT.velocity.add(
-      g.PLAYER.OBJECT.forward.multiplyScalar(-speedDelta)
-    );
+    g.PLAYER.OBJECT.velocity = g.PLAYER.OBJECT.forward.multiplyScalar(-speedDelta);
     // g.CAMERA.rotation.x -= g.PLAYER.LOOK_AROUND_SPEED * deltaTime;
   }
 

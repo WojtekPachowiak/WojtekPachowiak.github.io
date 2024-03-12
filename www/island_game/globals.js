@@ -6,6 +6,9 @@ const textureLoader = new THREE.TextureLoader();
 
 export const g = {
   DEBUG_MODE: false,
+  DEBUG: {
+    TRIANGLE : null
+  },
 
   SCREEN: {
     DPI: 1,
@@ -26,6 +29,7 @@ export const g = {
     DECALABLES: [],
     COLLIDABLES: [],
     INTERACTABLES: [],
+    WIREFRAMES: [],
   },
   RENDER_TARGET: null,
 
@@ -38,13 +42,15 @@ export const g = {
     MOUSE_SENSITIVITY: 0.2,
     LOOK_AROUND_SPEED: 1,
     COLLIDER: null,
+    COLLIDER_RADIUS: 0.35,
     VELOCITY: new THREE.Vector3(),
     DIRECTION: new THREE.Vector3(),
-    JUMP_SPEED: 30,
+    JUMP_SPEED: 80,
     JUMP_DAMPING: 0.01,
-    MOVE_SPEED: 2,
+    MOVE_SPEED: 10,
     JUMP_COOLDOWN: 0.6,
     JUMP_COOLDOWN_TIMER: new THREE.Clock({ autoStart: true }),
+    MAX_ON_FLOOR_ANGLE: (45 * Math.PI) / 180,
     ON_FLOOR: false,
     CONTROL_TYPE: "FPS",
   },
@@ -129,6 +135,7 @@ export const g = {
 
   MATERIALS: {
     PS1: null,
+    UV: null,
   },
 
   SOUNDS: {
@@ -145,7 +152,7 @@ export const g = {
     GRAVITY: -9.8,
     RAPIER: null,
     WORLD: null,
-    CHARACTER_CONTROLLER : null,
+    CHARACTER_CONTROLLER: null,
   },
 };
 

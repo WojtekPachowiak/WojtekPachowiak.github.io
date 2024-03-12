@@ -10,12 +10,21 @@ THREE.Vector3.prototype.toString = function () {
   return `(${x}, ${y}, ${z})`;
 };
 
+THREE.Vector2.prototype.toString = function () {
+  const x = typeof this.x === "number" ? this.x.toFixed(2) : this.x;
+  const y = typeof this.y === "number" ? this.y.toFixed(2) : this.y;
+  return `(${x}, ${y})`;
+};
+
 THREE.Euler.prototype.toString = function () {
   if(this.x === undefined || this.y === undefined || this.z === undefined){
     return "undefined";
   }
   return `(${this.x.toFixed(2)}, ${this.y.toFixed(2)}, ${this.z.toFixed(2)})`;
 };
+
+
+
 
 let CURRENT_DEBUG_STATES = {
   camera: "FPS",
@@ -27,6 +36,7 @@ let CURRENT_DEBUG_STATES = {
   variableTracking: false,
   worldAxes: false,
   cutscene: false,
+  debug_material: false,
 
 };
 
@@ -34,15 +44,42 @@ const DEFAULT_NONDEBUG_STATES = {...CURRENT_DEBUG_STATES};
 const DEFAULT_DEBUG_STATES = {
   camera: "FPS",
   wireframe: false,
-  postprocessing: false,
+  postprocessing: true,
   loweredOpacity: false,
   octree: false,
-  fog: false,
+  fog: true,
   variableTracking: true,
   worldAxes: false,
   cutscene: false,
+  debug_material: false,
 };
 
+
+function buildWireframes(){
+  // iterate over all objects in the scene and if they are meshes, get their geometry and put it into wireframeGeometry
+  g.SCENE.traverse((child) => {
+    if (child.isMesh) {
+      console.log(child.isMesh, child.geometry);
+      const wireframe = new THREE.WireframeGeometry(child.geometry);
+
+      // translate and rotate the wireframe to match the object
+      wireframe.translate(child.position.x, child.position.y, child.position.z);
+      wireframe.rotateX(child.rotation.x);
+      wireframe.rotateY(child.rotation.y);
+      wireframe.rotateZ(child.rotation.z);
+
+      const line = new THREE.LineSegments(wireframe);
+      line.material.depthTest = false;
+      // line.material.opacity = 0.25;
+      // line.material.transparent = true;
+      line.material.color = new THREE.Color(0xea00ff);
+      line.material.lineWidth = 1;
+      line.userData.isDebug = true;
+      g.SCENE.add(line);
+      g.OBJECT_GROUPS.WIREFRAMES.push(line);
+    }
+  });
+}
 
 export const gui = new GUI();
 gui.add(CURRENT_DEBUG_STATES, "camera", ["FPS", "ORBIT"]).onChange((value) => {
@@ -55,7 +92,15 @@ gui.add(CURRENT_DEBUG_STATES, "camera", ["FPS", "ORBIT"]).onChange((value) => {
 });
 
 gui.add(CURRENT_DEBUG_STATES, "wireframe").onChange((value) => {
-  g.MATERIALS.PS1.wireframe = value;
+  
+  if (value && g.OBJECT_GROUPS.WIREFRAMES.length === 0) {
+    buildWireframes();
+  } 
+
+  g.OBJECT_GROUPS.WIREFRAMES.forEach((child) => {
+    child.visible = value;
+  });
+  
 });
 
 gui.add(CURRENT_DEBUG_STATES, "postprocessing").onChange((value) => {
@@ -63,8 +108,15 @@ gui.add(CURRENT_DEBUG_STATES, "postprocessing").onChange((value) => {
 });
 
 gui.add(CURRENT_DEBUG_STATES, "loweredOpacity").onChange((value) => {
-  g.MATERIALS.PS1.opacity = value ? 0.5 : 1;
-  g.MATERIALS.PS1.transparent = value;
+  // iterate over dict of materials
+  Object.values(g.MATERIALS).forEach((mat) => {
+    if (!mat) {
+      return;
+    } 
+    console.log(mat);
+    mat.opacity = value ? 0.5 : 1;  
+    mat.transparent = value;
+  });
 });
 
 gui.add(CURRENT_DEBUG_STATES, "octree").onChange((value) => {
@@ -89,6 +141,9 @@ function variableTracking(div, rayHit=null){
   const varsToTrack = [
     "PLAYER.OBJECT.position",
     "PLAYER.OBJECT.velocity",
+    "PLAYER.OBJECT.rigidBody.translation()",
+    "PLAYER.OBJECT.rigidBody.rotation()",
+
     "PLAYER.ON_FLOOR",
   ];
   div.innerHTML = "";
@@ -108,16 +163,22 @@ function variableTracking(div, rayHit=null){
   textt += "</table>";
 
   if (rayHit) {
-    console.log(rayHit);
-
     textt += "<table>";
     textt += `<h1>MOUSE RAYCAST INFO:</h1>`;
+
+    const triangle = drawDebugTriangle(rayHit);
+
     const rayHitInfo = {
       name: rayHit.object.name,
       position: rayHit.object.position.toString(),
       rotation: rayHit.object.rotation.toString(),
       scale: rayHit.object.scale.toString(),
       material: rayHit.object.material.name,
+      uv: rayHit.uv ? rayHit.uv.toString() : "no UVs",
+      tri_a : triangle.a.toString(),
+      tri_b : triangle.b.toString(),
+      tri_c : triangle.c.toString(),
+      distance: rayHit.distance.toFixed(2),
     };
     for (const k in rayHitInfo) {
       textt += `
@@ -133,6 +194,33 @@ function variableTracking(div, rayHit=null){
   }
     div.innerHTML = textt;
 }
+
+function drawDebugTriangle(rayhit){
+  const face = rayhit.face;
+  const mesh = rayhit.object;
+
+  const linePosition = g.DEBUG.TRIANGLE.geometry.attributes.position;
+  const meshPosition = mesh.geometry.attributes.position;
+
+  linePosition.copyAt(0, meshPosition, face.a);
+  linePosition.copyAt(1, meshPosition, face.b);
+  linePosition.copyAt(2, meshPosition, face.c);
+  linePosition.copyAt(3, meshPosition, face.a);
+
+  mesh.updateMatrix();
+
+  g.DEBUG.TRIANGLE.geometry.applyMatrix4(mesh.matrix);
+
+  g.DEBUG.TRIANGLE.visible = true;
+  
+  // return positions of the triangle
+  return {
+    a: new THREE.Vector3().fromBufferAttribute(linePosition, 0),
+    b: new THREE.Vector3().fromBufferAttribute(linePosition, 1),
+    c: new THREE.Vector3().fromBufferAttribute(linePosition, 2),
+  };
+}
+
 
 gui.add(CURRENT_DEBUG_STATES, "variableTracking").onChange((value) => {
   const div = document.getElementById("debugMouseDrawer");
@@ -152,7 +240,8 @@ gui.add(CURRENT_DEBUG_STATES, "variableTracking").onChange((value) => {
         false
       );
 
-      variableTracking(div, intersects.length > 0 ? intersects[0]: null);
+      const rayhit = intersects.length > 0 ? intersects[0] : null;
+      variableTracking(div, rayhit);
     };
 });
 
@@ -172,6 +261,20 @@ function forceUpdateGUI() {
     c.setValue(CURRENT_DEBUG_STATES[c.property]);
 }
 }
+
+// debug triangle
+function createDebugTriangle(){
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute(
+    "position",
+    new THREE.BufferAttribute(new Float32Array(4 * 3), 3)
+  );
+  const material = new THREE.LineBasicMaterial({ color: 0xa200ff,depthTest: false});  
+  const line = new THREE.Line(geometry, material);
+  g.SCENE.add(line);
+  return line;
+}
+
 
 export function initDebugHelpers() {
   // debug helpers
@@ -193,12 +296,43 @@ export function initDebugHelpers() {
     }
   });
 
-  // if (g.DEBUG_MODE) {
-  //   gui.show();
-  // } else {
-  //   gui.hide();
-  // }
+  g.DEBUG.TRIANGLE = createDebugTriangle();
 }
+
+gui.add(CURRENT_DEBUG_STATES, "debug_material").onChange((value) => {
+  if(g.MATERIALS.UV === null){
+    g.MATERIALS.UV = new THREE.ShaderMaterial({
+      vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+      `,
+      fragmentShader: `
+      varying vec2 vUv;
+      void main() {
+        // checker
+        vec2 uv = vUv ;
+        gl_FragColor = vec4(uv, 0.0, 1.0);
+
+      }
+      `,
+    });
+  }
+  
+  // traverse scene and set material to UV
+  g.SCENE.traverse((child) => {
+    if (child.isMesh) {
+      child.userData.originalMaterial = child.userData.originalMaterial || child.material;
+      child.material = value
+        ? g.MATERIALS.UV
+        : child.userData.originalMaterial;
+    }
+  });
+
+
+});
 
 
 
@@ -218,230 +352,3 @@ export class DebugCube extends THREE.Mesh {
   }
 }
 
-
-// export function initDebugHelpers() {
-
-//   // debug helpers
-//   document.addEventListener("keydown", (event) => {
-
-//     // on press "`"  toggle debug mode
-//  if (event.code === "Backquote") {
-//       g.DEBUG_MODE = !g.DEBUG_MODE;
-//       if (g.DEBUG_MODE) {
-//         gui.show();
-//       } else {
-//         gui.hide();
-//       }
-//   }
-
-//   g.MAIN_LOOP_CALLBACKS["debugHelpers"] = () => {
-//     if (!g.DEBUG_MODE) {
-//       return;
-//     }
-
-//     // wireframe
-//     if (BOOLEAN_DEBUG_STATES.wireframe) {
-//       g.MATERIALS.PS1.wireframe = true;
-//     } else {
-//       g.MATERIALS.PS1.wireframe = false;
-//     }
-
-//     // postprocessing
-//     if (BOOLEAN_DEBUG_STATES.postprocessing) {
-//       g.POSTPROCESSING_PASSES.PS1.enabled = true;
-//     } else {
-//       g.POSTPROCESSING_PASSES.PS1.enabled = false;
-//     }
-
-//     // lowered opacity
-//     if (BOOLEAN_DEBUG_STATES.loweredOpacity) {
-//       g.MATERIALS.PS1.opacity = 0.5;
-//       g.MATERIALS.PS1.transparent = true;
-//     } else {
-//       g.MATERIALS.PS1.opacity = 1;
-//       g.MATERIALS.PS1.transparent = false;
-//     }
-
-//     // octree
-//     if (BOOLEAN_DEBUG_STATES.octree) {
-//       g.OCTREE_HELPER.visible = true;
-//       g.OCTREE_HELPER.update();
-//     } else {
-//       g.OCTREE_HELPER.visible = false;
-//       g.OCTREE_HELPER.update();
-//     }
-
-//     // fog
-//     if (BOOLEAN_DEBUG_STATES.fog && !g.SCENE.fog === null) {
-//       g.SCENE.fog = g.FOG;
-//       g.CAMERA.far = g.CAMERA_FAR;
-//       g.CAMERA.updateProjectionMatrix();
-//     } elif (!BOOLEAN_DEBUG_STATES.fog && g.SCENE.fog !== null){
-//       g.SCENE.fog = null;
-//       g.CAMERA.far = 1000;
-//       g.CAMERA.updateProjectionMatrix();
-//     }
-
-//     // raycasting and drawing name of the object
-//     if (BOOLEAN_DEBUG_STATES.variableTracking) {
-//       g.MAIN_LOOP_CALLBACKS["variableTracking"] = () => {
-//         const raycaster = new THREE.Raycaster();
-//         raycaster.setFromCamera(g.MOUSE, g.CAMERA);
-//         const intersects = raycaster.intersectObjects(
-//           g.OBJECT_GROUPS.COLLIDABLES,
-//           false
-//         );
-//         if (intersects.length > 0) {
-//           const obj = intersects[0].object;
-//           if (obj.name) {
-//             console.log(obj.name);
-//           }
-//         }
-//       };
-//     }
-
-//     // world axes
-//     if (BOOLEAN_DEBUG_STATES.worldAxes) {
-//       g.WORLD_AXES_HELPER.visible = true;
-//     } else {
-//       g.WORLD_AXES_HELPER.visible = false;
-//     }
-
-//     // cutscene
-//     // if (BOOLEAN_DEBUG_STATES.cutscene) {
-//     //   g.CUTSCENE.ACTIVE = true;
-//     // } else {
-//     //   g.CUTSCENE.ACTIVE = false;
-//     // }
-
-// });
-
-//     // on press "1" toggle between FPS g.CAMERA  with physics and fly g.CAMERA without physics
-//     if (event.code === "Digit1") {
-//       const choice = g.PLAYER.CONTROL_TYPE === "FPS" ? "ORBIT" : "FPS";
-//       setPlayerControlType(choice);
-
-//       // distance from the player to the g.CAMERA
-//       if (choice === "ORBIT"){
-//         g.CAMERA.position.set(0, 10, 20);
-//       }
-//     }
-
-//     // on press "2" toggle between wireframe, normal, depth and default rendering
-//     if (event.code === "Digit2") {
-//       if (g.MATERIALS.PS1.wireframe) {
-//         g.MATERIALS.PS1.wireframe = false;
-//       } else {
-//         g.MATERIALS.PS1.wireframe = true;
-//       }
-//     }
-
-//     // on press "3" toggle between normal and postprocessing rendering
-//     if (event.code === "Digit3") {
-//       // toggle postprocessing
-//       if (g.POSTPROCESSING_PASSES.PS1.enabled) {
-//         g.POSTPROCESSING_PASSES.PS1.enabled = false;
-//         g.POSTPROCESSING_PASSES.PS1_UI.enabled = false;
-//       } else {
-//         g.POSTPROCESSING_PASSES.PS1.enabled = true;
-//         g.POSTPROCESSING_PASSES.PS1_UI.enabled = true;
-//       }
-//     }
-
-//     // on press "4" toggle normal and lowered pacity rendering
-//     if (event.code === "Digit4") {
-//       // toggle lowered opacity
-//       if (g.MATERIALS.PS1.opacity === 0.5) {
-//         g.MATERIALS.PS1.opacity = 1;
-//         g.MATERIALS.PS1.transparent = false;
-//       } else {
-//         g.MATERIALS.PS1.opacity = 0.5;
-//         g.MATERIALS.PS1.transparent = true;
-//       }
-//     }
-
-//     // on press "5" toggle octree
-//     if (event.code === "Digit5") {
-//       // toggle octree
-//       if (g.OCTREE_HELPER.visible) {
-//         g.OCTREE_HELPER.visible = false;
-//         g.OCTREE_HELPER.update();
-
-//       } else {
-//         g.OCTREE_HELPER.visible = true;
-//         g.OCTREE_HELPER.update();
-//       }
-//     }
-
-//     // on press "6" disable fog and increase camera far
-//     if (event.code === "Digit6") {
-//       // toggle fog
-//       if (g.SCENE.fog === null) {
-//         g.SCENE.fog = g.FOG;
-//         g.CAMERA.far = g.CAMERA_FAR;
-//       } else {
-//         g.SCENE.fog = null;
-//         g.CAMERA.far = 1000;
-//       }
-//       g.CAMERA.updateProjectionMatrix();
-//     }
-
-//     // if press "7" turn on raycasting and drawing name of the object
-//     if (event.code === "Digit7") {
-//       const div = document.getElementById("debugMouseDrawer");
-
-//       if (g.MAIN_LOOP_CALLBACKS["variableTracking"]) {
-//         delete g.MAIN_LOOP_CALLBACKS["variableTracking"];
-//         div.innerHTML = "";
-//       }
-//       else{
-//         g.MAIN_LOOP_CALLBACKS["variableTracking"] = () => {
-//           div.innerHTML = "";
-//           const raycaster = new THREE.Raycaster();
-//           raycaster.setFromCamera(g.MOUSE, g.CAMERA);
-//           const intersects = raycaster.intersectObjects(
-//             g.OBJECT_GROUPS.COLLIDABLES,
-//             false
-//           );
-//           if (intersects.length > 0) {
-//             const obj = intersects[0].object;
-//             if (obj.name) {
-//               div.innerHTML = `
-//                 <p>${obj.name}</p>
-//                 <p>position: ${obj.position.x.toFixed(2)}, ${obj.position.y.toFixed(2)}, ${obj.position.z.toFixed(2)}</p>
-//                 <p>rotation: ${obj.rotation.x.toFixed(2)}, ${obj.rotation.y.toFixed(2)}, ${obj.rotation.z.toFixed(2)}</p>
-//                 <p>scale: ${obj.scale.x.toFixed(2)}, ${obj.scale.y.toFixed(2)}, ${obj.scale.z.toFixed(2)}</p>
-//                 <p>material: ${obj.material.name}</p>
-//                 <p>player position: ${g.CAMERA.position.x.toFixed(2)}, ${g.CAMERA.position.y.toFixed(2)}, ${g.CAMERA.position.z.toFixed(2)}</p>
-//                 <p>player rotation: ${g.CAMERA.rotation.x.toFixed(2)}, ${g.CAMERA.rotation.y.toFixed(2)}, ${g.CAMERA.rotation.z.toFixed(2)}</p>
-//                 `;
-
-//               div.style.left = (g.MOUSE.x/2 +0.5) * window.innerWidth + "px";
-//               div.style.top = (-g.MOUSE.y / 2 + 0.5) * window.innerHeight + "px";
-
-//               // g.CANVAS_CTX.clearRect(0, 0, g.CANVAS.width, g.CANVAS.height);
-//               // g.CANVAS_CTX.fillText(obj.name, g.CANVAS.width / 2, g.CANVAS.height / 2);
-//             }
-//           }
-//         };
-
-//       }
-
-//     }
-
-//     // on press "8" toggle world axis helper
-//     if (event.code === "Digit8") {
-//       if (g.WORLD_AXES_HELPER.visible) {
-//         g.WORLD_AXES_HELPER.visible = false;
-//       } else {
-//         g.WORLD_AXES_HELPER.visible = true;
-//       }
-//     }
-
-//     // on press "9" toggle cutscene
-//     if (event.code === "Digit9") {
-//       g.CUTSCENE.ACTIVE = !g.CUTSCENE.ACTIVE;
-//     }
-
-//   });
-// }
