@@ -3,7 +3,7 @@ import { g } from "./globals.js";
 import { snowflakesInit, snowflakesUpdate } from "./snowflakes.js";
 import { initMaterials } from "./materials.js";
 import { playerUpdate, initPlayer } from "./player.js";
-import { initDebugHelpers } from "./debug_helpers.js";
+import { initDebugGUI } from "./debug/debug_gui.js";
 import { initUI, resizeUI, renderUI } from "./ui.js";
 import { initPostProcessing } from "./postprocessing.js";
 import { initThree } from "./three_bultins.js";
@@ -24,7 +24,7 @@ async function initPhysics() {
         const gravity = { x: 0.0, y: 0, z: 0.0 };
         g.PHYSICS.WORLD = new RAPIER.World(gravity);
 
-        const characterController = g.PHYSICS.WORLD.createCharacterController(0.1);
+        const characterController = g.PHYSICS.WORLD.createCharacterController(0.01);
         // // Change the character controller’s up vector to the positive Z axis.
         // characterController.setUp({ x: 0.0, y: 0.0, z: 1.0 });
         // // Don’t allow climbing slopes larger than 45 degrees.
@@ -70,7 +70,7 @@ initInput();
 snowflakesInit();
 initPostProcessing();
 updateViewport();
-initDebugHelpers();
+initDebugGUI();
 animate();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

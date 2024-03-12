@@ -1,7 +1,6 @@
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { g } from "./globals.js";
 import * as THREE from "three";
-import { VertexNormalsHelper } from "three/addons/helpers/VertexNormalsHelper.js";
 
 
 export function init3DModels() {
@@ -44,8 +43,8 @@ export function init3DModels() {
             mat.map = map;
             map.minFilter = THREE.NearestFilter;
             map.magFilter = THREE.NearestFilter;
-            // g.MATERIALS.PS1.map = map;
-            child.material = mat;
+            g.MATERIALS.PS1.map = map;
+            child.material = g.MATERIALS.PS1;
             child.material.map = map;
           } else {
             child.material = g.MATERIALS.PS1;
@@ -69,7 +68,6 @@ export function init3DModels() {
           );
           g.PHYSICS.WORLD.createCollider(colliderDesc, rigidBody);
 
-          
           // translate, scale and rotate the collider to match the object
           rigidBody.setTranslation({x: obj.position.x, y: obj.position.y, z: obj.position.z}, true);
           rigidBody.setRotation({w: obj.quaternion.w, x: obj.quaternion.x, y: obj.quaternion.y, z: obj.quaternion.z}, true);
@@ -77,7 +75,7 @@ export function init3DModels() {
           // save reference
           obj.userData.rigidBody = rigidBody;
       }
-
+      
     },
     // called while loading is progressing
     function (xhr) {

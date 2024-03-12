@@ -7,7 +7,9 @@ const textureLoader = new THREE.TextureLoader();
 export const g = {
   DEBUG_MODE: false,
   DEBUG: {
-    TRIANGLE : null
+    GUI: null,
+    TRIANGLE: null,
+    CAMERA_GIZMO : null,
   },
 
   SCREEN: {
@@ -43,16 +45,18 @@ export const g = {
     LOOK_AROUND_SPEED: 1,
     COLLIDER: null,
     COLLIDER_RADIUS: 0.35,
+    COLLIDER_HEIGHT: 1,
     VELOCITY: new THREE.Vector3(),
     DIRECTION: new THREE.Vector3(),
     JUMP_SPEED: 80,
     JUMP_DAMPING: 0.01,
-    MOVE_SPEED: 10,
+    MOVE_SPEED: 2,
     JUMP_COOLDOWN: 0.6,
     JUMP_COOLDOWN_TIMER: new THREE.Clock({ autoStart: true }),
     MAX_ON_FLOOR_ANGLE: (45 * Math.PI) / 180,
     ON_FLOOR: false,
     CONTROL_TYPE: "FPS",
+    WANT_JUMP: false,
   },
   SNOWFLAKES: {
     PARTICLES_POSITIONS: [],

@@ -6,11 +6,12 @@ import { projectFootstepDecal } from "./decals.js";
 /**
  * Player class (overrides Capsule just so that Octree can work)
  */
-class Player{
+class Player extends THREE.Group{
   constructor() {
-
-    this.group = new THREE.Group();
-    g.SCENE.add(this.group);
+    super();
+    this.name = "player";
+    // create a group to hold player's meshes
+    g.SCENE.add(this);
 
     // // the player is holding a stick; draw this stick in the player's hand (right side of the screen)
     this.stick = new THREE.Mesh(
@@ -23,15 +24,20 @@ class Player{
     this.stick.rotation.x = Math.PI / 2.5;
     // this.stick.rotation.y = Math.PI / 6;
     this.stick.defaultRotation = this.stick.rotation.clone();
-    this.group.add(this.stick);
+    this.add(this.stick);
 
     // player body
     const body = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.1, 0.1, 2, 6),
+      new THREE.CapsuleGeometry(
+        g.PLAYER.COLLIDER_RADIUS,
+        g.PLAYER.COLLIDER_HEIGHT,
+        4,
+        8
+      ),
       new THREE.MeshStandardMaterial({ color: 0xe5ff00 })
     );
-    body.position.y = 0.5;
-    this.group.add(body);
+    // body.position.y = 0.5;
+    this.add(body);
 
     this.velocity = new THREE.Vector3();
     this.bobTimer = 0;
@@ -39,8 +45,8 @@ class Player{
 
     // setup physics
     let colliderDesc = g.PHYSICS.RAPIER.ColliderDesc.capsule(
+      (g.PLAYER.COLLIDER_HEIGHT)/ 2,
       g.PLAYER.COLLIDER_RADIUS,
-      1 / 2
     );
 
     // Or create the collider and attach it to a rigid-body.
@@ -66,19 +72,15 @@ class Player{
       // .setCanSleep(true)
       // // Whether or not CCD is enabled for this rigid-body.
       // // Default: false
-      .setTranslation(10, 10, 10 )
+      .setTranslation(...g.PLAYER.START_POSITION)
     );
     this.collider = g.PHYSICS.WORLD.createCollider(colliderDesc, this.rigidBody);
-    console.log(this.rigidBody);
+    
+
   }
 
-  get position() {
-    return this.group.position;
-  }
 
-  get rotation() {
-    return this.group.rotation;
-  }
+  ////// METHODS //////
 
   get forwardVelocity() {
     return this.velocity.clone().projectOnVector(this.forward);
@@ -92,25 +94,21 @@ class Player{
   }
 
   rotate(y) {
-    this.group.rotation.y += y;
+    this.rotation.y += y;
   }
 
   get forward() {
     // get forward vector from rotation
     const forward = new THREE.Vector3(0, 0, -1);
-    forward.applyEuler(this.group.rotation);
+    forward.applyEuler(this.rotation);
     forward.y = 0;
     forward.normalize();
     return forward;
   }
 
-  get up() {
-    return this.group.up;
-  }
-
   get right() {
     // TODO: check if this is correct
-    return this.group.up.clone().cross(this.forward);
+    return this.up.clone().cross(this.forward);
   }
 
   translate(x, y, z) {
@@ -122,7 +120,13 @@ class Player{
     g.PLAYER.OBJECT.rigidBody.setNextKinematicTranslation(
       new g.PHYSICS.RAPIER.Vector3(nextPos.x, nextPos.y, nextPos.z)
     );
-    g.PLAYER.OBJECT.group.position.copy(g.PLAYER.OBJECT.rigidBody.translation());
+    g.PLAYER.OBJECT.position.copy(g.PLAYER.OBJECT.rigidBody.translation());
+  }
+
+  get camPosition() {
+    const pos = this.collider.translation();
+    pos.y += g.PLAYER.COLLIDER_HEIGHT / 2;
+    return  pos;
   }
 }
 
@@ -130,14 +134,16 @@ export function initPlayer() {
   // init player as group object and parent capsule and stick to it
   g.PLAYER.OBJECT = new Player();
   // g.PLAYER.OBJECT.setTranslation(10, 30, 10);
-
 }
 
 function updateCamera() {
-  g.CAMERA.position.copy(g.PLAYER.OBJECT.collider.translation());
-  g.CAMERA.position.y += 1.5;
-  g.CAMERA.position.y += Math.sin(g.PLAYER.OBJECT.bobTimer * 5) * 0.1;
+  g.CAMERA.position.copy(g.PLAYER.OBJECT.camPosition);
+
+  
+  // g.CAMERA.position.y += Math.sin(g.PLAYER.OBJECT.bobTimer * 3) * 0.01;
   g.CAMERA.rotation.copy(g.PLAYER.OBJECT.rotation);
+  // move camera forward according to player's forward velocity
+  g.CAMERA.position.add(g.PLAYER.OBJECT.forwardVelocity.clone().multiplyScalar(0.5));
 }
 
 export function playerUpdate(deltaTime) {
@@ -176,7 +182,16 @@ export function setPlayerControlType(controlType) {
 
 function playerMove(deltaTime) {
   // add gravity
-  g.PLAYER.OBJECT.velocity.y += g.PHYSICS.GRAVITY * deltaTime;
+   if (
+     g.PLAYER.ON_FLOOR && g.PLAYER.WANT_JUMP
+   ) {
+     g.PLAYER.OBJECT.velocity.y = g.PLAYER.JUMP_SPEED * deltaTime;
+      g.PLAYER.WANT_JUMP = false;
+   }
+   else{
+     g.PLAYER.OBJECT.velocity.y = g.PHYSICS.GRAVITY * deltaTime;
+   }
+
 
   g.PHYSICS.CHARACTER_CONTROLLER.computeColliderMovement(
     g.PLAYER.OBJECT.collider, // The collider we would like to move.
@@ -281,13 +296,16 @@ function detectControls(deltaTime) {
   //   Math.min(Math.PI / 2, g.CAMERA.rotation.x)
   // );
 
-  if (
-    g.PLAYER.ON_FLOOR &&
-    g.PLAYER.JUMP_COOLDOWN_TIMER.getElapsedTime() > g.PLAYER.JUMP_COOLDOWN
-  ) {
-    if (g.KEY_STATES["Space"]) {
-      g.PLAYER.OBJECT.velocity.y += g.PLAYER.JUMP_SPEED * deltaTime;
-      g.PLAYER.JUMP_COOLDOWN_TIMER.start();
-    }
-  }
+
+  //  if (
+  //    g.KEY_STATES["Space"] &&
+  //    g.PLAYER.JUMP_COOLDOWN_TIMER.getElapsedTime() > g.PLAYER.JUMP_COOLDOWN
+  //  ) {
+  //    g.PLAYER.WANT_JUMP = true;
+  //    g.PLAYER.JUMP_COOLDOWN_TIMER.start();
+
+  //   }
+
+    
+   
 }
