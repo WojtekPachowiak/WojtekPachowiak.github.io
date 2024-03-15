@@ -12,7 +12,7 @@ export default defineConfig({
         main: resolve(__dirname, "index.html"),
         about: resolve(__dirname, "about.html"),
         art: resolve(__dirname, "art.html"),
-        horror: resolve(__dirname, "gramophone.html"),
+        contact: resolve(__dirname, "contact/contact.html"),
         sound: resolve(__dirname, "music.html"),
         diary: resolve(__dirname, "review.html"),
         camera_tracking: resolve(__dirname, "camera_tracking.html"),

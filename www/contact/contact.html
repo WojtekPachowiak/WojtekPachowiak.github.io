@@ -6,16 +6,42 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="icon" type="image/x-icon" href="resources/icons/asuka.ico">
-    <link rel="stylesheet" href="index.css" />
+    <link rel="stylesheet" href="../index.css" />
 
-    <link rel="stylesheet" href="gramophone.css">
+    <!-- <link rel="stylesheet" href="gramophone.css"> -->
    
 </head>
 
 <body style="margin:0" class="overflow-hidden">
-    <script src="gramophone.js" type="module"></script>
+    <!-- <script src="gramophone.js" type="module"></script> -->
 
+    <script type="module">
+        import backgroundShader from "./background.glsl?raw";
 
+        import {initBackground} from  "../shader_background.js"
+        const canvas = document.getElementById("background");
+        initBackground(backgroundShader,canvas);
+    </script>
+
+    <canvas id="background" class="fixed top-0 left-0 w-screen h-screen z-0 "></canvas> 
+<!-- blur-[1px] scale-[1.1] -->
+
+    <!-- black rect at the center with text inside-->
+    <div class="fixed top-0 left-0 w-screen h-screen  z-50 flex items-center justify-center">
+        <div class="bg-black bg-opacity-100 p-5 text-white font-mono border-1 border border-white">
+        <div class="flex flex-col items-center justify-center space-y-2">
+
+            <p >wojtekpaszo at gmail com</p>
+            <p >
+                <a href="https://www.github.com/WojtekPachowiak" target="_blank" class="underline ">github.com/WojtekPachowiak</a>
+            </p>
+            <p >
+                <a href="https://www.linkedin.com/in/wojciech-pachowiak" target="_blank" class="underline">linkedin.com/in/wojciech-pachowiak</a>
+            </p>
+        </div>
+        </div>
+    </div>  
+<!-- 
         <img id="my_face" style="-webkit-tap-highlight-color: transparent;" src="resources/image/myface/my_face_closed.jpg"
             class="face_gramophone"></img>
         <div class="arrow_nose_bg">
@@ -37,7 +63,7 @@
                 </ul>
                
             </div>
-        </div >
+        </div > -->
         
     
         
