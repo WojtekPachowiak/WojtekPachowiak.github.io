@@ -153,7 +153,7 @@ export function playerUpdate(deltaTime) {
 
   playerMove(deltaTime);
   // playerCollisions();
-  // footstep();
+  footstep();
   bob(deltaTime);
 
 
@@ -241,20 +241,24 @@ function bob(deltaTime) {
 }
 
 function footstep() {
-  if (g.PLAYER.ON_FLOOR) {
-    projectFootstepDecal(
-      g.PLAYER.OBJECT.position,
-      g.PLAYER.OBJECT.up.clone().multiplyScalar(-1)
-    );
-  }
+  // if (g.PLAYER.ON_FLOOR) {
 
-  if (g.PLAYER.OBJECT.velocity.length() > 1 && g.PLAYER.ON_FLOOR) {
+  // }
+
+  // and not playing audio already
+  if (
+    g.PLAYER.OBJECT.forwardVelocity.length() > 0 &&
+    g.PLAYER.ON_FLOOR &&
+    g.SOUNDS.FOOTSTEP.paused
+  ) {
     // if moved, then play footstep sound
     g.SOUNDS.FOOTSTEP.play();
-  } else {
-    g.SOUNDS.FOOTSTEP.pause();
-    g.SOUNDS.FOOTSTEP.currentTime = 0;
-  }
+      projectFootstepDecal(
+        g.PLAYER.OBJECT.position,
+        g.PLAYER.OBJECT.up.clone().multiplyScalar(-1),
+        g.PLAYER.OBJECT.rotation
+      );
+  } 
 }
 
 function detectControls(deltaTime) {

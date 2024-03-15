@@ -10,7 +10,7 @@ export function initMaterials() {
 		// specular: 0x000000,
 		// shininess: 0,
         
-	});
+	}).clone();
 
 
 	// g.MATERIALS.PS1.transparent = true;
@@ -224,4 +224,88 @@ export function initMaterials() {
 	};
 
 
+}
+
+export function createPS1Material() {
+		// modify mesh phong material's vertex shader with onbeforecompile
+	const material = new THREE.MeshPhongMaterial({
+		color: 0xffffff,
+		dithering: true,
+		name: "PS1	",
+		// specular: 0x000000,
+		// shininess: 0,
+        
+	}).clone();
+
+	
+	// material.transparent = true;
+	// material.opacity = 0.5;
+	material.onBeforeCompile = (shader) => {
+		material.userData.shader = shader;
+		console.log("onBeforeCompile");
+		console.log(shader);
+
+		// define custom uniform "uResolution" for the shader
+		shader.uniforms.uResolution = { value: g.SCREEN.RESOLUTION };
+		shader.uniforms.uVertexJitterStrength = { value: 0.5 };
+
+		// vertex snapping and affine texture mapping
+		shader.vertexShader = shader.vertexShader.replace(
+			"void main() {",
+			`
+                      uniform vec2 uResolution;
+                      uniform float uVertexJitterStrength;
+                      varying vec2 vUv;
+                      varying float vW;
+  
+                      void main() {
+                      `
+		);
+		shader.vertexShader = shader.vertexShader.replace(
+			"#include <project_vertex>",
+			`
+                      
+                     vec4 mvPosition = vec4( transformed, 1.0 );
+      
+                      #ifdef USE_INSTANCING
+      
+                          mvPosition = instanceMatrix * mvPosition;
+      
+                      #endif
+      
+                      mvPosition = modelViewMatrix * mvPosition;
+                      
+                      // vertex snapping
+                      vec4 _mypos = projectionMatrix * mvPosition;
+                      vec2 _myres = uResolution * uVertexJitterStrength;
+                      _mypos.xy = floor(_myres * _mypos.xy / _mypos.w) / _myres * _mypos.w;
+                      gl_Position = _mypos;
+                      
+                      // affine texture mapping
+                      vUv = uv * gl_Position.w;
+                      vW = gl_Position.w;
+                      `
+		);
+
+		// affine texture mapping
+		shader.fragmentShader = shader.fragmentShader.replace(
+			"void main() {",
+			`
+                      varying vec2 vUv;
+                      varying float vW;
+                      void main() {
+                      `
+		);
+		shader.fragmentShader = shader.fragmentShader.replace(
+			"#include <map_fragment>",
+			`
+                      #ifdef USE_MAP
+                        diffuseColor *= texture2D( map, vUv / vW);
+  
+                      #endif
+                      `
+		);
+	};
+
+	return material;
 }

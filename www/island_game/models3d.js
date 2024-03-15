@@ -1,7 +1,46 @@
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { g } from "./globals.js";
 import * as THREE from "three";
+import {createPS1Material} from "./materials.js";
 
+
+
+function processMesh(mesh){
+  mesh.layers.set(g.LAYERS.DEFAULT);
+
+  // console.log(mesh.position);
+  // console.log(mesh.rotation);
+
+  if (mesh.name === "land") {
+    g.OBJECT_GROUPS.DECALABLES.push(mesh);
+  }
+  if (mesh.name !== "water") {
+    g.OBJECT_GROUPS.COLLIDABLES.push(mesh);
+  }
+  if (mesh.name === "player") {
+    g.OBJECT_GROUPS.INTERACTABLES.push(mesh);
+  }
+
+  // if it has a texture, then set it on the material
+  let map;
+  if (mesh.material.map) {
+    // console.log(mesh.name, "has", mesh.material.map);
+    map = mesh.material.map.clone();
+    // map.minFilter = THREE.NearestFilter;
+    // map.magFilter = THREE.NearestFilter;
+    // color space
+    map.colorSpace = THREE.LinearSRGBColorSpace;
+    const mat = createPS1Material();
+    mat.map = map;
+    map.minFilter = THREE.NearestFilter;
+    map.magFilter = THREE.NearestFilter;
+    // g.MATERIALS.PS1.map = map;
+    mesh.material = mat;
+    mesh.material.map = map;
+  } else {
+    mesh.material = g.MATERIALS.PS1;
+  }
+}
 
 export function init3DModels() {
   // 3d models
@@ -17,73 +56,27 @@ export function init3DModels() {
     function (gltf) {
       gltf.scene.traverse(function (child) {
         // console.log(child.name);
+        console.log(child);
+
         if (child.isMesh) {
-          child.layers.set(g.LAYERS.DEFAULT);
+          processMesh(child);
+        }
 
-          if (child.name === "land") {
-            g.OBJECT_GROUPS.DECALABLES.push(child);
-          }
-          if (child.name !== "water") {
-            g.OBJECT_GROUPS.COLLIDABLES.push(child);
-          }
-          if (child.name === "player") {
-            g.OBJECT_GROUPS.INTERACTABLES.push(child);
-          }
-
-          // if it has a texture, then set it on the material
-          let map;
-          if (child.material.map) {
-            console.log(child.name, "has", child.material.map);
-            map = child.material.map.clone();
-            map.minFilter = THREE.NearestFilter;
-            map.magFilter = THREE.NearestFilter;
-            // color space
-            map.colorSpace = THREE.LinearSRGBColorSpace;
-            const mat = g.MATERIALS.PS1.clone();
-            mat.map = map;
-            map.minFilter = THREE.NearestFilter;
-            map.magFilter = THREE.NearestFilter;
-            g.MATERIALS.PS1.map = map;
-            child.material = g.MATERIALS.PS1;
-            child.material.map = map;
-          } else {
-            child.material = g.MATERIALS.PS1;
-          }
-
+        if (child.isGroup) {
+          child.children.forEach((c) => {
+            // 
+            processMesh(c);
+          });
         }
       });
 
       g.SCENE.add(gltf.scene);
-
-      // iterate over children and add to physical world
-      for (let obj of g.OBJECT_GROUPS.COLLIDABLES) {
-          const geometry = obj.geometry;
-          let colliderDesc = g.PHYSICS.RAPIER.ColliderDesc.trimesh(
-            geometry.attributes.position.array,
-            geometry.index.array
-          );
-          g.PHYSICS.WORLD.createCollider(colliderDesc);
-          const rigidBody = g.PHYSICS.WORLD.createRigidBody(
-            g.PHYSICS.RAPIER.RigidBodyDesc.fixed()
-          );
-          g.PHYSICS.WORLD.createCollider(colliderDesc, rigidBody);
-
-          // translate, scale and rotate the collider to match the object
-          rigidBody.setTranslation({x: obj.position.x, y: obj.position.y, z: obj.position.z}, true);
-          rigidBody.setRotation({w: obj.quaternion.w, x: obj.quaternion.x, y: obj.quaternion.y, z: obj.quaternion.z}, true);
-
-          // save reference
-          obj.userData.rigidBody = rigidBody;
-      }
-      
     },
-    // called while loading is progressing
     function (xhr) {
       console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
     },
-    // called when loading has errors
     function (error) {
-      console.log("An error happened:", error);
+      console.log("An error happened while loading:", error);
     }
   );
 }

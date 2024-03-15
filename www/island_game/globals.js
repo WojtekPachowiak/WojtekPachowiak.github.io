@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import soundFootstep from "./assets/footsteps_sand.mp3";
+import soundFootstep from "./assets/footsteps_sand_single.mp3";
 
 
 const textureLoader = new THREE.TextureLoader();

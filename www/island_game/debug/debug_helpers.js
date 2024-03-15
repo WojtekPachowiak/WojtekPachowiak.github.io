@@ -54,6 +54,9 @@ export function buildWireframes(){
       line.userData.isDebug = true;
       line.parent = child;
 
+      console.log(child.name);
+      console.log(child.position);
+      console.log(child.rotation);
       // translate and rotate the wireframe to match the object
       line.rotation.copy(child.rotation);
       line.position.copy(child.position);
