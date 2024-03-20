@@ -49,11 +49,11 @@
       </div> -->
 
       <!-- GRID //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////// -->
-      <div class="columns-1 sm:columns-2xs gap-2 space-y-2 m-4  ">
+      <div class="columns-1 sm:columns-2xs gap-2 space-y-2 m-2  ">
         <!-- cards -->
         <div
           id="card"
-          class=" bg-black bg-opacity-30	shadow   break-inside-avoid-column rounded-lg   hover:-translate-y-1 hover:shadow-lg "
+          class=" bg-black bg-opacity-30	shadow  border-1 border border-black border-opacity-10 break-inside-avoid-column rounded-lg   hover:-translate-y-1 hover:shadow-lg "
  
         >
         <div class="overflow-hidden rounded-t-lg " >
@@ -70,7 +70,7 @@
               >
                 title
               </h5>
-            <p id="desc" class="mb-3 text-gray-300 text-opacity-70">
+            <p id="desc" class="mb-3 text-gray-300 ">
               
             </p>
             <!-- align right -->
@@ -84,6 +84,7 @@
 
       <script>
         let s = [
+          ["https://miro.medium.com/v2/resize:fit:800/1*BK5FChSYlexNgo2ky_GGZQ.jpeg", "Arx Fatalis (2002)", 2403, ""],
           ["https://assetsio.reedpopcdn.com/450-fs7tx5.jpg?width=1600&height=900&fit=crop&quality=100&format=png&enable=upscale&auto=webp", "Metal Gear Rising: Revengeance (2013)", 2402],
           ["https://www.metalgearinformer.com/wp-content/uploads/2020/06/Metal-Gear-Solid-Peace-Walker-Kaz-and-Snake.jpg", "Metal Gear Solid: Peace Walker (2010)", 2402, "woohoo"],
           ["https://preview.redd.it/slice-of-life-distilled-to-its-purest-essence-yokohama-v0-ztratc35wswa1.png?width=632&format=png&auto=webp&s=7d4db0fe98b399f17c62d594e51997cbda8cd58c", "Yokohama Kaidashi Kikō OVA (1998)", 2402, "aaaaaaaaaa"],
@@ -109,11 +110,21 @@
         // remove the original card
         document.getElementById("card").remove();
 
+        
+        // hue rotate background color
+        document.addEventListener("click", (event) => {
+          let background = document.getElementById("background");
+
+          // randomize brightness and saturation
+          background.style.filter = `hue-rotate(${parseInt(Math.random() * 360)}deg) saturate(${Math.random()*1})`;
+          
+        });
+
       </script>
 
 
-    <div
-    class="fixed top-0 left-0  w-full h-full bg-cover bg-center bg-gradient-to-b from-indigo-500 from-10% via-sky-500 via-30% to-emerald-500 to-90% brightness-[0.3] hue-rotate-[140deg]	"
+    <div id="background"
+    class="fixed top-0 left-0  w-full h-full bg-cover bg-center bg-gradient-to-b from-indigo-500 from-0%  to-emerald-500 to-100% brightness-[0.3] hue-rotate-[140deg]	"
     style="z-index: -1000;"
     ></div>
     

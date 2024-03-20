@@ -20,16 +20,26 @@
 
         import {initBackground} from  "../shader_background.js"
         const canvas = document.getElementById("background");
+        // on click randomize hue rotate of background
+        document.addEventListener("click", (event) => {
+            console.log(event.target.tagName);
+            // if click on text then ignore
+            if (event.target.tagName !== "BODY") return;
+
+            console.log("click");
+            canvas.style.filter = `hue-rotate(${parseInt(Math.random() * 360)}deg)`;
+        });
         initBackground(backgroundShader,canvas);
+
     </script>
 
-    <canvas id="background" class="fixed top-0 left-0 w-screen h-screen z-0 "></canvas> 
+    <canvas id="background" class="fixed top-0 left-0 w-screen h-screen z-0" style="filter: hue-rotate(323deg);"></canvas> 
 <!-- blur-[1px] scale-[1.1] -->
 
     <!-- black rect at the center with text inside-->
-    <div class="fixed top-0 left-0 w-screen h-screen  z-50 flex items-center justify-center">
-        <div class="bg-black bg-opacity-100 p-5 text-white font-mono border-1 border border-white">
-        <div class="flex flex-col items-center justify-center space-y-2">
+    <div class="fixed top-0 left-0 w-screen h-screen  z-50 flex items-center justify-center pointer-events-none	">
+        <div class="bg-white bg-opacity-100 p-5 text-black font-mono border-1 border border-black pointer-events-none	 ">
+        <div class="flex flex-col items-center justify-center space-y-2 pointer-events-auto">
 
             <p >wojtekpaszo at gmail com</p>
             <p >

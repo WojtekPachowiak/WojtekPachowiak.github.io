@@ -4,7 +4,7 @@ import WebGL from "three/addons/capabilities/WebGL.js";
 
 let dpi = 1;
 
-export function initBackground(shader, canvas) {
+export function initBackground(shader, canvas, mouseDamp=0.1) {
   // if mobile device
 
   if (WebGL.isWebGL2Available() === false) {
@@ -25,6 +25,9 @@ export function initBackground(shader, canvas) {
 
   const aspect = window.innerWidth / window.innerHeight;
 
+  const mouse = new THREE.Vector2();
+const newMouse = new THREE.Vector2();
+
   // scene
   const scene = new THREE.Scene();
   // shader background
@@ -32,6 +35,7 @@ export function initBackground(shader, canvas) {
   const plane_material = new THREE.ShaderMaterial({
     uniforms: {
       uTime: { value: 1 },
+      uMouse: { value: mouse },
       uResolution: {
         value: new THREE.Vector2(
           window.innerWidth * dpi,
@@ -60,11 +64,18 @@ export function initBackground(shader, canvas) {
     requestAnimationFrame(animate);
 
     plane_material.uniforms.uTime.value = performance.now() / 1000;
-
+    mouse.lerp(newMouse, mouseDamp);
+    plane_material.uniforms.uMouse.value = mouse;
     renderer.clear();
     renderer.render(scene, camera);
   }
   animate();
+
+  //mouse move
+    window.addEventListener("mousemove", (event) => {
+        newMouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        newMouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+    });
 
   // onresize
   function updateViewport() {
@@ -76,6 +87,8 @@ export function initBackground(shader, canvas) {
       window.innerWidth * dpi,
       window.innerHeight * dpi
     );
+    // mouse
+    plane_material.uniforms.uMouse.value = mouse;   
   }
   window.onresize = updateViewport;
 }

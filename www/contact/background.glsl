@@ -1,6 +1,7 @@
 vec2 pos;
 uniform float uTime;
 uniform vec2 uResolution;
+uniform vec2 uMouse;
 
 #define     PI 3.14159265358979323846
 
@@ -85,68 +86,114 @@ vec2 rotate(vec2 v, float a) {
     return m * v;
 }
 
+float sin01(float x) {
+    return sin(x) * 0.5 + 0.5;
+}
+
+vec2 mouse01() {
+    // from -1,1 to 0,1
+    return uMouse * 0.5 + 0.5;
+}
+
+
+vec3 pestki(float angle, vec2 pos, float distance, float time, vec3 col1, vec3 col2){
+    vec3 col = vec3(0.0);
+    col = vec3(angle);
+
+    float petals_num = 10.0;
+    col = mod(col * petals_num  + time, 1.0);
+
+    float sharpen = 1.;
+    float offset = 0.;
+    float disappearing = 10.0;  
+    col = smoothstep(0.0 + offset, sharpen + offset, col) * smoothstep(sharpen + offset, 0.0 + offset, col) *disappearing;
+
+    // inner and outer petals shape
+    float e = 0.8;
+    float pestka_length = 1.;
+    col = col * smoothstep(0.0, e, distance  );
+    col = col * smoothstep(1.0, e, distance * pestka_length);
+
+    // discretization
+    float stepval = sin01(time) *0.2 + .2;
+    float o = 0.01;
+    col = smoothstep(stepval-o,stepval, col );
+
+    // posterize
+    // float num_levels = 3.;
+    // num_levels = num_levels / 2.;
+    // col = floor(col * num_levels) / num_levels;
+
+    // assign two colors
+    col = mix(col1, col2, col);
+
+
+    return col;
+}
+
+
 void main(void) {
 
 
     vec2 res = uResolution;
     vec2 pos = gl_FragCoord.xy / res.xy;
+    float aspect = res.x / res.y;
     // center
-    pos = pos * 2.0 - 1.0;
+    // pos = pos * 2.0 - 2.0;
     // fix stretching
-    pos.x *= res.x / res.y;
-    // shift
-    // pos += vec2(4.0, 5.0);
+    pos.x *= aspect;
+    
+    float mouseStrength = 0.2;
+    pos += (uMouse * mouseStrength - vec2(0.5,0.2) * aspect/2.) ;
+    // put in the center bottom (arbitrary, trial and error)
+    pos += vec2(-1.0, 0.0) ;
 
+
+    // mirror screen diagonally (the values are arbitrary, trial and error)
+    // if (pos.x > aspect/2. * (1.-pos.y+0.5)) {
+    //     // pos = pos * 2.0 ;
+    //     pos.x -= 2.0;
+    //     pos.y -= 1.0;
+    // }
     // distance from current center
     float distance = length(pos);
-    
+
     // time
     float time = uTime;
     time *= 0.5;
-    // time *= fbm_noise(pos, 1000., 5);
-    // time *= 1.- distance;
+    // time *= fbm_noise(pos, 300., 5);
+    // time *= 1.- length(pos+0.4);
     time += 10.0;
 
+
+
     // zoom
-    // float zoom = 1.0 * sin(time)*330. + 1.0;
-    // pos *= zoom;
 
     vec3 col = vec3(0.0);
 
     float angle = (atan(pos.x, pos.y) + PI) / (2.0 * PI);
-    col = vec3(angle);
 
-    float petals_num = 10.0;
-    pos *= fbm_noise(pos, 100., 40);
-    col = mod(col * petals_num + time, 1.0);   
     
-    
-    float sharpen = 1.;
-    float offset = 0.;
-    col = smoothstep(0.0 + offset, sharpen+ offset, col) * smoothstep(sharpen+offset, 0.0+offset, col) *10.0;
-
-
-    // inner and outer petals shape
-    float e = 0.8;
-    col = col * smoothstep(0.0, e, distance);
-    col = col * smoothstep(1.0, e *distance, distance);
-
-    float stepval = sin(time) / 3. + 0.5;
-    col = smoothstep(stepval-0.01,stepval+0.01, col);
-    
-    // assign two colors
     // 5356FF
     vec3 col1 = vec3(83.0, 86.0, 255.0) / 255.0;
     // FDA403
-    vec3 col2 =  vec3(253.0, 164.0, 3.0) / 255.0;
-    col = mix(col1, col2, col);
+    vec3 col2 = vec3(253.0, 164.0, 3.0) / 255.0;
+    vec3 colf1 = pestki(angle, pos, distance + sin(time)*0.01, time, col1, col2);
 
+    // same but other colors, offset distance and time and angle
+    // 67C6E3
+    col1 = vec3(103.0, 198.0, 227.0) / 255.0;
+    // 891652
+    col2 = vec3(137.0, 22.0, 82.0) / 255.0;
+    vec3 colf2 = pestki(angle , pos, distance * 1.05, time +0.1, col1, col2);
+
+    col = mix(colf1, colf2, mouse01().y *0.3 +0.3);
 
     // vignette
-    float vig = 1.0 - distance;
-    vig = smoothstep(-1.0, 0., vig);
-    float vig_strength = 0.5;
-    col *= 1.-((1.-vig) * vig_strength);
+    // float vig = 1.0 - distance;
+    // vig = smoothstep(-1.0, 0., vig);
+    // float vig_strength = 0.5;
+    // col *= 1.-((1.-vig) * vig_strength);
     // col = vec3(vig);
 
 
