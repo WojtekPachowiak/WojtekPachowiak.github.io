@@ -1,5 +1,5 @@
-import { initBackground } from "../../resources/js/shader_background.js";
-import backgroundShaderFrag from "./mouse_fun_frag.glsl?raw";
+// import { initBackground } from "/www/resources/js/shader_background.js";
+// import backgroundShaderFrag from "./mouse_fun_frag.glsl?raw";
 import { Vector2 } from "three";
 const CANVAS = document.getElementById("2dcanvas");
 

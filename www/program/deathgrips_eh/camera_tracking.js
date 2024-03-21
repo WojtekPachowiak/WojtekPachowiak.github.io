@@ -8,8 +8,8 @@ import {
 } from "./camera_tracking_mediapipe.js";
 import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 
-import deathgripseh_frag from "./resources/shaders/deathgripseh_frag.glsl?raw";
-import deathgripseh_vert from "./resources/shaders/deathgripseh_vert.glsl?raw";
+import deathgripseh_frag from "/www/resources/shaders/deathgripseh_frag.glsl?raw";
+import deathgripseh_vert from "/www/resources/shaders/deathgripseh_vert.glsl?raw";
 
 
 let camera;

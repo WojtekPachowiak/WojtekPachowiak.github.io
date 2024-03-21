@@ -1,0 +1,75 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Wojtek (Wojciech) Pachowiak's own webpage!"
+    />
+    <title>Wojtek Pachowiak</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0 user-scalable=0"
+    />
+    <link rel="icon" type="image/x-icon" href="../resources/icons/asuka.ico" />
+    <link rel="stylesheet" href="../index.css" />
+   
+</head>
+
+<body style="margin:0" class="overflow-hidden">
+
+    <div class="fixed z-50 text-white font-mono m-10 p-2 bg-black bg-opacity-30  border border-black border-1">
+        <h1 class="text-lg text-center"> programming in the backrooms</h1>
+        <h1 class=" text-center text-sm"> (use on desktop) </h1>
+
+        <ul id="list" class="list-disc list-inside space-y-1 pt-2"> 
+            
+        </ul>
+    </div>
+
+    <script>
+        const list = document.getElementById("list");
+        const lis = [
+            ["Silent Hill 1 clone", "island_game/index.html", "WIP"],
+            ["Spritesheet cutter", "spritesheet_cutter/index.html", "WIP"],
+            ["Gradient ball", "gradient_ball/index.html"],
+            ["Deathgrips Eh vfx", "deathgrips_eh/index.html", "WIP"],
+            ["Mouse distortion", "mouse_distortion/index.html", "WIP"],
+
+        ];
+        lis.forEach((item) => {
+            const ele = document.createElement("li");
+            const a = document.createElement("a");
+            a.href = item[1];
+
+           
+            a.target = "_blank";
+            a.classList.add("underline", "underline-offset-4", "decoration-sky-500", "hover:decoration-sky-300", "hover:underline-offset-2");
+            a.textContent = item[0];
+            ele.appendChild(a);
+            list.appendChild(ele);
+
+             // if WIP, then add a blinking "(WIP)" text
+            if (item[2] === "WIP") {
+                const span = document.createElement("span");
+                span.textContent = " (WIP)";
+                span.classList.add("text-red-500");
+                setInterval(() => {
+                    span.classList.toggle("opacity-0");
+                }, 500);
+
+                ele.appendChild(span);
+            }
+
+        });
+
+    </script>
+
+    <p class="fixed bottom-0 left-0  m-5  text-white opacity-10	select-none pointer-events-none	z-50">photo source: i dont know</p>
+
+    <img src="./evangelion rei backrooms.jpg" class="fixed w-screen h-screen"></img>
+
+
+</body>
+
+</html>
