@@ -52,9 +52,9 @@ button {
 }
 #playlist>ol>li,
 #playlist>ol>li>button {
-
+  padding-bottom: 3px;
   /* size of font */
-  font-size: 1.2em;
+  /* font-size: 1.2em; */
 
 }
 

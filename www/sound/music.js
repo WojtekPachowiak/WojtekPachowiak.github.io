@@ -1,19 +1,19 @@
 import * as THREE from "three";
-import backgroundShader from "./resources/shaders/music_background.glsl?raw";
+import backgroundShader from "../resources/shaders/music_background.glsl?raw";
 import WebGL from "three/addons/capabilities/WebGL.js";
 
 // buttons
-import volume from "./resources/icons/sound-player-timeline/volume.svg";
-import nosound from "./resources/icons/sound-player-timeline/nosound.svg";
-import play from "./resources/icons/sound-player-timeline/play.svg";
-import pause from "./resources/icons/sound-player-timeline/pause.svg";
+import volume from "../resources/icons/sound-player-timeline/volume.svg";
+import nosound from "../resources/icons/sound-player-timeline/nosound.svg";
+import play from "../resources/icons/sound-player-timeline/play.svg";
+import pause from "../resources/icons/sound-player-timeline/pause.svg";
 
 
 // tracks
-import sirene2 from "./resources/sound/sirene2.mp3";
-import grimy_sheet_gonges from "./resources/sound/grimy_sheet_gonges.mp3";
-import nights_kurafiia from "./resources/sound/nights_kurafiia.mp3";
-import turetibrek from "./resources/sound/turetibrek.mp3";
+import sirene2 from "../resources/sound/sirene2.mp3";
+import grimy_sheet_gonges from "../resources/sound/grimy_sheet_gonges.mp3";
+import nights_kurafiia from "../resources/sound/nights_kurafiia.mp3";
+import turetibrek from "../resources/sound/turetibrek.mp3";
 
 
 // if (matchMedia("(pointer:coarse)").matches) {
@@ -208,7 +208,7 @@ function initAudioPlayer(){
     ["nights_kurafiia", nights_kurafiia],
     ["grimy_sheet_gonges", grimy_sheet_gonges],
     ["sirene2", sirene2],
-  ]
+  ];
 
   // // push 60 copies of each track to the end of the array
   // for (let i = 0; i < 60; i++) {

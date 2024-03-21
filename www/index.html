@@ -1,112 +1,93 @@
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    
-    <meta name="description" content="Wojtek (Wojciech) Pachowiak's own webpage!">
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Wojtek (Wojciech) Pachowiak's own webpage!"
+    />
     <title>Wojtek Pachowiak</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=0" /> 
-
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0 user-scalable=0"
+    />
     <link rel="icon" type="image/x-icon" href="resources/icons/asuka.ico" />
-
     <link rel="stylesheet" href="index.css" />
-
-
   </head>
 
   <body class="overflow-hidden">
     <script src="index.js" type="module"></script>
 
 
-  
-    
-
-
-    <!-- <div class="lines"></div> -->
-    <!-- <div class="circle"></div> -->
-
-    <!-- transform: scale(1.5, 1) translateX(0.5em); -->
-    <!-- <div class="sm:fixed top-0 left-0 "> -->
-
-      <div class=" m-10 text-center sm:text-left  ">
-            <!--  mx-8 p-2 transform scale-x-150 origin-center my-12 -->
-            <ul id="menu-list" class="bg-black bg-opacity-60 w-auto inline-block  p-4 scale-x-150 origin-center sm:origin-left" style="box-shadow: 0px 0px 3px black;"> 
-              <li >
-                <a href="art.html">
-                  Image
-                </a>
-              </li>
-              <li>
-                <a href="music.html">
-                  Sound
-                </a>
-              </li>
-              <li>
-                <a href="diary.html">
-                  Diary
-                </a>
-              </li>
-              <li id="separator" class="my-2  border-t-0 bg-white opacity-50  h-0.5 scale-y-50"></li>              
-
-              <li>
-                <a href="camera_tracking.html">
-                  Camera
-                </a>
-              </li>
-
-              <li>
-                <a href="mouse/mouse.html">
-                  Mouse
-                </a>
-              </li>
-
-              <li>
-                <a href="island_game/index.html">
-                  PS1
-                </a>
-              </li>
-              <li>
-                <a href="spritesheet_cutter/index.html">
-                  Sprite
-                </a>
-              </li>
-              <!-- separator -->
-              <!-- <div class="lines"></div> -->
-              <li id="separator" class="my-2  border-t-0 bg-white opacity-50  h-0.5 scale-y-50"></li>              
-              <li>
-                <a href="about.html">
-                  About
-                </a>
-              </li>
-              <li>
-                <a href="contact/contact.html">
-                  Contact
-                </a>
-              </li>
-            </ul>
-            </div>
-
+    <div class="m-10 text-center sm:text-left">
+      <ul
+        id="menu-list"
+        class="bg-black bg-opacity-60 w-auto inline-block p-4 scale-x-150 origin-center sm:origin-left"
+        style="box-shadow: 0px 0px 3px black"
+      >
+    </ul>
+    </div>
 
     <!-- </div> -->
-      
-      
+
     <script>
       // to each item in menu-list add tailwind classess
-      const menulist = document.querySelectorAll("#menu-list li")
-      console.log("menulist", menulist)
-      menulist.forEach((item) => {
-        if (item.id === "separator") {
-          return
-        }
-        item.classList.add( "text-white", "text-3xl","font-['Courier_New']", "opacity-70", "hover:opacity-100", "transition", "delay-0", "z-index-100")
-        // add style text-shadow: 1px 1px 2px pink on hover;
-        item.addEventListener("mouseover", (e) => {
-          e.target.style.textShadow = "0px 0px 3px white"
-        });
-        item.addEventListener("mouseout", (e) => {
-          e.target.style.textShadow = "none"
-        });
+      const menulist = document.getElementById("menu-list");
+
+      const lis = [
+        ["Image", "image/index.html"],
+        ["Sound", "sound/index.html"],
+        ["Program", "program/index.html"],
+        "separator",
+        // ["Camera", "camera_tracking.html"],
+        // ["Mouse", "mouse/mouse.html"],
+        // ["PS1", "island_game/index.html"],
+        // ["Sprite", "spritesheet_cutter/index.html"],
+        // "separator",
+        ["About", "about/index.html"],
+        ["Contact", "contact/index.html"],
+      ];
+
+      lis.forEach((item) => {
+        const ele = document.createElement("li");
+        if (item === "separator") {
+
+          ele.classList.add(
+            "my-2",
+            "border-t-0",
+            "bg-white",
+            "opacity-50",
+            "h-0.5",
+            "scale-y-50"
+          );
+          menulist.appendChild(ele);
+          return;
+        } 
+
+          ele.classList.add(
+            "text-white",
+            "text-3xl",
+            "font-['Courier_New']",
+            "opacity-70",
+            "hover:opacity-100",
+            "transition",
+            "delay-0",
+            "z-index-100"
+          );
+
+          // add bloom on hover
+          ele.addEventListener("mouseover", (e) => {
+            e.target.style.textShadow = "0px 0px 3px white";
+          });
+          ele.addEventListener("mouseout", (e) => {
+            e.target.style.textShadow = "none";
+          });
+
+          // add to the list
+          ele.innerHTML = `<a href="${item[1]}">${item[0]}</a>`;
+
+          // add to the list
+          menulist.appendChild(ele);
       });
     </script>
-
   </body>
 </html>

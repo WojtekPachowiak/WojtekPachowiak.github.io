@@ -1,40 +1,28 @@
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="icon" type="image/x-icon" href="resources/icons/asuka.ico">
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Wojtek (Wojciech) Pachowiak's own webpage!"
+    />
+    <title>Wojtek Pachowiak</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0 user-scalable=0"
+    />
+    <link rel="icon" type="image/x-icon" href="../resources/icons/asuka.ico" />
     <link rel="stylesheet" href="../index.css" />
-
     <!-- <link rel="stylesheet" href="gramophone.css"> -->
    
 </head>
 
 <body style="margin:0" class="overflow-hidden">
-    <!-- <script src="gramophone.js" type="module"></script> -->
+    <script src="index.js" type="module"></script>
 
-    <script type="module">
-        import backgroundShader from "./background.glsl?raw";
 
-        import {initBackground} from  "../shader_background.js"
-        const canvas = document.getElementById("background");
-        // on click randomize hue rotate of background
-        document.addEventListener("click", (event) => {
-            console.log(event.target.tagName);
-            // if click on text then ignore
-            if (event.target.tagName !== "BODY") return;
-
-            console.log("click");
-            canvas.style.filter = `hue-rotate(${parseInt(Math.random() * 360)}deg)`;
-        });
-        initBackground(backgroundShader,canvas);
-
-    </script>
-
+    <!-- shader background -->
     <canvas id="background" class="fixed top-0 left-0 w-screen h-screen z-0" style="filter: hue-rotate(323deg);"></canvas> 
-<!-- blur-[1px] scale-[1.1] -->
 
     <!-- black rect at the center with text inside-->
     <div class="fixed top-0 left-0 w-screen h-screen  z-50 flex items-center justify-center pointer-events-none	">
@@ -51,6 +39,10 @@
         </div>
         </div>
     </div>  
+
+
+
+
 <!-- 
         <img id="my_face" style="-webkit-tap-highlight-color: transparent;" src="resources/image/myface/my_face_closed.jpg"
             class="face_gramophone"></img>

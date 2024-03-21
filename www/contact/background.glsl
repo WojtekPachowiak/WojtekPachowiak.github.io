@@ -186,7 +186,7 @@ void main(void) {
     // 891652
     col2 = vec3(137.0, 22.0, 82.0) / 255.0;
     vec3 colf2 = pestki(angle , pos, distance * 1.05, time +0.1, col1, col2);
-
+    // col = colf2;
     col = mix(colf1, colf2, mouse01().y *0.3 +0.3);
 
     // vignette
