@@ -10,10 +10,10 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
-        // about: resolve(__dirname, "about/index.html"),
-        // image: resolve(__dirname, "image/index.html"),
-        // contact: resolve(__dirname, "contact/index.html"),
-        // sound: resolve(__dirname, "sound/index.html"),
+        about: resolve(__dirname, "about/index.html"),
+        image: resolve(__dirname, "image/index.html"),
+        contact: resolve(__dirname, "contact/index.html"),
+        sound: resolve(__dirname, "sound/index.html"),
         // diary: resolve(__dirname, "diary/index.html"),
         // program
         // camera_tracking: resolve(__dirname, "camera_tracking.html"),
