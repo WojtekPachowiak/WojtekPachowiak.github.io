@@ -16,7 +16,7 @@ export default defineConfig({
         sound: resolve(__dirname, "sound/index.html"),
         // diary: resolve(__dirname, "diary/index.html"),
         program: resolve(__dirname, "program/index.html"),
-        // program_spritesheet_cutter: resolve(__dirname, "program/spritesheet_cutter/index.html"),
+        program_spritesheet_cutter: resolve(__dirname, "program/spritesheet_cutter/index.html"),
         program_island_game: resolve(__dirname, "program/island_game/index.html"),
         // program_deathgrips_eh: resolve(__dirname, "program/deathgrips_eh/index.html"),
         // program_mouse_distortion: resolve(__dirname, "program/mouse_distortion/index.html"),

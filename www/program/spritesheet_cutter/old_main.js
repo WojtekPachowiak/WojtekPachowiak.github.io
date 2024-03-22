@@ -1,20 +1,17 @@
 import JSZip from "jszip";
 const globals = {
+  SPRITESHEET_WIDTH: null,
+  SPRITESHEET_HEIGHT: null,
   ZOOM_SPEED: 1.1,
-  ZOOM_LEVEL: 1,
+  SPRITESHEET_DRAG_OFFSET: { x: 0, y: 0 },
+  SPRITESHEET_LEFTTOP_OFFSET: { x: 0, y: 0 },
   DOMINANT_COLOR: null,
   MOUSE_POS: { x: 0, y: 0 },
   BOUDING_BOXES: [],
-  IMAGE_MATRIX: null,
-  IMAGE_NAME: null,
 };
-
-window.globals = globals;
-
 
 // on file drop event or select file hide "spritesheetCanvasBeforeUpload" and show "spritesheetCanvasAfterUpload"\
 const LEFT_PANE = document.getElementById("leftPane");
-
 const CANVAS_ELE_BEFORE_UPLOAD = document.getElementById(
   "spritesheetCanvasBeforeUpload"
 );
@@ -27,7 +24,6 @@ const CTX = CANVAS_ELE.getContext("2d", {
   antialias: false,
   willReadFrequently: true,
 });
-
 
 function getDominantColor(imageMatrix) {
   const colorCounts = {};
@@ -56,62 +52,39 @@ function getDominantColor(imageMatrix) {
   return dominantColor;
 }
 
-
 function readFile(file) {
-
-  // if file is not an image  throw an error
-  if (!file.type.startsWith("image/")) {
-    alert("File is not an image");
-    throw new Error("File is not an image");
-  }
-  
-
   const reader = new FileReader();
   reader.onload = (e) => {
     const img = new Image();
     img.onload = () => {
       CANVAS_ELE.width = img.width;
       CANVAS_ELE.height = img.height;
-
-      // get the ration between LEFT_PANE width/height and img width/height
-      const ratio = Math.min(
-        LEFT_PANE.offsetWidth / img.width,
-        LEFT_PANE.offsetHeight / img.height
-      );
-      globals.ZOOM_LEVEL = ratio *0.9;
-      const transform = `scale(${globals.ZOOM_LEVEL})`;
-      CANVAS_ELE.style.transform = transform;
+      globals.SPRITESHEET_WIDTH = img.width;
+      globals.SPRITESHEET_HEIGHT = img.height;
+      globals.SPRITESHEET_LEFTTOP_OFFSET = {
+        x: img.width / 2,
+        y: img.height / 2,
+      };
+      // remove styles from previous image
+      CANVAS_ELE.style.width = ``;
+      CANVAS_ELE.style.left = ``;
+      CANVAS_ELE.style.top = ``;
 
       CTX.drawImage(img, 0, 0);
-      
-      // //draw red on center
-      // CTX.strokeStyle = "red";
-      // CTX.strokeRect(img.width / 2 - 1, img.height / 2 - 1, 2, 2);
+      //draw red on center
+      CTX.strokeStyle = "red";
+      CTX.strokeRect(img.width / 2 - 1, img.height / 2 - 1, 2, 2);
 
-      globals.IMAGE_NAME = file.name.split(".")[0];
-
-      globals.IMAGE_MATRIX = CTX.getImageData(0, 0, img.width, img.height);
-
-      globals.DOMINANT_COLOR = getDominantColor(globals.IMAGE_MATRIX);
+      globals.DOMINANT_COLOR = getDominantColor(
+        CTX.getImageData(0, 0, img.width, img.height)
+      );
       // update color picker
       document.getElementById("colorPicker").value = globals.DOMINANT_COLOR;
     };
     img.src = e.target.result;
   };
   reader.readAsDataURL(file);
-  setButtonsActive(true);
-  
-
 }
-
-function setButtonsActive(active) {
-  const buttons = document.querySelectorAll("button");
-  console.log("buttons", buttons);
-  buttons.forEach((button) => {
-    button.disabled = !active;
-  });
-}
-
 
 FILE_PICKER.addEventListener("change", (e) => {
   const file = e.target.files[0];
@@ -133,35 +106,101 @@ CANVAS_ELE.addEventListener("drop", (e) => {
   CANVAS_ELE_AFTER_UPLOAD.classList.remove("hidden");
 });
 
+//   on mouse drag event move the canvas
+let isDragging = false;
+let lastX = 0;
+let lastY = 0;
+CANVAS_ELE.addEventListener("mousedown", (e) => {
+  isDragging = true;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  globals.SPRITESHEET_DRAG_OFFSET = {
+    x: CANVAS_ELE.style.width / 2,
+    y: CANVAS_ELE.style.height / 2,
+  };
+});
 
+document.addEventListener("mouseup", (e) => {
+  isDragging = false;
+});
+
+document.addEventListener("mousemove", (e) => {
+  if (isDragging) {
+    const dx = e.clientX - lastX;
+    const dy = e.clientY - lastY;
+    lastX = e.clientX;
+    lastY = e.clientY;
+    // edit tailwind translate styleclass
+    // spritesheetCanvas.className = `translate-x-${dx} translate-y-${dy}`;
+    globals.SPRITESHEET_LEFTTOP_OFFSET = { x: e.clientX, y: e.clientY };
+    CANVAS_ELE.style.left = `${
+      globals.SPRITESHEET_LEFTTOP_OFFSET.x - globals.SPRITESHEET_WIDTH / 2
+    }px`;
+    CANVAS_ELE.style.top = `${
+      globals.SPRITESHEET_LEFTTOP_OFFSET.y - globals.SPRITESHEET_HEIGHT / 2
+    }px`;
+  }
+});
+
+//get mouse pos
+document.addEventListener("mousemove", (e) => {
+  globals.MOUSE_POS = { x: e.clientX, y: e.clientY };
+  //console.log("mouse",globals.MOUSE_POS);
+});
 
 function zoomInView() {
-    const scale = globals.ZOOM_LEVEL /1.1;
-    globals.ZOOM_LEVEL = scale;
+  globals.SPRITESHEET_WIDTH /= globals.ZOOM_SPEED;
+  globals.SPRITESHEET_HEIGHT /= globals.ZOOM_SPEED;
+  CANVAS_ELE.style.width = `${globals.SPRITESHEET_WIDTH}px`;
 
-    const transform = `scale(${scale})`;
-    CANVAS_ELE.style.transform = transform;
+  const mousePosWithinCanvas = {
+    x: globals.MOUSE_POS.x - globals.SPRITESHEET_LEFTTOP_OFFSET.x,
+    y: globals.MOUSE_POS.y - globals.SPRITESHEET_LEFTTOP_OFFSET.y,
+  };
+  console.log("mousePos", globals.MOUSE_POS);
+  console.log(
+    "globals.SPRITESHEET_LEFTTOP_OFFSET",
+    globals.SPRITESHEET_LEFTTOP_OFFSET
+  );
+  console.log("mouseSubtract", mousePosWithinCanvas);
+  console.log(
+    "wh",
+    globals.SPRITESHEET_WIDTH / 2,
+    globals.SPRITESHEET_HEIGHT / 2
+  );
+
+  CANVAS_ELE.style.left = `${
+    globals.SPRITESHEET_LEFTTOP_OFFSET.x +
+    mousePosWithinCanvas.x -
+    globals.SPRITESHEET_WIDTH / 2
+  }px`;
+  CANVAS_ELE.style.top = `${
+    globals.SPRITESHEET_LEFTTOP_OFFSET.y +
+    mousePosWithinCanvas.y -
+    globals.SPRITESHEET_HEIGHT / 2
+  }px`;
 }
 
 function zoomOutView() {
-  const scale = globals.ZOOM_LEVEL * 1.1;
-  globals.ZOOM_LEVEL = scale;
-  
-  const transform = `scale(${scale})`;
-  CANVAS_ELE.style.transform = transform;
-  console.log("scale", CANVAS_ELE.style.transform);
-  
- 
+  globals.SPRITESHEET_WIDTH *= globals.ZOOM_SPEED;
+  globals.SPRITESHEET_HEIGHT *= globals.ZOOM_SPEED;
+  CANVAS_ELE.style.width = `${globals.SPRITESHEET_WIDTH}px`;
+  CANVAS_ELE.style.left = `${
+    globals.SPRITESHEET_LEFTTOP_OFFSET.x - globals.SPRITESHEET_WIDTH / 2
+  }px`;
+  CANVAS_ELE.style.top = `${
+    globals.SPRITESHEET_LEFTTOP_OFFSET.y - globals.SPRITESHEET_HEIGHT / 2
+  }px`;
 }
 
 // zoom in zoom out spritesheet
 const zoomIn = document.getElementById("zoomIn");
 const zoomOut = document.getElementById("zoomOut");
-zoomIn.addEventListener("click", () => {
+zoomIn.addEventListener("click", (e) => {
   zoomInView();
 });
 
-zoomOut.addEventListener("click", () => {
+zoomOut.addEventListener("click", (e) => {
   zoomOutView();
 });
 
@@ -174,18 +213,19 @@ CANVAS_ELE.addEventListener("wheel", (e) => {
   }
 });
 
-
 // remove spritesheet
 const removeSpritesheet = document.getElementById("removeSpritesheet");
-removeSpritesheet.addEventListener("click", () => {
+removeSpritesheet.addEventListener("click", (e) => {
   CTX.clearRect(0, 0, CANVAS_ELE.width, CANVAS_ELE.height);
   CANVAS_ELE_BEFORE_UPLOAD.classList.remove("hidden");
   CANVAS_ELE_AFTER_UPLOAD.classList.add("hidden");
-  setButtonsActive(false);
 });
 
-
-
+// tight packing
+const tightPacking = document.getElementById("tightPacking");
+tightPacking.addEventListener("click", (e) => {
+  console.log("tightPacking");
+});
 
 function downloadJSON(data, filename) {
   const blob = new Blob([data], { type: "application/json" });
@@ -198,48 +238,31 @@ function downloadJSON(data, filename) {
 
 // parseable coordinates
 const parseableCoordinates = document.getElementById("parseableCoordinates");
-parseableCoordinates.addEventListener("click", () => {
+parseableCoordinates.addEventListener("click", (e) => {
   // download a .json file with the coordinates of the sprites
   const data = JSON.stringify(globals.BOUDING_BOXES);
-  downloadJSON(data, `SC-coord-sprites-${globals.IMAGE_NAME}.json`);
+  downloadJSON(data, "sprites.json");
 });
 
 // seperate images
 const seperateImages = document.getElementById("seperateImages");
-seperateImages.addEventListener("click", () => {
-  
+seperateImages.addEventListener("click", (e) => {
   //extract images from bounding boxes and download them as a zip
   const images = [];
-
-  // get data from globals.IMAGE_MATRIX by creating temporary canvas and context
-  const tmpCanvas = document.createElement("canvas");
-  tmpCanvas.width = globals.IMAGE_MATRIX.width;
-  tmpCanvas.height = globals.IMAGE_MATRIX.height;
-  const tmpCtx = tmpCanvas.getContext("2d");
-  tmpCtx.putImageData(globals.IMAGE_MATRIX, 0, 0);
-
-  // iterate over the bounding boxes and extract the images
-  globals.BOUDING_BOXES.forEach((bound) => {
-
-    const image = tmpCtx.getImageData(
+  globals.BOUDING_BOXES.forEach((bound, index) => {
+    const image = CTX.getImageData(
       bound.left,
       bound.top,
       bound.right - bound.left,
       bound.bottom - bound.top
     );
-    
-    // const image = CTX.getImageData(
-    //   bound.left,
-    //   bound.top,
-    //   bound.right - bound.left,
-    //   bound.bottom - bound.top
-    // );
     const tmpcanvas = document.createElement("canvas");
     tmpcanvas.width = bound.right - bound.left;
     tmpcanvas.height = bound.bottom - bound.top;
     const tmpctx = tmpcanvas.getContext("2d");
     tmpctx.putImageData(image, 0, 0);
     images.push(tmpcanvas.toDataURL("image/png"));
+    console.log("images", images);
   });
   //download as zip
   const zip = new JSZip();
@@ -249,15 +272,14 @@ seperateImages.addEventListener("click", () => {
   zip.generateAsync({ type: "blob" }).then((content) => {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(content);
-    a.download = `SC-sep-sprites-${globals.IMAGE_NAME}.zip`;
+    a.download = "sprites.zip";
     a.click();
   });
 });
 
-
 // calculate bounds
 const calculateBounds = document.getElementById("calculateBounds");
-calculateBounds.addEventListener("click", () => {
+calculateBounds.addEventListener("click", (e) => {
   let backgroundColor = document.getElementById("colorPicker").value;
   backgroundColor = [
     parseInt(backgroundColor.slice(1, 3), 16),
@@ -274,17 +296,6 @@ calculateBounds.addEventListener("click", () => {
   function getBounds(imageMatrix, backgroundColor) {
     // an array of tuples (bottomLeft, topRight) identifying the bounds of each sprite
     const bounds = [];
-
-    // reset the canvas with global.IMAGE_MATRIX
-    // const tmpCanvas = document.createElement("canvas");
-    // tmpCanvas.width = globals.IMAGE_MATRIX.width;
-    // tmpCanvas.height = globals.IMAGE_MATRIX.height;
-    // const tmpCtx = tmpCanvas.getContext("2d");
-    // tmpCtx.putImageData(globals.IMAGE_MATRIX, 0, 0);
-    CTX.putImageData(globals.IMAGE_MATRIX, 0, 0);
-    
-    
-    
 
     // a fixed-size array of booleans to keep track of which pixels have been visited
     const visited = new Array(imageMatrix.data.length / 4).fill(false);
@@ -354,15 +365,10 @@ calculateBounds.addEventListener("click", () => {
           queue.push(index + imageMatrix.width);
         }
       }
-      // make sure the bounds are not empty, singel pixel, etc
-      if (maxx - minx > 0 && maxy - miny > 0)
-        bounds.push({ left: minx, top: miny, right: maxx, bottom: maxy });
-
-
+      bounds.push({ left: minx, top: miny, right: maxx, bottom: maxy });
     }
     // draw these bounds on the canvas
     CTX.strokeStyle = "red";
-    CTX.lineWidth = 1;
     bounds.map((bound) => {
       CTX.strokeRect(
         bound.left,
