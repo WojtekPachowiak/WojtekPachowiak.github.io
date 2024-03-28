@@ -5,7 +5,8 @@ uniform sampler2D tex;
 const float PI = 3.1415926535;
 uniform float warpStrength;
 uniform float warpRadius;
-
+uniform float time;
+uniform float warpShape;
 
 
 vec2 fishEye(vec2 pos, vec2 mousePosNorm, float radius, float strength) {
@@ -27,15 +28,46 @@ vec2 fishEye(vec2 pos, vec2 mousePosNorm, float radius, float strength) {
     return pos;
 }
 
-vec2 blackhole(vec2 pos, vec2 mousePosNorm, float radius, float strength) {
+vec2 blackhole_warp(vec2 pos, vec2 mousePosNorm, float radius, float strength) {
     vec2 dir = pos - mousePosNorm;
     float dist = length(dir);
     float distFactor = 1.0 - smoothstep(0.0, radius, dist);
     float strengthFactor = (smoothstep(-1.0, 1.0, strength) - 0.5) *2.0 * max(1.0, abs(strength));
     float factor = distFactor * strengthFactor ;
 
-    return pos + dir * factor;
+    return  dir * factor;
 }
+
+vec2 rotate(vec2 pos, float angle) {
+    float s = sin(angle);
+    float c = cos(angle);
+    mat2 rot = mat2(c, -s, s, c);
+    return rot * pos;
+
+}
+
+vec2 spiral_warp(vec2 pos, vec2 mousePosNorm, float radius, float strength) {
+    // rotate around the mouse position
+    vec2 dir = pos - mousePosNorm;
+    // "power" determines how quickly the spiral affets the center of the area of effect (the lower it is, the quicker)
+    float power = 0.1;
+    float dist = pow(length(dir),power);
+
+    // make the strengh and radius independent of the power
+    radius = pow(radius, power);
+    strength = strength / power *1.;
+    
+    float distFactor = 1.0 - smoothstep(0.0, radius, dist);
+    float strengthFactor = (smoothstep(-1.0, 1.0, strength) - 0.5) *2.0 * max(1.0, abs(strength));
+    
+    float factor = distFactor * strengthFactor ;
+    dir = rotate(dir, PI/2.);
+
+
+    return  dir * factor;
+}
+
+
 
 vec3 checker(vec2 pos, float size) {
 
@@ -100,27 +132,20 @@ void main() {
     vec3 color;
 
     // pos = fishEye(pos, mousePosNorm, 0.2, 0.0);
-    pos2 = blackhole(pos2, mousePosNorm2, warpRadius, warpStrength);
-    pos = blackhole(pos, mousePosNorm, warpRadius, warpStrength);
-    // color = blurred_tex(tex, pos,6.0);
-    // // texture
-    // gl_FragColor = vec4(color, 1.);
-    // return;
+    // pos2 = blackhole(pos2, mousePosNorm2, warpRadius, warpStrength);
 
-    // distance to mouse changes color
-    // color = mix(color, vec3(1.0, 0.0, 0.0), smoothstep(0.1, 0.0, mousePosNorm));
-    
-    // checker board
-    //  color = checker(pos, checkerSize);
-    // color = blurred_checker( pos, 4.0, checkerSize);
+    vec2 warp;
+    if (round(warpShape) == 0.0) {
+        warp = blackhole_warp(pos, mousePosNorm, warpRadius, warpStrength);
+    } else if (round(warpShape) == 1.0) {
 
-    // checker on nonnormalized coords
-    // color = vec3(smoothstep(.3, 1.0, 20.*sin(pos.x * checkerSize) * sin(pos.y * checkerSize)));
+        warp = spiral_warp(pos, mousePosNorm, warpRadius, warpStrength);
+    }
 
+    pos2 = pos2 + warp;
 
     color = texture2D(tex, pos2).rgb;
 
     gl_FragColor = vec4(color, 1.);
-    // gl_FragColor = vec4(pos,0.0, 1.);
 
 }

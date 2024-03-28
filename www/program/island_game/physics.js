@@ -1,39 +1,59 @@
-import {g} from './globals.js';
+import { g } from "./globals.js";
+import * as THREE from "three";
 
-export function initStaticColliders(){
-    for (let obj of g.OBJECT_GROUPS.COLLIDABLES) {
+export function initStaticColliders() {
+  for (let obj of g.OBJECT_GROUPS.COLLIDABLES) {
+
     const geometry = obj.geometry;
     let colliderDesc = g.PHYSICS.RAPIER.ColliderDesc.trimesh(
-    geometry.attributes.position.array,
-    geometry.index.array
+      geometry.attributes.position.array,
+      geometry.index.array
     );
-    g.PHYSICS.WORLD.createCollider(colliderDesc);
+    // g.PHYSICS.WORLD.createCollider(colliderDesc);
     const rigidBody = g.PHYSICS.WORLD.createRigidBody(
-    g.PHYSICS.RAPIER.RigidBodyDesc.fixed()
+      g.PHYSICS.RAPIER.RigidBodyDesc.fixed()
     );
-    g.PHYSICS.WORLD.createCollider(colliderDesc, rigidBody);
-
-    // translate, scale and rotate the collider to match the object
-    rigidBody.setTranslation(
-    { x: obj.position.x, y: obj.position.y, z: obj.position.z },
-    true
-    );
-    rigidBody.setRotation(
-    {
-        w: obj.quaternion.w,
-        x: obj.quaternion.x,
-        y: obj.quaternion.y,
-        z: obj.quaternion.z,
-    },
-    true
-    );
-
-    // save reference
-    obj.userData.rigidBody = rigidBody;
-    }
     
-}
+    // window.obj = obj;
 
+    // obj.updateMatrix();
+      
+    const matrixWorld = obj.matrixWorld;
+    // console.log(matrixWorld);
+    let position = new THREE.Vector3();
+    let quaternion = new THREE.Quaternion();
+    let scale = new THREE.Vector3();
+    // console.log(position);
+    // console.log(quaternion);
+    // console.log(scale);
+    matrixWorld.decompose(position, quaternion, scale);
+    // console.log(position);
+    // console.log(quaternion);
+    // console.log(scale);
+
+    
+    // translate, scale and rotate the collider to match the object
+    rigidBody.setRotation(
+      {
+          w: quaternion.w,
+          x: quaternion.x,
+          y: quaternion.y,
+          z: quaternion.z,
+        },
+        true
+        );
+        rigidBody.setTranslation(
+          { x: position.x, y: position.y, z: position.z },
+          true
+          );
+    
+
+        g.PHYSICS.WORLD.createCollider(colliderDesc, rigidBody);
+        
+        // save reference
+    obj.userData.rigidBody = rigidBody;
+  }
+}
 
 export async function initPhysics() {
   return new Promise((resolve, reject) => {
@@ -52,7 +72,7 @@ export async function initPhysics() {
         // // characterController.setMinSlopeSlideAngle((30 * Math.PI) / 180);
         // // Autostep if the step height is smaller than 0.5, its width is larger than 0.2,
         // // and allow stepping on dynamic bodies.
-        characterController.enableAutostep(0.5, g.PLAYER.COLLIDER_RADIUS, true);
+        characterController.enableAutostep(1, 0.00, true);
         // // Disable autostep.
         // characterController.disableAutostep();
         // // Snap to the ground if the vertical distance to the ground is smaller than 0.5.

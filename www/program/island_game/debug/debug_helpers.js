@@ -9,9 +9,9 @@ export class DebugCube extends THREE.Mesh {
       new THREE.BoxGeometry(0.2, 0.1, 0.2),
       new THREE.MeshBasicMaterial({
         color: 0xf500fd,
-        opacity: 0.1,
+        opacity: 0.2,
         transparent: true,
-        depthWrite: false,
+        depthTest: false,
       })
     );
     this.position.copy(position);
@@ -31,41 +31,49 @@ export class DebugCube extends THREE.Mesh {
   );
   // geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
   const material = new THREE.LineBasicMaterial({
-    vertexColors: false,
     transparent: true,
+    // depthTest: false,
     opacity: 0.5,
-    color: 0xff0000,
+    color: 0xffa600,
   });
   const lines = new THREE.LineSegments(geometry, material);
-  g.SCENE.add(lines);
   lines.userData.isPhyscisDebug = true;
+  lines.name = "physics_debug";
+  
+  
+  g.SCENE.add(lines);
   g.OBJECT_GROUPS.WIREFRAMES.push(lines);
 }
 
+
+
 export function buildWireframes(){
   // iterate over all objects in the scene and if they are meshes, get their geometry and put it into wireframeGeometry
-  g.SCENE.traverse((child) => {
-    if (child.isMesh) {
-      const wireframe = new THREE.WireframeGeometry(child.geometry);
+  // g.SCENE.traverse((child) => {
+  //   if (child.isMesh) {
+  //     const wireframe = new THREE.WireframeGeometry(child.geometry);
 
-      const line = new THREE.LineSegments(wireframe);
-      line.material.opacity = 0.5;
-      line.material.color = new THREE.Color(0xea00ff);
-      line.userData.isDebug = true;
-      line.parent = child;
+  //     const line = new THREE.LineSegments(wireframe);
+  //     // line.material.depthTest = false;
+  //     line.material.opacity = 0.5;
+  //     line.material.transparent = true;
+  //     line.material.color.set(0x0011ff);
+  //     line.userData.isDebug = true;
+  //     line.parent = child;
 
-      console.log(child.name);
-      console.log(child.position);
-      console.log(child.rotation);
-      // translate and rotate the wireframe to match the object
-      line.rotation.copy(child.rotation);
-      line.position.copy(child.position);
+  //     console.log(child.name);
+  //     console.log(child.position);
+  //     console.log(child.rotation);
+  //     // translate and rotate the wireframe to match the object
+  //     line.rotation.copy(child.rotation);
+  //     line.position.copy(child.position);
 
-      child.userData.wireframe = line;
-      g.SCENE.add(line);
-      g.OBJECT_GROUPS.WIREFRAMES.push(line);
-    }
-  });
+  //     line.name = child.name + "_wireframe";
+  //     child.userData.wireframe = line;
+  //     // g.SCENE.add(line);
+  //     // g.OBJECT_GROUPS.WIREFRAMES.push(line);
+  //   }
+  // });
 
   // build physics wireframes
   buildPhysicsWireframes();
@@ -166,16 +174,35 @@ function drawDebugTriangle(rayhit){
 
   mesh.updateMatrix();
 
-  g.DEBUG.TRIANGLE.geometry.applyMatrix4(mesh.matrix);
+  g.DEBUG.TRIANGLE.geometry.applyMatrix4(mesh.matrixWorld);
 
   g.DEBUG.TRIANGLE.visible = true;
   
-  // return positions of the triangle
-  return {
+  
+  
+  
+  
+  // draw the coordinates of the triangle on screen for debugging
+  const vertices = {
     a: new THREE.Vector3().fromBufferAttribute(linePosition, 0),
     b: new THREE.Vector3().fromBufferAttribute(linePosition, 1),
     c: new THREE.Vector3().fromBufferAttribute(linePosition, 2),
   };
+
+  Object.keys(vertices).forEach((k) => {
+    const v = vertices[k];
+    const screenPos = v.clone().project(g.CAMERA);
+    const p = document.getElementById("debugTriangle_" + k);
+    p.style.position = "absolute";
+    p.style.left = `${(screenPos.x + 1) * window.innerWidth / 2}px`;
+    p.style.top = `${(-screenPos.y + 1) * window.innerHeight / 2}px`;
+    p.style.display = "block";
+    p.innerHTML = `${k}: ${v.x.toFixed(2)}, ${v.y.toFixed(2)}, ${v.z.toFixed(2)}`;
+
+    });
+
+
+  return vertices;
 }
 
 

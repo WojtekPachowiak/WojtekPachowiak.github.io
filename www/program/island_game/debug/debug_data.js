@@ -13,13 +13,13 @@ const DEFAULT_NONDEBUG_STATES = {
 };
 
 const DEFAULT_DEBUG_STATES = {
-  camera: "FPS",
+  camera: "ORBIT",
   cameraGizmo : false,
-  wireframe: false,
+  wireframe: true,
   postprocessing: false,
   loweredOpacity: false,
   octree: false,
-  fog: true,
+  fog: false,
   variableTracking: true,
   worldAxes: false,
   cutscene: false,

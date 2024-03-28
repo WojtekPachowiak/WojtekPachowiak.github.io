@@ -9,7 +9,7 @@
 
     <link rel="icon" type="image/x-icon" href="../resources/icons/asuka.ico" />
 
-    <link rel="stylesheet" href="../index.css" />
+    <link rel="stylesheet" href="/index.css" />
 
 
   </head>
@@ -22,13 +22,17 @@
 
  -->
 
-<body style="overflow: hidden">
+<body style="overflow: hidden" class="bg-black">
     <!-- <div class="fixed bottom-0 right-0  w-1/2 h-1/2  m-5  " > -->
     <!-- <canvas  id="output_canvas" class="h-1/8 w-1/8  absolute bottom-0 right-0 z-10 scale-x-[-1] m-5 pointer-events-none	"></canvas> -->
 
     <!-- </div> -->
-    
+    <!-- center canvas vertically and horizontally -->
+    <div class="flex justify-center items-center h-screen w-screen">
+      <canvas id="output_canvas"></canvas>
 
+
+    </div>
 
     
     
@@ -57,7 +61,7 @@
       }
 
       h1 {
-        font-size: 20px;
+        /* font-size: 20px; */
         color: rgb(255, 145, 0);
         margin: 0;
         padding: 0;
@@ -84,12 +88,35 @@
         /* display: none; */
       }
 
+      #debugTriangle_a, #debugTriangle_b, #debugTriangle_c {
+        position: absolute;
+        /* width: 10px;
+        height: 10px; */
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        z-index: 1000;
+        pointer-events: none;
+        transform: translate(-50%, -50%);
+        left: 50%;
+        top: 50%;
+        display: none;
+        padding: 2px;
+        line-height: 1;
+      }
+
       
       
     </style>
 
 
     <div id="debugMouseDrawer"></div>
+
+    <p id="debugTriangle_a" ></p>
+    <p id="debugTriangle_b" ></p>
+    <p id="debugTriangle_c" ></p>
+
+
+
     <div id="cursor-custom">
       <!-- crosshair rects -->
       <div style="position: absolute; width: 2px; height: 8px; background-color: rgb(255, 255, 255); left: 50%; top: 50%; transform: translate(-50%, -50%);"></div>

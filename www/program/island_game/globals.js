@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import soundFootstep from "./assets/footsteps_sand_single.mp3";
 
-
 const textureLoader = new THREE.TextureLoader();
 
 export const g = {
@@ -9,7 +8,7 @@ export const g = {
   DEBUG: {
     GUI: null,
     TRIANGLE: null,
-    CAMERA_GIZMO : null,
+    CAMERA_GIZMO: null,
   },
 
   SCREEN: {
@@ -38,7 +37,7 @@ export const g = {
   MOUSE: new THREE.Vector2(),
   PLAYER: {
     OBJECT: null,
-    START_POSITION: new THREE.Vector3(9, 13, 15),
+    START_POSITION: new THREE.Vector3(22, 13, 15),
     MOVE_STOP_DAMPING: 0.1,
     MOVE_STOP_DAMPING_THRESHOLD: 0.008,
     MOUSE_SENSITIVITY: 0.2,
@@ -50,7 +49,7 @@ export const g = {
     DIRECTION: new THREE.Vector3(),
     JUMP_SPEED: 80,
     JUMP_DAMPING: 0.01,
-    MOVE_SPEED: 2,
+    MOVE_SPEED: 3,
     JUMP_COOLDOWN: 0.6,
     JUMP_COOLDOWN_TIMER: new THREE.Clock({ autoStart: true }),
     MAX_ON_FLOOR_ANGLE: (45 * Math.PI) / 180,
@@ -68,7 +67,7 @@ export const g = {
     DYING_DURATION: 0.5,
     OPACITY: 0.1,
     SIZE: 40,
-    NUM: 1000,
+    NUM: 100,
     GEOMETRY: null,
   },
 
@@ -98,7 +97,7 @@ export const g = {
     CANVAS: null,
 
     TEXT: {
-      TEXT: "Silent Hill 1",
+      TEXT: "",
       BLINKING: true,
       BLINKING_RATE: 0.5,
       TEXT_T: 1,
@@ -111,8 +110,8 @@ export const g = {
   MAIN_LOOP_CALLBACKS: {},
 
   LIGHTS: {
-    GLOBAL_AMBIENT_INTENSITY: 10,
-    GLOBAL_DIRECTIONAL_INTENSITY: 0,
+    GLOBAL_AMBIENT_INTENSITY: 7,
+    GLOBAL_DIRECTIONAL_INTENSITY: 3,
     FLASHLIGHT_INTENSITY: 10,
   },
   // three.js internal vars
@@ -125,7 +124,7 @@ export const g = {
   ORBIT_CONTROLS: null,
   WORLD_AXES_HELPER: null,
 
-  FOG_COLOR: 0x9b9b9b,
+  FOG_COLOR: 0xaa9487,
   FOG: null,
 
   POSTPROCESSING_COMPOSERS: {
@@ -160,14 +159,11 @@ export const g = {
   },
 };
 
+// make g available in console
+window.g = g;
+
 g.SOUNDS.FOOTSTEP.volume = 0.05;
-
-
-
 
 export const m = {
   OBJECT_NAME_TO_POSITION: new Map(),
-
-
 };
-

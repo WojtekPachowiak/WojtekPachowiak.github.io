@@ -6,19 +6,25 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 
 export function initThree() {
-  g.RENDERER = new THREE.WebGLRenderer({ antialias: false });
+
+  const cavas = document.getElementById("output_canvas");
+  g.RENDERER = new THREE.WebGLRenderer({ antialias: false, canvas: cavas});
   // g.RENDERER.setSize(g.SCREEN.TARGET_Y_RESOLUTION * g.SCREEN.ASPECT_RATIO, g.SCREEN.TARGET_Y_RESOLUTION, false);
   g.RENDERER.setSize(window.innerWidth, window.innerHeight);
   g.RENDERER.setPixelRatio(g.DPI);
-  document.body.appendChild(g.RENDERER.domElement);
-  g.RENDERER.domElement.style.width = "100%";
-  g.RENDERER.domElement.style.height = "100%";
-  g.RENDERER.domElement.style.position = "absolute";
-  g.RENDERER.domElement.style.top = "0";
-  g.RENDERER.domElement.style.left = "0";
+  // document.body.appendChild(g.RENDERER.domElement);
+  // g.RENDERER.domElement.style.width = "100%";
+  // g.RENDERER.domElement.style.height = "100%";
+  // g.RENDERER.domElement.style.position = "absolute";
+  // g.RENDERER.domElement.style.top = "0";
+  // g.RENDERER.domElement.style.left = "0";
+
+  
+
   g.RENDERER.domElement.style.zIndex = "-1";
-  // disable cursor
   g.RENDERER.domElement.style.cursor = "none";
+  g.RENDERER.shadowMap.enabled = true;
+  g.RENDERER.shadowMap.type = THREE.PCFSoftShadowMap;
   // set image-rendering: pixelated;
   // g.RENDERER.domElement.style.imageRendering = "pixelated";
 
@@ -71,7 +77,7 @@ export function initThree() {
   g.FOG = new THREE.Fog(g.FOG_COLOR, 1, 20);
   scene.fog = g.FOG;
   scene.background = new THREE.Color(g.FOG_COLOR);
-  
+
   // scene.fog = new THREE.FogExp2( g.FOG_COLOR, 0.05 );
 
   // sky cubemap
@@ -86,9 +92,30 @@ export function initThree() {
     g.FOG_COLOR,
     g.LIGHTS.GLOBAL_DIRECTIONAL_INTENSITY
   );
-  dirLight.position.set(0, 30, 0);
+  dirLight.position.set(0+5, 30,0);
+  dirLight.target.position.set(3+5, 0, 3);
+
+  dirLight.castShadow = true;
+  //Set up shadow properties for the light
+  console.log(dirLight.shadow);
+  const resolution = 1024/4;
+  dirLight.shadow.mapSize.width = resolution; // default
+  dirLight.shadow.mapSize.height = resolution; // default
+  dirLight.shadow.camera.near = 1; // default
+  dirLight.shadow.camera.far = 50; // default
+  const d = 30;
+  dirLight.shadow.camera.top = d;
+  dirLight.shadow.camera.bottom = -d;
+  dirLight.shadow.camera.left = -d;
+  dirLight.shadow.camera.right = d;
+  dirLight.shadow.bias = -0.0001;
+  // dirLight.shadow.radius = 1;
   scene.add(dirLight);
+  scene.add(dirLight.target);
   g.LIGHTS.DIRECTIONAL = dirLight;
+
+  // const helper = new THREE.CameraHelper(dirLight.shadow.camera);
+  // scene.add(helper);
 
   // const hemiLight = new THREE.HemisphereLight(g.FOG_COLOR, 0x9e9e9e, 1);
   // scene.add(hemiLight);
@@ -123,7 +150,6 @@ export function initThree() {
     }
   });
 
-
-//   Raycaster
-g.RAYCASTER = new THREE.Raycaster();
+  //   Raycaster
+  g.RAYCASTER = new THREE.Raycaster();
 }

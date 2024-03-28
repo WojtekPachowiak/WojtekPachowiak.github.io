@@ -196,16 +196,14 @@ function playerMove(deltaTime) {
   g.PHYSICS.CHARACTER_CONTROLLER.computeColliderMovement(
     g.PLAYER.OBJECT.collider, // The collider we would like to move.
     g.PLAYER.OBJECT.velocity // The movement we would like to apply if there wasn’t any obstacle.
-  );
+  );    
   let correctedMovement = g.PHYSICS.CHARACTER_CONTROLLER.computedMovement();
-  // console.log("correctedMovement", correctedMovement);
 
   // After the collider movement calculation is done, we can read the
   // collision events.
   // console.log("numComputedCollisions", g.PHYSICS.CHARACTER_CONTROLLER.numComputedCollisions());
   for (let i = 0; i < g.PHYSICS.CHARACTER_CONTROLLER.numComputedCollisions(); i++) {
     let collision = g.PHYSICS.CHARACTER_CONTROLLER.computedCollision(i);
-    // console.log("collision:" + i, collision);
     
     // check if collision normal is within g.PLAYER.MAX_SLOPE_ANGLE of up
     let normal = new THREE.Vector3(collision.normal1.x, collision.normal1.y, collision.normal1.z);

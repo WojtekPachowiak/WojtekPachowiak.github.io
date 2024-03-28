@@ -12,7 +12,7 @@ import { updateCutscene, initCutscenes } from "./cutscenes.js";
 import { initInput } from "./input.js";
 import { screenspaceRaycast } from "./raycast.js";
 import { projectDecal } from "./decals.js";
-import { initPhysics, initStaticColliders } from "./physics.js";
+import { initPhysics } from "./physics.js";
 
 if (WebGL.isWebGL2Available() === false) {
   document.body.appendChild(WebGL.getWebGL2ErrorMessage());
@@ -25,7 +25,6 @@ initThree();
 initMaterials();
 init3DModels();
 initPlayer();
-initStaticColliders();
 initUI();
 initInput();
 snowflakesInit();
@@ -112,7 +111,9 @@ function render() {
 
 // onresize
 function updateViewport() {
-  g.CAMERA.aspect = window.innerWidth / window.innerHeight;
+  // g.CAMERA.aspect = window.innerWidth / window.innerHeight;
+  g.CAMERA.aspect = 4 / 3;
+
   g.CAMERA.updateProjectionMatrix();
 
   g.SCREEN.RESOLUTION.set(
@@ -120,7 +121,7 @@ function updateViewport() {
     g.SCREEN.TARGET_Y_RESOLUTION
   );
 
-  resizeUI();
+  // resizeUI();
 
   /////////////////////// UPDATE UNIFORMS
   // > PS1 Material
@@ -133,7 +134,52 @@ function updateViewport() {
   // > PS1_MAIN Postprocessing
   g.POSTPROCESSING_PASSES.PS1.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
 
-  g.RENDERER.setSize(window.innerWidth, window.innerHeight);
-  g.RENDERER.setPixelRatio(g.DPI);
+  const whRatio = window.innerWidth / window.innerHeight;
+
+  if (whRatio > 4 / 3) {
+    g.RENDERER.setSize(window.innerWidth, window.innerWidth * (3 / 4), false);
+  } else {
+    g.RENDERER.setSize(window.innerHeight * (4 / 3), window.innerHeight, false);
+  }
+  console.log("resizing renderer");
+  g.RENDERER.setSize(window.innerWidth, window.innerWidth , false);
+
+  // set canvas element size so that aspect ratio is maintained
+  
+  // 4 * x = window.innerWidth
+  // 3 * x = height
+
+  let width, height;
+  // if (window.innerWidth < window.innerHeight) {
+    width = window.innerWidth;
+    height = window.innerWidth * (3 / 4);
+  if (height > window.innerHeight) {
+    height = window.innerHeight;
+    width = window.innerHeight * (4 / 3);
+  }
+  
+  // } else {
+  //   width = window.innerHeight * (4 / 3);
+  //   height = window.innerHeight;
+  // }
+  
+  g.RENDERER.domElement.style.width = width + "px";
+  g.RENDERER.domElement.style.height = height + "px";
+
+
+  // g.RENDERER.setSize(window.innerWidth, window.innerHeight, false);
+
+  // if (g.CAMERA.aspect > 1) {
+  //   g.RENDERER.domElement.style.width = "100vw";
+  //   g.RENDERER.domElement.style.height = `calc(100vw * ${1 / g.CAMERA.aspect})`;
+  // } else {
+  //   g.RENDERER.domElement.style.width = `calc(100vw * ${g.CAMERA.aspect})`;
+  //   g.RENDERER.domElement.style.height = "100vh";
+  // }
+
+
+  // g.RENDERER.domElement.style.width = "100svw";
+  // g.RENDERER.domElement.style.height = "100svh";
+  // g.RENDERER.setPixelRatio(g.DPI);
 }
 window.onresize = updateViewport;
