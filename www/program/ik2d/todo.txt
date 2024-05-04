@@ -1,0 +1,4 @@
+- fix ccd bug (double arm)
+- in IKArm allow swapping root joint and endeffector
+- max rotational velocity + acceleration?
+- CCD different counting/jumping schemes    
