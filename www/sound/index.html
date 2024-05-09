@@ -29,50 +29,53 @@
   <script src="music.js" type="module"></script>
 
   <!-- FLEX COL -->
-  <div class="flex flex-col justify-center items-center my-screencenter-zhighest-panel gap-1 h-full">
+  <div class="flex-center">
 
-    <!-- playlist -->
-    <div id="playlist" class="my-paragraph-simple overflow-y-auto  w-full">
-      <ol class="list-decimal	list-inside  table table-auto">
-            <!-- AUDO ADDED FROM SCRIPT  -->
-      </ol>
-    </div>
-    
-    <!-- music timeline on middle bottom -->
+    <div class="flex flex-col justify-center items-center gap-1">
   
-    <div id="audio-player" class="flex justify-center items-center flex-row my-paragraph-simple space-x-3 w-full">
-      <div id="play-pause">
-        <button class="disabled w-[5ch]">
-          pause
-        </button>
+      <!-- playlist -->
+      <div id="playlist" class="my-paragraph-simple overflow-y-auto  w-full">
+        <ol class="list-decimal	list-inside  table table-auto">
+              <!-- AUDO ADDED FROM SCRIPT  -->
+        </ol>
       </div>
       
-      <div id="loop">
-        <button class="disabled ">
-          loop
-        </button>
-      </div>
-   
-      <div class="flex flex-row">
-        <div id="current-time">
-          <span class="w-[4ch]">0:00</span>
+      <!-- music timeline on middle bottom -->
+    
+      <div id="audio-player" class="flex justify-center items-center flex-row my-paragraph-simple space-x-3 w-full">
+        <div id="play-pause">
+          <button class="disabled w-[5ch]">
+            pause
+          </button>
         </div>
+        
+        <div id="loop">
+          <button class="disabled ">
+            loop
+          </button>
+        </div>
+     
+        <div class="flex flex-row">
+          <div id="current-time">
+            <span class="w-[4ch]">0:00</span>
+          </div>
+    
+          <div>
+            <span>/</span>
+          </div>
+    
+          <div id="max-time">
+            <span class="w-[4ch]">0:00</span>
+          </div>
   
-        <div>
-          <span>/</span>
         </div>
-  
-        <div id="max-time">
-          <span class="w-[4ch]">0:00</span>
-        </div>
-
       </div>
+  
+  
+      
+      
+      
     </div>
-
-
-    
-    
-    
   </div>
     
     

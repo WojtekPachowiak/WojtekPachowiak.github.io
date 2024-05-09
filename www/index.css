@@ -28,15 +28,15 @@ body{
   }
 
   .my-paragraph-simple {
-    @apply text-black font-mono p-4 px-5 border border-black border-2    bg-white ;
+    @apply text-black font-mono p-4 px-5 border border-black border-2 bg-white ;
   }
 
   .my-paragraph-simple-invert {
     @apply text-white font-mono p-4 px-5 border border-white border-2 bg-black;
   }
 
-  .my-screencenter-zhighest-panel{
-    @apply  fixed bottom-1/2 right-1/2 translate-y-1/2 translate-x-1/2 z-50  ;
+  .flex-center {
+    @apply w-full h-full flex items-center justify-center;
   }
 
   
