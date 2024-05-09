@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <meta name="description" content="Wojtek (Wojciech) Pachowiak's own webpage!">
+    <title>Wojtek Pachowiak</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=0" />
+    <link rel="icon" type="image/x-icon" href="/resources/icons/asuka.ico" />
+
+    <link rel="stylesheet" href="/index.css" />
+</head>
+
+<body class="font-mono h-screen bg-black">
+
+    <div class="fixed top-0 flex flex-col w-full m-2 mx-10">
+        <!-- bottom bar -->
+        <div class=" bg-opacity-0 flex flex-row  items-center ">
+            <button id="micBtn" class="btn-simple-invert">microphone</button>
+            <button id="uploadBtn" class="btn-simple-invert">upload your own audio</button>
+            <button id="exampleBtn" class="btn-simple-invert">play example audio</button>
+            <!-- separator -->
+            <div class="mx-2"></div>
+            <button id="infoBtn" class="btn-simple-invert cursor-default" onmouseover="showInfoPanel()"
+                onmouseout="hideInfoPanel()">info</button>
+        </div>
+    </div>
+
+    <!-- canvas -->
+    <div class="p-5 h-full">
+        <canvas class="flex-1 border border-white h-full w-full" id="canvas3d"></canvas>
+    </div>
+
+    <!-- INFO PANEL -->
+    <div id="infoPanel" class="my-paragraph-simple-invert my-screencenter-zhighest-panel" style="visibility: hidden;">
+        <p>
+            Visualizing audio data using a 3D spectrogram inspired by
+            <a
+                href="https://calebgannon.com/2021/01/09/spectrogram-with-three-js-and-glsl-shaders/">https://calebgannon.com/2021/01/09/spectrogram-with-three-js-and-glsl-shaders/</a>
+        </p>
+        <br>
+        <p>
+        <h3>Audio example sources:</h1>
+            <ul class="list-disc list-inside	">
+                <li><a href="https://www.youtube.com/watch?v=Ldj4E25d0AI">Evergrace II (PS2) - Palace, King's Throne</a>
+                </li>
+                <li><a href="https://www.youtube.com/watch?v=Es2vrzGInHU">Nico - Eulogy To Lenny Bruce</a></li>
+                <li><a href="https://www.youtube.com/watch?v=D8TkqkBlkbo">Haunting Ground (PS2) panic mode</a></li>
+            </ul>
+            <p>
+    </div>
+
+    <p id="startPanel" class="my-paragraph-simple-invert my-screencenter-zhighest-panel">
+        Click start/stop the audio</p>
+
+
+    <script src="index.js" type="module"></script>
+</body>
+
+</html>

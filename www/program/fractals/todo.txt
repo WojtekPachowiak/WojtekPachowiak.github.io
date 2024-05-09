@@ -1,0 +1,3 @@
+- different fractals
+- zooming and dragging improvement
+- coloring; luts, orbits

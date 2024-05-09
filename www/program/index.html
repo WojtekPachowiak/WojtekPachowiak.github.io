@@ -16,13 +16,13 @@
    
 </head>
 
-<body style="margin:0" class="overflow-hidden">
+<body class="overflow-hidden ">
 
-    <div class="fixed z-50 text-white font-mono m-10 p-2 bg-black bg-opacity-30  border border-black border-1">
-        <h1 class="text-lg text-center"> programming in the backrooms</h1>
-        <h1 class=" text-center text-sm"> (use on desktop) </h1>
+    <div class="my-screencenter-zhighest-panel my-paragraph-simple text-balance min-w-72">
+        <h1 class="text-center"> programming in the backrooms</h1>
+        <p class=" text-center text-sm"> (use on desktop) </p>
 
-        <ul id="list" class="list-disc list-inside space-y-1 pt-2"> 
+        <ul id="list" class="list-disc list-inside space-y-1 pt-2 "> 
             
         </ul>
     </div>
@@ -31,10 +31,14 @@
         const list = document.getElementById("list");
         const lis = [
             ["Silent Hill 1 clone", "island_game/index.html", "WIP"],
+            ["Audio spectrogram", "unfolding_spectrogram/index.html", "WIP"],
             ["Spritesheet cutter", "spritesheet_cutter/index.html"],
             ["Deathgrips Eh vfx", "deathgrips_eh/index.html", "WIP"],
             ["Gradient ball", "gradient_ball/index.html"],
             ["Mouse distortion", "mouse_distortion/index.html"],
+            ["2D Inverse Kinematics", "ik2d/index.html", "WIP"],
+
+            
 
         ];
         lis.forEach((item) => {
@@ -44,7 +48,6 @@
 
            
             a.target = "_blank";
-            a.classList.add("underline", "underline-offset-4", "decoration-sky-500", "hover:decoration-sky-300", "hover:underline-offset-2");
             a.textContent = item[0];
             ele.appendChild(a);
             list.appendChild(ele);
@@ -53,7 +56,7 @@
             if (item[2] === "WIP") {
                 const span = document.createElement("span");
                 span.textContent = " (WIP)";
-                span.classList.add("text-red-500");
+                // span.classList.add("text-red-500");
                 setInterval(() => {
                     span.classList.toggle("opacity-0");
                 }, 500);
@@ -65,9 +68,9 @@
 
     </script>
 
-    <p class="fixed bottom-0 left-0  m-5  text-white opacity-10	select-none pointer-events-none	z-50">photo source: i dont know</p>
+    <p class="fixed bottom-0 left-0  m-2  text-white opacity-10	select-none pointer-events-none	z-50">background image source: i dont know</p>
 
-    <img src="./evangelion rei backrooms.jpg" class="fixed w-screen h-screen"></img>
+    <img src="./evangelion rei backrooms.jpg" class="fixed w-screen h-screen "></img>
 
 
 </body>

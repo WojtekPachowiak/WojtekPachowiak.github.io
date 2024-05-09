@@ -2,18 +2,11 @@ import * as THREE from "three";
 import backgroundShader from "../resources/shaders/music_background.glsl?raw";
 import WebGL from "three/addons/capabilities/WebGL.js";
 
-// buttons
-import volume from "../resources/icons/sound-player-timeline/volume.svg";
-import nosound from "../resources/icons/sound-player-timeline/nosound.svg";
-import play from "../resources/icons/sound-player-timeline/play.svg";
-import pause from "../resources/icons/sound-player-timeline/pause.svg";
-
-
 // tracks
-import sirene2 from "../resources/sound/sirene2.mp3";
-import grimy_sheet_gonges from "../resources/sound/grimy_sheet_gonges.mp3";
-import nights_kurafiia from "../resources/sound/nights_kurafiia.mp3";
-import turetibrek from "../resources/sound/turetibrek.mp3";
+import sirene2 from "/resources/sound/sirene2.mp3";
+import grimy_sheet_gonges from "/resources/sound/grimy_sheet_gonges.mp3";
+import nights_kurafiia from "/resources/sound/nights_kurafiia.mp3";
+import turetibrek from "/resources/sound/turetibrek.mp3";
 
 
 // if (matchMedia("(pointer:coarse)").matches) {
@@ -39,7 +32,7 @@ function initBackground() {
   renderer.setSize(
     window.innerWidth,
     window.innerHeight,
-    dpi
+    false
   );
   renderer.setPixelRatio(dpi);
   document.body.appendChild(renderer.domElement);
@@ -94,7 +87,7 @@ function initBackground() {
     renderer.setSize(
       window.innerWidth,
       window.innerHeight,
-      dpi
+      false
     );
     renderer.setPixelRatio(dpi);
     // plane_mesh.scale.set(window.innerWidth / window.innerHeight, 1, 1);
@@ -113,42 +106,11 @@ function initAudioPlayer(){
   audio.loop = false;
   audio.volume = 0.5;
   
-  // slider fll color
-  const s = document.querySelector("#timeline-slider")
-  function progressColorFill() {
-    const sVal = s.value;
-    s.style.background = `linear-gradient(to right, #fff ${sVal}%, #555 ${sVal}%)`;
-  }
-  // by default disable the slider (no audio loaded)
-  s.disabled = true;
-  // by default play button is greyed out because no audio is loaded
-  document.querySelector("#play-pause button").style.filter = "invert(100%) brightness(0.5)";
   // on audio load, enable slider
   audio.onloadedmetadata = () => {
-    // change slider value
-    s.value = 0;
-  
-    // change slider color
-    progressColorFill();
-  
-    // enable interaction with slider
-    if (s.disabled) {
-      s.disabled = false;
-    }
-  
-    // change background-color of #timeline-slider::-webkit-slider-thumb to white
-    const style = document.createElement("style");
-    style.innerHTML = `
-      #timeline-slider::-webkit-slider-thumb {
-        background-color: white;
-      }
-    `;
-    document.head.appendChild(style);
   
     // change color of play button
-    document.querySelector("#play-pause button").style.filter = "brightness(1.0)";
-  
-  
+    document.querySelector("#play-pause button").classList.remove("disabled");
   
     // time in format 0:00 (minutes:seconds)
     const maxTime = Math.floor(audio.duration / 60) + ":" + Math.floor(audio.duration % 60).toString().padStart(2, "0");
@@ -156,17 +118,14 @@ function initAudioPlayer(){
   };
   
   
-  
-  
-  
   // on press loop button change loop value
   document.querySelector("#loop button").onclick = () => {
     audio.loop = !audio.loop;
     if (audio.loop) {
       //   filter: invert(100%) brightness(0.5);
-      document.querySelector("#loop").style.filter = "invert(100%) brightness(1.0)";
+      document.querySelector("#loop button").classList.remove("disabled");
     } else {
-      document.querySelector("#loop").style.filter = "invert(100%) brightness(0.5)";
+      document.querySelector("#loop button").classList.add("disabled");
     }
   };
   
@@ -180,69 +139,80 @@ function initAudioPlayer(){
     }
     if (audio.paused) {
       audio.play();
-      document.querySelector("#play-pause button img").src = pause;
+      document.querySelector("#play-pause button").innerHTML = "pause";
     } else {
       audio.pause();
-      document.querySelector("#play-pause button img").src = play;
+      document.querySelector("#play-pause button").innerHTML = "play";
     }
   };
   
   // on audio end, change play button icon
   audio.onended = () => {
-    document.querySelector("#play-pause button img").src = play;
+    document.querySelector("#play-pause button").innerHTML = "Play";
   };
   
   
-  // audio playing logic
-  s.oninput = () => {
-    // change audo time
-    audio.currentTime = audio.duration * (s.value / 100);
-    // change slider color
-    progressColorFill();
-  };
-  
-  
-  
-  const tracks = [
-    ["turetibrek", turetibrek],
-    ["nights_kurafiia", nights_kurafiia],
-    ["grimy_sheet_gonges", grimy_sheet_gonges],
-    ["sirene2", sirene2],
-  ];
-
-  // // push 60 copies of each track to the end of the array
-  // for (let i = 0; i < 60; i++) {
-  //   tracks.push(["turetibrek", turetibrek]);
-  // }
-
   // initial buttons triggering playing a track
-  const playlist = document.querySelector("#playlist ol")
-  const trackButtons = []
-  tracks.forEach((track) => {
-    // create li with button inside and inner text track name
-    const li = document.createElement("li");
-    const button = document.createElement("button");
-    button.innerText = track[0];
-    trackButtons.push(button);
-    // on click play audio
-    button.onclick = () => {
-      // make all the other buttons greyed out (change color's alpha to 0.8)
-      trackButtons.forEach((button) => {
-        button.style.color = "";
-      });
-      // make this button white
-      button.style.color = "rgba(255, 255, 255, 1.0)";
+  // const playlist_tracks = document.querySelectorAll("#playlist ol li button");
+  const tracks = [
+    // [track_name, track_year, track_path]
+    ["turetibrek", 2023, turetibrek],
+    ["nights_kurafiia", 2023, nights_kurafiia],
+    ["grimy_sheet_gonges", 2023, grimy_sheet_gonges],
+    ["sirene2", 2023, sirene2],
+  ];
+ 
+    
+  const track_buttons = [];
+  // iterate over playlist items
+  tracks.forEach((track) => {    
+    // create row for each track
+    let row = document.createElement("div");
+    row.innerHTML =
+    `
+    <li class="table-row">
+      <button class="trackBtn table-cell mr-4">
+        ${track[0]}
+      </button>
+      <span class="table-cell pr-4">${track[1]}</span>
+      <button class="downloadBtn table-cell bg-white align-middle material-icons-outlined  cursor-pointer">V</button>
+    </li>
+    `.trim();
+    row = row.children[0];
+    document.querySelector("#playlist ol").appendChild(row);
 
-      // change audio source
-      audio.src = track[1];
+    // get button inside li
+    const btn = row.querySelector(".trackBtn");
+    track_buttons.push(btn);
+    btn.onclick = () => {
+
+      // make all the other buttons greyed out (change color's alpha to 0.8)
+      track_buttons.forEach((button) => {
+        button.classList.remove("active");
+      });
+      // make this button active
+      btn.classList.add("active");
+
+      audio.src = track[2];
 
       // play audio
       audio.play();
     };
-    li.appendChild(button);
-    playlist.appendChild(li);
+
+    // on click downloadBtn
+    const downloadBtn = row.querySelector(".downloadBtn");
+    downloadBtn.onclick = () => {
+      // download
+      const a = document.createElement("a");
+      a.href = track[2];
+      a.download = track[0];
+      a.click();
+      a.remove();
+    };
   });
-  
+
+
+
   // change #current-time and #max-time spans
   audio.ontimeupdate = () => {
     console.log("ontimeupdate");
@@ -250,15 +220,7 @@ function initAudioPlayer(){
     // time in format 0:00 (minutes:seconds)
     const time = Math.floor(audio.currentTime / 60) + ":" + Math.floor(audio.currentTime % 60).toString().padStart(2, "0");
     document.querySelector("#current-time span").innerText = time;
-  
-    // change slider value
-    s.value = (audio.currentTime / audio.duration) * 100;
-  
-    // change slider color
-    progressColorFill();
   };
-  
-  
   
   // on pressing spacebar, play/pause audio
   document.body.onkeydown = (e) => {
@@ -271,16 +233,6 @@ function initAudioPlayer(){
   };
   
   
-  // on pressing #volume buton, mute/unmute audio
-  document.querySelector("#volume button").onclick = () => {
-    if (audio.muted) {
-      audio.muted = false;
-      document.querySelector("#volume button img").src = volume;
-    } else {
-      audio.muted = true;
-      document.querySelector("#volume button img").src = nosound;
-    }
-  };
     
 }
 

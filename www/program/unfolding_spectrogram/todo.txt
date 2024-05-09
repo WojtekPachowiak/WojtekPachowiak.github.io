@@ -1,0 +1,5 @@
+-allow microphone
+-keep clicked buttons active
+-check whether the fft range is correct. check logarithmic scale
+-draw fft frequency bars next to 3d grid
+-fix info panel

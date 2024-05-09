@@ -18,76 +18,33 @@
     <script src="index.js" type="module"></script>
 
 
-    <div class="m-10 text-center sm:text-left">
+    <div class="my-screencenter-zhighest-panel my-paragraph-simple-invert text-center   ">
       <ul
         id="menu-list"
-        class="bg-black bg-opacity-60 w-auto inline-block p-4 scale-x-150 origin-center sm:origin-left"
-        style="box-shadow: 0px 0px 3px black"
       >
+      <li>
+        <a href="image/index.html">Image</a>
+      </li>
+      <li>
+        <a href="sound/index.html">Sound</a>
+      </li>
+      <li>
+        <a href="program/index.html">Program</a>
+      </li>
+      <li class="my-2 border-t-0 bg-white opacity-50 h-0.5 scale-y-50"></li>
+      <!-- <li>
+        <a href="blog/index.html">Blog</a>
+      </li> -->
+      <!-- <li>
+        <a href="about/index.html">About</a>
+      </li> -->
+      <li>
+        <a href="contact/index.html">Contact</a>
+      </li>
+
+      
     </ul>
     </div>
 
-    <!-- </div> -->
-
-    <script>
-      // to each item in menu-list add tailwind classess
-      const menulist = document.getElementById("menu-list");
-
-      const lis = [
-        ["Image", "image/index.html"],
-        ["Sound", "sound/index.html"],
-        ["Program", "program/index.html"],
-        "separator",
-        // ["Camera", "camera_tracking.html"],
-        // ["Mouse", "mouse/mouse.html"],
-        // ["PS1", "island_game/index.html"],
-        // ["Sprite", "spritesheet_cutter/index.html"],
-        // "separator",
-        ["About", "about/index.html"],
-        ["Contact", "contact/index.html"],
-      ];
-
-      lis.forEach((item) => {
-        const ele = document.createElement("li");
-        if (item === "separator") {
-
-          ele.classList.add(
-            "my-2",
-            "border-t-0",
-            "bg-white",
-            "opacity-50",
-            "h-0.5",
-            "scale-y-50"
-          );
-          menulist.appendChild(ele);
-          return;
-        } 
-
-          ele.classList.add(
-            "text-white",
-            "text-3xl",
-            "font-['Courier_New']",
-            "opacity-70",
-            "hover:opacity-100",
-            "transition",
-            "delay-0",
-            "z-index-100"
-          );
-
-          // add bloom on hover
-          ele.addEventListener("mouseover", (e) => {
-            e.target.style.textShadow = "0px 0px 3px white";
-          });
-          ele.addEventListener("mouseout", (e) => {
-            e.target.style.textShadow = "none";
-          });
-
-          // add to the list
-          ele.innerHTML = `<a href="${item[1]}">${item[0]}</a>`;
-
-          // add to the list
-          menulist.appendChild(ele);
-      });
-    </script>
   </body>
 </html>

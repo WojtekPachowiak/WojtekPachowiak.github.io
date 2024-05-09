@@ -1,0 +1,118 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta
+      name="description"
+      content="Wojtek (Wojciech) Pachowiak's own webpage!"
+    />
+    <title>Wojtek Pachowiak</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0 user-scalable=0"
+    />
+    <link rel="icon" type="image/x-icon" href="../resources/icons/asuka.ico" />
+    <link rel="stylesheet" href="/index.css" />
+    <link rel="stylesheet" href="./index.css" />
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script> -->
+    
+    <!-- and it's easy to individually load additional languages -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/go.min.js"></script> -->
+    
+</head>
+
+<body class="bg-teal-200  h-full">
+    
+    <script type="module">
+        import hljs from 'highlight.js';
+
+        import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+        // embed markdown in articlemy
+        async function fetchText(url) {
+            const response = await fetch(url);
+            return response.text();
+        }
+        fetchText("/blog/loremipsum.md").then(text => {
+            document.getElementById("articlemy").innerHTML = marked.parse( text );
+            hljs.highlightAll();
+        } );
+        // const text = await fetch("/blog/loremipsum.md")
+        // document.getElementById("articlemy").innerHTML = markdown.toHTML( "# Hello *World*! " );
+        
+        </script>
+
+
+<!-- <script src="index.js" type="module"></script> -->
+
+<div class=" h-full w-10/12 m-auto  ">
+    <div id="articlemy" class=" my-paragraph-simple font-sans p-10 h-auto">
+    </div>
+</div>
+<!-- shader background -->
+<!-- <canvas id="background" class="fixed top-0 left-0 w-screen h-screen z-0" style="filter: hue-rotate(323deg);"></canvas>  -->
+
+<!-- black rect at the center with text inside-->
+<!-- <div class="fixed top-0 left-0 w-screen h-screen  z-50 flex items-center justify-center pointer-events-none	">
+    <div class="bg-white bg-opacity-100 p-5 text-black font-mono border-1 border border-black pointer-events-none	 ">
+        <div class="flex flex-col items-center justify-center space-y-2 pointer-events-auto">
+            
+            <p >wojtekpaszo at gmail com</p>
+            <p >
+                <a href="https://www.github.com/WojtekPachowiak" target="_blank" class="underline ">github.com/WojtekPachowiak</a>
+            </p>
+            <p >
+                <a href="https://www.linkedin.com/in/wojciech-pachowiak" target="_blank" class="underline">linkedin.com/in/wojciech-pachowiak</a>
+            </p>
+        </div>
+    </div>
+</div>   -->
+
+
+
+
+<!-- 
+    <img id="my_face" style="-webkit-tap-highlight-color: transparent;" src="resources/image/myface/my_face_closed.jpg"
+    class="face_gramophone"></img>
+    <div class="arrow_nose_bg">
+        <img id="arrow" class="arrow_nose shake-constant shake-crazy"
+        style="-webkit-tap-highlight-color: transparent;" src="resources/icons/curoserwindows.svg"></img>
+        
+        <div id="text-box" class="fixed top-[80%] left-1/2 w-screen  text-center text-2xl origin-center -translate-x-1/2  text-white pointer-events-auto" style="visibility: hidden;">
+            <ul class="list-disc list-inside">
+                <li>
+                    wojtekpaszo at gmail com
+                </li>
+                <li>
+                    
+                    <a href="https://www.github.com/WojtekPachowiak" target="_blank" class="underline ">github.com/WojtekPachowiak</a>
+                </li>
+                <li>
+                    <a href="https://www.linkedin.com/in/wojciech-pachowiak/" target="_blank" class="underline">linkedin.com/in/wojciech-pachowiak/</a>
+                </li>
+            </ul>
+            
+        </div>
+    </div > -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</body>
+<!-- <script>
+setTimeout(() => {
+    hljs.highlightAll();
+}, 1000);
+</script> -->
+
+</html>

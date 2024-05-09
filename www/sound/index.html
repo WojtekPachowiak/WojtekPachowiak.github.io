@@ -12,74 +12,70 @@
       content="width=device-width, initial-scale=1.0 user-scalable=0"
     />
     <link rel="icon" type="image/x-icon" href="../resources/icons/asuka.ico" />
-    <link rel="stylesheet" href="../index.css" />
+    <link rel="stylesheet" href="/index.css" />
   <link rel="stylesheet" href="music.css" />
 
   <!-- play icon -->
-  <link rel="stylesheet"
+  <!-- <link rel="styleshee t"
     href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous"> -->
 
-
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    rel="stylesheet">
 </head>
 
-<body>
+<body class="overflow-hidden">
   <script src="music.js" type="module"></script>
 
-  <!-- black gradient on the right side of the screen -->
-  <div id="gradient-sidebar"></div>
+  <!-- FLEX COL -->
+  <div class="flex flex-col justify-center items-center my-screencenter-zhighest-panel gap-1 h-full">
 
-  <!-- playlist -->
-  <div id="playlist">
-    <ol dir='rtl' style="list-style-type: none;" reversed>
-    </ol>
+    <!-- playlist -->
+    <div id="playlist" class="my-paragraph-simple overflow-y-auto  w-full">
+      <ol class="list-decimal	list-inside  table table-auto">
+            <!-- AUDO ADDED FROM SCRIPT  -->
+      </ol>
+    </div>
+    
+    <!-- music timeline on middle bottom -->
+  
+    <div id="audio-player" class="flex justify-center items-center flex-row my-paragraph-simple space-x-3 w-full">
+      <div id="play-pause">
+        <button class="disabled w-[5ch]">
+          pause
+        </button>
+      </div>
+      
+      <div id="loop">
+        <button class="disabled ">
+          loop
+        </button>
+      </div>
+   
+      <div class="flex flex-row">
+        <div id="current-time">
+          <span class="w-[4ch]">0:00</span>
+        </div>
+  
+        <div>
+          <span>/</span>
+        </div>
+  
+        <div id="max-time">
+          <span class="w-[4ch]">0:00</span>
+        </div>
+
+      </div>
+    </div>
+
+
+    
+    
+    
   </div>
-
-  <!-- music timeline on middle bottom -->
-
-  <div id="audio-player" class="d-flex justify-content-center align-items-center">
-
-    <div id="play-pause">
-      <button>
-        <img src="../resources/icons/sound-player-timeline/pause.svg" alt="buttonpng" border="0" />
-      </button>
-    </div>
-
-    <div id="loop">
-      <button>
-        <img src="../resources/icons/sound-player-timeline/loop.svg" alt="buttonpng" border="0" />
-      </button>
-    </div>
-
-
-    <div id="current-time">
-      <span>0:00</span>
-    </div>
-
-    <div id="timeline"> 
-      <!-- slider -->
-      <input type="range" id="timeline-slider" min="0" max="100" value="0" step="0.1"  />
-    </div>
-
-    <div id="max-time">
-      <span>0:00</span>
-    </div>
-
-    <div id="volume">
-      <button>
-        <img src="../resources/icons/sound-player-timeline/volume.svg" alt="buttonpng" border="0" />
-      </button>
-      <!-- <div id="volume-slider">
-        <input type="range" id="volume-slider" min="0" max="100" value="100" />
-      </div> -->
-    </div>
-
-  </div>
-
-
-
-
-</body>
-
-</html>
+    
+    
+  </body>
+  
+  </html>
