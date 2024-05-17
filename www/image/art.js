@@ -57,87 +57,82 @@ let images = [
   [potwur, "potwur (2020)"],
 ];
 
-let grid = document.getElementsByClassName("container")[0];
-images.forEach((img) => {
+let grid = document.getElementById("gridContainer");
+images.forEach((img, i) => {
   let path = img[0];
-  let cell = document.createElement("div");
-  cell.className = "cell";
 
   let content;
   if (path.endsWith(".mp4")) {
+    
     if (img.length == 3) {
       // add time offset to video source
       path = path + "#t=" + img[2];
     } 
+    
     content = `
-            <div>
-            <img class="video-icon" src="${playIcon}"></span>
-            <video class="media">
-            <source src="${path}" type="video/mp4">
-            
-            Your browser does not support the video tag.
-            </video>
-            <span class="media-title">${img[1]}</span>
-
-            </div>
-      
+      <div class="cell group">
+        <video class="cell-media group-hover:scale-105 transition" loading="lazy" src="${path}" alt="video" /></video>
+        <span class="material-symbols-outlined play-icon">play_arrow</span>
+        <span class="cell-subtitle invisible group-hover:visible ">${img[1]}</span>
+      </div>
       `;
   } else if (path.endsWith(".jpg")) {
     content = `
-        <div>
-        <img class="media" loading="lazy" src="${path}" alt="image" />
-        <span class="media-title">${img[1]}</span>
-        </div>
+      <div class="cell group">
+        <img class="cell-media group-hover:scale-105 transition" loading="lazy" src="${path}" alt="image" /></img>
+        <span class="cell-subtitle invisible group-hover:visible ">${img[1]}</span>
+      </div>
       `;
   } else {
     throw "Unknown path type";
   }
 
-  if (matchMedia("(pointer:fine)").matches) {
-    console.log("fine pointer");
-    // on hover show title
-    cell.onmouseover = () => {
-      cell.getElementsByClassName("media-title")[0].style.display = "block";
-    };
-    cell.onmouseout = () => {
-      cell.getElementsByClassName("media-title")[0].style.display = "none";
-    };
-  }
-  
+  // create element with html of content
+  let cell = document.createElement("div");
+  cell.innerHTML = content;  
+  cell = cell.children[0];
 
-  cell.innerHTML = content;
   grid.appendChild(cell);
 });
 
-// ///
+initPopup();
 
-document.querySelectorAll(".cell .media").forEach((media) => {
-  media.onclick = () => {
-    // show popup window
-    document.querySelector(".popup-image").style.display = "block";
-    // set image in popup window
-    if (media.tagName == "VIDEO") {
-      media = media.cloneNode(true);
-      media.controls = true;
-      media.autoplay = true;
-      media.loop = true;
-      // remove time offset from video source
-      media.getElementsByTagName("source")[0].src = media
-        .getElementsByTagName("source")[0]
-        .src.split("#")[0];
-    }
 
-    document.querySelector(".popup-image").innerHTML = media.outerHTML;
+// /// POPUP
+function initPopup(){
+
+  document.querySelectorAll(".cell-media").forEach((media) => {
+    media.onclick = () => {
+      console.log(media);
+      // show popup window
+      console.log("showing");
+      document.querySelector("#popup-background").style.display = "flex";
+
+      const image =document.querySelector("#popup-image");
+      const video = document.querySelector("#popup-video");
+
+      // if media is image, hide video
+      if (media.tagName == "IMG") {
+        image.src = media.src;
+        image.style.display = "flex";
+        video.style.display = "none";
+        
+      }
+      else if (media.tagName == "VIDEO") {
+        image.style.display = "none";
+        video.style.display = "flex";
+        video.controls = true;
+        video.autoplay = true;
+        video.loop = true;
+        // remove time offset from video source before setting it
+        video.src = media.src.split("#")[0];
+      }      
+    };
+  });
+  
+  // hide popup window on click anywhere
+  document.querySelector("#popup-background").onclick = () => {
+    document.querySelector("#popup-background").style.display = "none";
   };
-});
-
-// // "X" button to close popup window
-// let s = document.querySelector(".popup-image span")
-// if (s != null) {
-//   s.onclick = () => { document.querySelector(".popup-image").style.display = "none"; }
-// };
-
-// hide popup window on click anywhere
-document.querySelector(".popup-image").onclick = () => {
-  document.querySelector(".popup-image").style.display = "none";
-};
+  
+}

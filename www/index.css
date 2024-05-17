@@ -7,12 +7,47 @@ body{
 }
 
 ::selection {
-  background-color: #995c00;
+  background-color: #9bdeff;
   color: #fff;
+}
+
+@layer base{
+  h1 {
+    @apply text-lg font-bold;
+  }
+
 }
 
 @layer components {
   .btn-simple {
-    @apply bg-white text-black p-1 border-black border cursor-pointer my-1 hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed;; 
+    @apply bg-white text-black p-1 px-2 border-black border cursor-pointer my-1 hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed;; 
   }
+
+  .btn-simple-invert {  
+    @apply font-mono bg-black text-white p-1 px-2 border-white border cursor-pointer hover:bg-white hover:text-black disabled:opacity-50 disabled:cursor-not-allowed;; 
+  }
+
+  .my-paragraph-simple {
+    @apply text-black font-mono p-4 px-5 border border-black border-2 bg-white ;
+  }
+
+  .my-paragraph-simple-invert {
+    @apply text-white font-mono p-4 px-5 border border-white border-2 bg-black;
+  }
+
+  .flex-center {
+    @apply w-full h-full flex items-center justify-center;
+  }
+
+  
+}
+
+
+/* disable focus border from button */
+button:focus{
+  outline: none;
+}
+
+a {
+  @apply underline underline-offset-2 hover:underline-offset-4;
 }

@@ -14,6 +14,7 @@ export default defineConfig({
         image: resolve(__dirname, "image/index.html"),
         contact: resolve(__dirname, "contact/index.html"),
         sound: resolve(__dirname, "sound/index.html"),
+        // blog: resolve(__dirname, "blog/index.html"),
         // diary: resolve(__dirname, "diary/index.html"),
         program: resolve(__dirname, "program/index.html"),
         program_spritesheet_cutter: resolve(__dirname, "program/spritesheet_cutter/index.html"),
@@ -21,6 +22,10 @@ export default defineConfig({
         // program_deathgrips_eh: resolve(__dirname, "program/deathgrips_eh/index.html"),
         // program_mouse_distortion: resolve(__dirname, "program/mouse_distortion/index.html"),
         program_gradient_ball: resolve(__dirname, "program/gradient_ball/index.html"),
+        program_unfolding_spectrogram: resolve(__dirname, "program/unfolding_spectrogram/index.html"),
+        program_ik2d: resolve(__dirname, "program/ik2d/index.html"),
+
+        
         // camera_tracking: resolve(__dirname, "camera_tracking.html"),
         // islandgame: resolve(__dirname, "island_game/index.html"),
         // spritesheet_cutter: resolve(__dirname, "spritesheet_cutter/index.html"),
