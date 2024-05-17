@@ -75,7 +75,7 @@ class BallTrace {
       {
         color1: "oklab(90% 10% 70%)",
         color2: "oklab(32% 61% -10%)",
-        gradientSpread: 1.1,
+        gradientSpread: 1.7,
       },
     ];
 

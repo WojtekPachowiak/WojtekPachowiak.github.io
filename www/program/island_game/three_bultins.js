@@ -8,7 +8,10 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 export function initThree() {
 
   const cavas = document.getElementById("output_canvas");
-  g.RENDERER = new THREE.WebGLRenderer({ antialias: false, canvas: cavas});
+  g.RENDERER = new THREE.WebGLRenderer({ 
+    antialias: false, 
+    canvas: cavas
+  });
   // g.RENDERER.setSize(g.SCREEN.TARGET_Y_RESOLUTION * g.SCREEN.ASPECT_RATIO, g.SCREEN.TARGET_Y_RESOLUTION, false);
   g.RENDERER.setSize(window.innerWidth, window.innerHeight);
   g.RENDERER.setPixelRatio(g.DPI);
@@ -19,6 +22,10 @@ export function initThree() {
   // g.RENDERER.domElement.style.top = "0";
   // g.RENDERER.domElement.style.left = "0";
 
+  g.SCREEN.RESOLUTION.set(
+    Math.floor(g.SCREEN.TARGET_Y_RESOLUTION * g.SCREEN.ASPECT_RATIO),
+    Math.floor(g.SCREEN.TARGET_Y_RESOLUTION)
+  );
   
 
   g.RENDERER.domElement.style.zIndex = "-1";
@@ -46,6 +53,11 @@ export function initThree() {
     g.CAMERA_FAR
   );
   g.CAMERA.rotation.order = "YXZ";
+  g.CAMERA.aspect = g.SCREEN.ASPECT_RATIO;
+
+  g.CAMERA.updateProjectionMatrix();
+
+  
   scene.add(g.CAMERA);
 
   // octree

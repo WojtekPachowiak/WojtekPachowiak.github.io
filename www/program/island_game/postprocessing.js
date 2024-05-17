@@ -14,6 +14,7 @@ export function initPostProcessing() {
       tDiffuse: { value: null },
       uResolution: { value: g.SCREEN.RESOLUTION },
       uBlackBarsT: { value: 0 },
+      uTime: { value: 0 },
     },
     vertexShader: /* glsl */ `
     
@@ -27,10 +28,12 @@ export function initPostProcessing() {
                         }`,
     fragmentShader: /* glsl */ `
                         
-    
+                        #define PI 3.14159265358979323846
+
                         uniform sampler2D tDiffuse;
                         uniform vec2 uResolution;
                         uniform float uBlackBarsT;
+                        uniform float uTime;
     
                         varying vec2 vUv;
     
@@ -41,16 +44,7 @@ export function initPostProcessing() {
                             15.,7.,13.,5.
                         );
     
-                        //  float psx_dither_table[16] = float[16](
-                        //     0.,8.,2.,10.,
-                        //     12.,4.,14.,6.,
-                        //     3.,11.,1.,9.,
-                        //     15.,7.,13.,5.
-                        //     );
-    
                         
-                        
-    
     
                         vec3 dither(vec3 color, vec2 p){
                             //extrapolate 16bit color float to 16bit integer space
@@ -86,6 +80,8 @@ export function initPostProcessing() {
                             //bring color back to floating point number space
                             color/=255.; 
 
+                            
+
                            
 
                             return color;
@@ -95,6 +91,10 @@ export function initPostProcessing() {
                           return floor(uv  * res ) / res;
                         }
 
+                        float pixelate(float t, float res){
+                          return floor(t  * res ) / res;
+                        }
+
                         vec3 posterize(vec3 color, float levels) {
                             color *= levels;
                             color = floor(color);
@@ -102,14 +102,62 @@ export function initPostProcessing() {
                             return color;
                         }
 
+                        vec3 vignette(vec2 uv, float amount){
+                            float dist = distance(uv, vec2(0.5));
+                            return mix(vec3(0.), vec3(1.), smoothstep(0.5, 0.5+amount, dist));
+                        }
+
+                        float rand (vec2 st) {
+                                return fract(sin(dot(st.xy,
+                                                    vec2(12.9898,78.233)))*
+                                    43758.5453123);
+                            }
+
+
+
+                            float noise(vec2 p, float freq ){
+                              float unit = 200./freq;
+                              vec2 ij = floor(p/unit);
+                              vec2 xy = mod(p,unit)/unit;
+                              //xy = 3.*xy*xy-2.*xy*xy*xy;
+                              xy = .5*(1.-cos(PI*xy));
+                              float a = rand((ij+vec2(0.,0.)));
+                              float b = rand((ij+vec2(1.,0.)));
+                              float c = rand((ij+vec2(0.,1.)));
+                              float d = rand((ij+vec2(1.,1.)));
+                              float x1 = mix(a, b, xy.x);
+                              float x2 = mix(c, d, xy.x);
+                              return mix(x1, x2, xy.y);
+                            }
+
+                            float pNoise(vec2 p, int res){
+                              float persistance = .5;
+                              float n = 0.;
+                              float normK = 0.;
+                              float f = 4.;
+                              float amp = 1.;
+                              int iCount = 0;
+                              for (int i = 0; i<50; i++){
+                                n+=amp*noise(p, f);
+                                f*=2.;
+                                normK+=amp;
+                                amp*=persistance;
+                                if (iCount == res) break;
+                                iCount++;
+                              }
+                              float nf = n/normK;
+                              return nf*nf*nf*nf;
+                            }
+
                         void main() {
     
-                            vec2 pos = gl_FragCoord.xy / uResolution.y;
                             
-                            //pixelate
-                            vec2 uv = vUv;
-                            uv = pixelate(uv, uResolution);
-    
+                          
+                          
+                          //pixelate
+                          vec2 uv = vUv;
+                            
+                            
                             // sample tex
                             vec4 texel_wa = texture2D( tDiffuse, uv).rgba;
                             vec3 texel = texel_wa.rgb;
@@ -117,15 +165,23 @@ export function initPostProcessing() {
 
                             
                             //scaling gl_FragCoord makes it so that the same value from dither table is used for each pixel in a block (texel)
-                            texel = dither(texel, uv *uResolution );
+                            texel = dither(texel, floor(uv * uResolution) );
+                            
                             
                             // posterize
-                            float levels = 128.0;
+                            float levels = 32.0;
                             texel = posterize(texel, levels);
                             
-                                                    
                             
-
+                            //// apply noise, changing with time
+                            float rtime = pixelate(uTime,130.) *0.1;
+                            // float r = rand(vec2(uv.x, uv.y)+rtime);
+                            float r = pNoise(vec2(uv.x, uv.y)+uTime, 1000);
+                            // r = r * 2. - 1.;
+                            r *= 0.9;
+                            texel += r;
+                            
+                            
                             // checked that empirically: in Silent Hill in almost completely black scene the lowest value is 0.09 (but in menu it's 0.0!)
                             texel = clamp(texel, 0.09, 1.0);
                             
@@ -138,6 +194,7 @@ export function initPostProcessing() {
 
                             // just color alpha
                             // gl_FragColor = vec4(vec3(opacity), 1.0 );
+
 
                             gl_FragColor = vec4(texel, opacity );
 

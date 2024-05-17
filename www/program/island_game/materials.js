@@ -232,8 +232,7 @@ function modifyPhongMaterial(material) {
   // material.opacity = 0.5;
   material.onBeforeCompile = (shader) => {
     material.userData.shader = shader;
-    console.log("onBeforeCompile");
-    console.log(shader);
+
 
     // define custom uniform "uResolution" for the shader
     shader.uniforms.uResolution = { value: g.SCREEN.RESOLUTION };
@@ -270,7 +269,7 @@ function modifyPhongMaterial(material) {
                       // vertex snapping
                       vec4 _mypos = projectionMatrix * mvPosition;
                       vec2 _myres = uResolution * uVertexJitterStrength;
-                      _mypos.xy = floor(_myres * _mypos.xy / _mypos.w) / _myres * _mypos.w;
+                      // _mypos.xy = floor(_myres * _mypos.xy / _mypos.w) / _myres * _mypos.w;
                       gl_Position = _mypos;
                       
                       // affine texture mapping

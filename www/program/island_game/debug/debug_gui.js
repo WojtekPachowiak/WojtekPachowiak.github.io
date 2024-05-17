@@ -1,10 +1,11 @@
-import { setPlayerControlType } from "../player.js";
+import { setPlayerControlType } from "../player/player.js";
 import { g } from "../globals.js";
 import * as THREE from "three";
 import GUI from "lil-gui";
 import {DEBUG_STATES} from "./debug_data.js";
-import { buildWireframes, updateWireframe, variableTracking, initDebugHelpers } from "./debug_helpers.js";
-import {initDebugOverrides} from "./overrides.js";
+import { buildWireframes, updateWireframe, variableTracking, initDebugHelpers } from "./debug_functions.js";
+import {initDebugOverrides} from "./debug_overrides.js";
+import "./debug_keytriggers.js";
 
 export function initDebugGUI(){
   const gui = new GUI();

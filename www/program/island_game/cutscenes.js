@@ -1,6 +1,6 @@
 import { g,m } from "./globals.js";
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export function initCutscenes() {
   g.CUTSCENES = {
@@ -24,8 +24,16 @@ export function initCutscenes() {
       ],
       "harry_mason"
     ),
+    test: new Cutscene(
+      [
+        new Keyframe("□□□□□□ □□□□ □□! □□□ □□□□□?", 2),
+        new Keyframe("□□□□ □□□□...", 3),
+      ]
+    ),
   };
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export class CutsceneTriggerCondition {
   constructor() {
@@ -33,6 +41,10 @@ export class CutsceneTriggerCondition {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/**
+ * Single keyframe of a cutscene
+ */
 class Keyframe {
   /**
    * @param {string} text 
@@ -44,79 +56,106 @@ class Keyframe {
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/**
+ * Stores cutscene info
+ */
 export class Cutscene {
   /**
    * @param {Keyframe[]} keyframes
-   * @param {string} cameraTargetName
-   * @param {CutsceneTriggerCondition} triggerCondition
+   * @param {string | null} cameraTargetName
+   * @param {CutsceneTriggerCondition | null} triggerCondition
    */
-  constructor(keyframes, cameraTargetName, triggerCondition) {
+  constructor(keyframes, cameraTargetName=null, triggerCondition=null) {
     this.keyframes = keyframes;
-    this.cameraTarget = m.OBJECT_NAME_TO_POSITION[cameraTargetName];
+    this.cameraTarget =
+      cameraTargetName ? m.OBJECT_NAME_TO_POSITION[cameraTargetName] : null;
     this.triggerCondition = triggerCondition;
     this.duration = keyframes.reduce((acc, kf) => acc + kf.time, 0);
     /** @type {"waiting" | "playing" | "finished"} */
-    this.state = "waiting";
+    this.state = "finished";
     this.currentKeyframe = 0;
-    this.currentTime = 0;
+    this.currentKeyframeTime = 0;
+    this.timeout = null;
   }
 
   // check if cutscene should start
   checkTrigger() {
     if (this.triggerCondition.condition()) {
-      startCutscene(this);
+      this.start();
     }
   }
 
   scheduleNextKeyframe() {
-    setTimeout(() => {
+    const offset =1;
+    this.timeout = setTimeout(() => {
       this.currentKeyframe++;
       if (this.currentKeyframe >= this.keyframes.length) {
         this.state = "finished";
       } else {
         this.state = "waiting";
       }
-    }, this.keyframes[this.currentKeyframe].time * 1000);
+    }, (this.keyframes[this.currentKeyframe].time + offset) * 1000);
     
+    this.currentKeyframeTime = 0;
     this.state = "playing";
-    g.UI.TEXT = this.keyframes[this.currentKeyframe].text;
+    g.UI.TEXT.TEXT = this.keyframes[this.currentKeyframe].text;
+  }
+
+  start() {    
+    this.reset();
+    this.state = "waiting";
+    
+
+    // if camera target is set, look at it
+    if (this.cameraTarget) {
+      g.CAMERA_LAST_ORIENTATION.copy(g.CAMERA.rotation);
+      g.CAMERA.lookAt(this.cameraTarget);
+      g.PLAYER.CONTROL_TYPE = "CUTSCENE";
+    }
+  }
+
+  end() {
+    if (this.cameraTarget) {
+      g.CAMERA.rotation.copy(g.CAMERA_LAST_ORIENTATION);
+      g.PLAYER.CONTROL_TYPE = "FPS";
+    }
+    this.reset();
+
+    
+  }
+
+  reset() {
+    this.state = "finished";
+    this.currentKeyframe = 0;
+    this.currentKeyframeTime = 0;
+    g.UI.TEXT.TEXT = "";
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+    }
+  }
+
+  update() {
+    if (this.state === "finished") {
+      this.end();
+    }
+
+    
+    if (this.state === "waiting") {
+      this.scheduleNextKeyframe();
+    }
+
+    this.currentKeyframeTime += g.DELTA_TIME;
+    // typing text effect (instead of just showing it all at once)
+    g.UI.TEXT.TEXT_T =
+      this.currentKeyframeTime / this.keyframes[this.currentKeyframe].time ;
   }
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-
-/** @param {Cutscene} cutscene */
-function startCutscene(cutscene) {
-  g.CUTSCENE = cutscene;
-  g.CAMERA_LAST_ORIENTATION.copy(g.CAMERA.rotation);
-  g.CAMERA.lookAt(cutscene.cameraTarget);
-  g.PLAYER.CONTROL_TYPE = "CUTSCENE";
-}
-
-
-function endCutscene() {
-  g.CAMERA.rotation.copy(g.CAMERA_LAST_ORIENTATION);
-  g.CUTSCENE = null;
-  g.PLAYER.CONTROL_TYPE = "FPS";
-  g.UI.TEXT = "";
-}
-
-
-export function updateCutscene() {
-
-  if (g.CUTSCENE.state === "finished") {
-    endCutscene();
-  }
-
-  g.CUTSCENE.currentTime += g.DELTA_TIME;
-
-  if (g.CUTSCENE.state === "waiting") {
-    g.CUTSCENE.scheduleNextKeyframe();
-  }
-}
 
 
 

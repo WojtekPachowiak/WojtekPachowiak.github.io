@@ -2,35 +2,39 @@ import WebGL from "three/addons/capabilities/WebGL.js";
 import { g } from "./globals.js";
 import { snowflakesInit, snowflakesUpdate } from "./snowflakes.js";
 import { initMaterials } from "./materials.js";
-import { playerUpdate, initPlayer } from "./player.js";
+import { playerUpdate, initPlayer } from "./player/player.js";
 import { initDebugGUI } from "./debug/debug_gui.js";
 import { initUI, resizeUI, renderUI } from "./ui.js";
 import { initPostProcessing } from "./postprocessing.js";
 import { initThree } from "./three_bultins.js";
 import { init3DModels } from "./models3d.js";
-import { updateCutscene, initCutscenes } from "./cutscenes.js";
+import { initCutscenes } from "./cutscenes.js";
 import { initInput } from "./input.js";
 import { screenspaceRaycast } from "./raycast.js";
 import { projectDecal } from "./decals.js";
 import { initPhysics } from "./physics.js";
+import {initText} from "./text.js";
+import { initAudio } from "./audio.js";
+import { updateViewport } from "./screen.js";
 
 if (WebGL.isWebGL2Available() === false) {
   document.body.appendChild(WebGL.getWebGL2ErrorMessage());
 }
 
-
-
 await initPhysics();
 initThree();
 initMaterials();
+initAudio();
 init3DModels();
 initPlayer();
-initUI();
 initInput();
 snowflakesInit();
 initPostProcessing();
 updateViewport();
+initText();
+initUI();
 initDebugGUI();
+initCutscenes();
 animate();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -40,12 +44,18 @@ animate();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // MAIN LOOP
-function animate() {
+async function animate() {
   requestAnimationFrame(animate);
 
   g.DELTA_TIME = Math.min(0.05, g.CLOCK.getDelta());
-
   g.TIME = performance.now() / 1000 + 0;
+
+  g.IS_START_SCREEN = false;
+  // if in start screen
+  if (g.IS_START_SCREEN){
+    await renderUI();
+    return;
+  }
 
   playerUpdate(g.DELTA_TIME);
   snowflakesUpdate(g.DELTA_TIME);
@@ -54,9 +64,11 @@ function animate() {
   if (intersection && intersection.distance < 2) {
     // change pointer image
     console.log("hovering over interactable");
-    document.getElementById("cursor-custom").style.opacity = g.CURSOR_HOVER_OPACITY;
+    document.getElementById("cursor-custom").style.opacity =
+      g.CURSOR_HOVER_OPACITY;
   } else {
-    document.getElementById("cursor-custom").style.opacity = g.CURSOR_DEFAUTL_OPACITY;
+    document.getElementById("cursor-custom").style.opacity =
+      g.CURSOR_DEFAUTL_OPACITY;
   }
 
   // call all main loop callbacks (its a dict of functions)
@@ -65,7 +77,7 @@ function animate() {
   }
 
   if (g.CUTSCENE !== null) {
-    updateCutscene();
+    g.CUTSCENE.update();
   }
 
   g.PHYSICS.WORLD.step();
@@ -74,18 +86,14 @@ function animate() {
   //g.RENDERER.render(scene, g.CAMERA);
   // if (f % RENDER_EVERY_N_FRAME === 0)
   if (g.TIME_SINCE_LAST_FRAME > 1 / g.FPS) {
-    render();
+    await render();
     g.TIME_SINCE_LAST_FRAME = 0;
   } else {
     g.TIME_SINCE_LAST_FRAME += g.DELTA_TIME;
   }
 
-  // after 5 seconds, change text
-  // if (g.TIME > 5) {
-  //   g.UI.TEXT = "Hello, world!";
-  //   console.log("changing text");
-  //   redrawText();
-  // }
+  g.POSTPROCESSING_PASSES.PS1.uniforms.uTime.value = g.TIME;
+
 
   // controls.update( clock.getDelta() );
 }
@@ -94,7 +102,7 @@ function animate() {
 g.RENDERER.autoClear = false;
 g.RENDERER.setClearColor(0xf700ff, 0.0);
 
-function render() {
+async function render() {
   // g.CAMERA.layers.set(g.LAYERS.DEFAULT);
   // g.SCENE.background = new THREE.Color(g.FOG_COLOR);
   g.POSTPROCESSING_COMPOSERS.MAIN.render();
@@ -103,83 +111,8 @@ function render() {
   // g.CAMERA.layers.set(g.LAYERS.TEXT);
   // g.RENDERER.render(g.SCENE, g.CAMERA);
 
-  renderUI();
+  await renderUI();
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
-
-// onresize
-function updateViewport() {
-  // g.CAMERA.aspect = window.innerWidth / window.innerHeight;
-  g.CAMERA.aspect = 4 / 3;
-
-  g.CAMERA.updateProjectionMatrix();
-
-  g.SCREEN.RESOLUTION.set(
-    g.SCREEN.TARGET_Y_RESOLUTION * g.CAMERA.aspect,
-    g.SCREEN.TARGET_Y_RESOLUTION
-  );
-
-  // resizeUI();
-
-  /////////////////////// UPDATE UNIFORMS
-  // > PS1 Material
-  if (g.MATERIALS.PS1.userData.shader) {
-    g.MATERIALS.PS1.userData.shader.uniforms.uResolution.value =
-      g.SCREEN.RESOLUTION;
-  }
-  // > PS1_UI Postprocessing
-  // g.POSTPROCESSING_PASSES.PS1_UI.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
-  // > PS1_MAIN Postprocessing
-  g.POSTPROCESSING_PASSES.PS1.uniforms.uResolution.value = g.SCREEN.RESOLUTION;
-
-  const whRatio = window.innerWidth / window.innerHeight;
-
-  if (whRatio > 4 / 3) {
-    g.RENDERER.setSize(window.innerWidth, window.innerWidth * (3 / 4), false);
-  } else {
-    g.RENDERER.setSize(window.innerHeight * (4 / 3), window.innerHeight, false);
-  }
-  console.log("resizing renderer");
-  g.RENDERER.setSize(window.innerWidth, window.innerWidth , false);
-
-  // set canvas element size so that aspect ratio is maintained
-  
-  // 4 * x = window.innerWidth
-  // 3 * x = height
-
-  let width, height;
-  // if (window.innerWidth < window.innerHeight) {
-    width = window.innerWidth;
-    height = window.innerWidth * (3 / 4);
-  if (height > window.innerHeight) {
-    height = window.innerHeight;
-    width = window.innerHeight * (4 / 3);
-  }
-  
-  // } else {
-  //   width = window.innerHeight * (4 / 3);
-  //   height = window.innerHeight;
-  // }
-  
-  g.RENDERER.domElement.style.width = width + "px";
-  g.RENDERER.domElement.style.height = height + "px";
-
-
-  // g.RENDERER.setSize(window.innerWidth, window.innerHeight, false);
-
-  // if (g.CAMERA.aspect > 1) {
-  //   g.RENDERER.domElement.style.width = "100vw";
-  //   g.RENDERER.domElement.style.height = `calc(100vw * ${1 / g.CAMERA.aspect})`;
-  // } else {
-  //   g.RENDERER.domElement.style.width = `calc(100vw * ${g.CAMERA.aspect})`;
-  //   g.RENDERER.domElement.style.height = "100vh";
-  // }
-
-
-  // g.RENDERER.domElement.style.width = "100svw";
-  // g.RENDERER.domElement.style.height = "100svh";
-  // g.RENDERER.setPixelRatio(g.DPI);
-}
-window.onresize = updateViewport;

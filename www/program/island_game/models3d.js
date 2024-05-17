@@ -3,136 +3,122 @@ import { g } from "./globals.js";
 import * as THREE from "three";
 import {createPS1Material} from "./materials.js";
 import {initStaticColliders} from "./physics.js";
+import { findSound } from "./audio.js";
+import {triangleWave} from "./utils.js";
 
+function processSoundEmitter(object3d){
+  // remove suffix and ignore last 3 digits
+  const soundName = object3d.name.split("__")[1].slice(0, -3);
+    const sound = findSound(soundName);
+    object3d.visible = false;
+    object3d.userData.sound = sound;
+    console.log(object3d);
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+function specialMeshProcessing(mesh){
+
+
+  //// WATER
+  if (mesh.name == "WATER"){
+    // move mesh sinusoidally left and right to simulate waves
+    g.MAIN_LOOP_CALLBACKS["water_wave"] = () => {
+      if (mesh.material.userData.shader) {
+        mesh.material.userData.shader.uniforms.uTexOffset.value =
+          new THREE.Vector2(
+            g.TIME * 0.001,
+            triangleWave(g.TIME / 10, 1) * 0.003
+          );
+      }
+    };
+  }
+
+  //// OILSPILL
+  if (mesh.name.startsWith("oilspill")) {
+    mesh.material.transparent = true;
+    mesh.material.opacity = 0.5;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function processMesh(mesh){
   mesh.layers.set(g.LAYERS.DEFAULT);
 
-  // console.log(mesh.position);
-  // console.log(mesh.rotation);
-
   g.OBJECT_GROUPS.DECALABLES.push(mesh);
-  // if (mesh.name === "land") {
-  // }
   g.OBJECT_GROUPS.COLLIDABLES.push(mesh);
-  // if (mesh.name !== "water") {
-  // }
   if (mesh.name === "player") {
     g.OBJECT_GROUPS.INTERACTABLES.push(mesh);
   }
 
-  mesh.castShadow = true; //default is false
-  mesh.receiveShadow = true; //default
+  //// set shadow properties
+  mesh.castShadow = true; 
+  mesh.receiveShadow = true; 
 
-  // if it has a texture, then set it on the material
-  let map;
+  //// if it has a texture, then create a new material with the texture
   if (mesh.material && mesh.material.map) {
-    // console.log(mesh.name, mesh.material);
-    // console.log(mesh.name, "has", mesh.material.map);
-    
-    map = mesh.material.map.clone();
+    const map = mesh.material.map.clone();
 
-    // map.minFilter = THREE.NearestFilter;
-    // map.magFilter = THREE.NearestFilter;
-    // color space
+    //// set color space and texture properies
     map.colorSpace = THREE.LinearSRGBColorSpace;
-    const mat = createPS1Material();
-    mat.map = map;
     map.minFilter = THREE.NearestFilter;
     map.magFilter = THREE.NearestFilter;
-    // g.MATERIALS.PS1.map = map;
+
+    //// create a new material with the texture
+    const mat = createPS1Material();
+    mat.map = map;
+
+    //// set material properties on the mesh
     mesh.material = mat;
     mesh.material.map = map;
-    if (mesh.name.startsWith("oilspill")) {
-      mesh.material.transparent = true;
-      mesh.material.opacity = 0.5;
-    }
-    if (mesh.name.startsWith("water")) {
-      // 2.*abs(x/1 - floor(x/1 +1/2) )
-      const triangle_wave = (t,p) => {
-        return 2 * Math.abs(t/p - Math.floor(t/p + 0.5));
-      };
 
-        // move mesh sinusoidally left and right to simulate waves
-        (g.MAIN_LOOP_CALLBACKS["water_wave"] = () => {
-          if (mesh.material.userData.shader) {
-            mesh.material.userData.shader.uniforms.uTexOffset.value =
-              new THREE.Vector2(
-                g.TIME * 0.001,
-                triangle_wave(g.TIME/10, 1) * 0.003
-              );
-          }
+    //// try to apply special processing depending on the mesh name
+    specialMeshProcessing(mesh);
 
-        });
-    }
-
-    // mat.needsUpdate = true;
-  } else {
+  } 
+  //// if it has no texture, then simply use the default material
+  else {
     mesh.material = g.MATERIALS.PS1;
   }
 
-  // apply position and rotation transforms to geometry
-  // mesh.geometry.applyMatrix4(mesh.matrix);
-  // mesh.position.set(0, 0, 0);
-  // mesh.rotation.set(0, 0, 0);
-  // mesh.scale.set(1, 1, 1);
-  // mesh.updateMatrix();
-  // mesh.updateWorldMatrix();
-  // console.log(mesh.position);
-  // console.log(mesh.rotation);
 }
 
-// function getMeshesFromGroup(group){
-//   let meshes = [];
-//   group.children.forEach((child) => {
-//     if (child.isMesh) {
-//       meshes.push(child);
-//     }
-//     if (child.isGroup) {
-//       meshes = meshes.concat(getMeshesFromGroup(child));
-//     }
-//   });
-//   return meshes;
-// }
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 export function init3DModels() {
-  // 3d models
   const loader = new GLTFLoader();
 
-  // // Optional: Provide a DRACOLoader instance to decode compressed mesh data
-  // const dracoLoader = new DRACOLoader();
-  // dracoLoader.setDecoderPath( '/examples/jsm/libs/draco/' );
-  // loader.setDRACOLoader( dracoLoader );
-
+  //// load main scene (containing all the objects)
   loader.load(
     "./assets/island_scene.glb",
     function (gltf) {
       gltf.scene.traverse(function (child) {
-        // console.log(child.name);
-        
+
+        //// update world matrix so that global position independent of parents can be accessed
         child.updateWorldMatrix(true, true);
         child.updateMatrixWorld(true);
+        
+        if (child.name.startsWith("SOUND__")) {
+          processSoundEmitter(child);
+        }
         
         if (child.isMesh) {
           processMesh(child);
         }
-
-        // if (child.isGroup) {
-        //   const meshes = getMeshesFromGroup(child);
-        //   meshes.forEach((m) => {
-        //     processMesh(m);
-        //   });
-        // }
       });
 
       g.SCENE.add(gltf.scene);
       initStaticColliders();
     },
+    // eslint-disable-next-line no-unused-vars
     function (xhr) {
-      console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
+      // console.log((xhr.loaded / xhr.total) * 100 + "% loaded");
     },
     function (error) {
-      console.log("An error happened while loading:", error);
+      alert("An error happened while loading the 3D models!", error);
     }
   );
 }

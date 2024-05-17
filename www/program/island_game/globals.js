@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import soundFootstep from "./assets/footsteps_sand_single.mp3";
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -11,11 +10,16 @@ export const g = {
     CAMERA_GIZMO: null,
   },
 
+  IS_START_SCREEN: true,
+  START_SCREEN_IMAGE: null,
+
   SCREEN: {
     DPI: 1,
     TARGET_Y_RESOLUTION: 256,
-    ASPECT_RATIO: window.innerWidth / window.innerHeight,
+    ASPECT_RATIO: 4/3,
     RESOLUTION: new THREE.Vector2(),
+    WINDOW_RESOLUTION: new THREE.Vector2(),
+    RENDER_LOWRES: false,
   },
 
   GRAVITY: 5,
@@ -37,7 +41,7 @@ export const g = {
   MOUSE: new THREE.Vector2(),
   PLAYER: {
     OBJECT: null,
-    START_POSITION: new THREE.Vector3(22, 13, 15),
+    START_POSITION: new THREE.Vector3(21, 4, 10),
     MOVE_STOP_DAMPING: 0.1,
     MOVE_STOP_DAMPING_THRESHOLD: 0.008,
     MOUSE_SENSITIVITY: 0.2,
@@ -66,7 +70,7 @@ export const g = {
     SPAWN_VELOCITY_MAX_SPEED: 3,
     DYING_DURATION: 0.5,
     OPACITY: 0.1,
-    SIZE: 40,
+    SIZE: 20,
     NUM: 100,
     GEOMETRY: null,
   },
@@ -95,13 +99,16 @@ export const g = {
     FULLSCREEN_QUAD: null,
     TEXTURE: null,
     CANVAS: null,
+    CTX: null,
+    CTX_GRADIENT: null,
+    SCALE: 1,
 
     TEXT: {
       TEXT: "",
-      BLINKING: true,
+      BLINKING: false,
       BLINKING_RATE: 0.5,
       TEXT_T: 1,
-      SIZE: 70,
+      SIZE: 50,
       HEIGHT: 120,
       GRADIENT_SPREAD: 19,
     },
@@ -124,7 +131,7 @@ export const g = {
   ORBIT_CONTROLS: null,
   WORLD_AXES_HELPER: null,
 
-  FOG_COLOR: 0xaa9487,
+  FOG_COLOR: 0xac9b8d ,
   FOG: null,
 
   POSTPROCESSING_COMPOSERS: {
@@ -139,10 +146,6 @@ export const g = {
   MATERIALS: {
     PS1: null,
     UV: null,
-  },
-
-  SOUNDS: {
-    FOOTSTEP: new Audio(soundFootstep),
   },
 
   TEXTURES: {
@@ -162,7 +165,6 @@ export const g = {
 // make g available in console
 window.g = g;
 
-g.SOUNDS.FOOTSTEP.volume = 0.05;
 
 export const m = {
   OBJECT_NAME_TO_POSITION: new Map(),
