@@ -33,11 +33,13 @@ export function updateViewport() {
   g.RENDERER.domElement.style.height = height + "px";
 
   //// if debug mode then render at full resolution
-  const lowres = !g.DEBUG_MODE;
+  const lowres = g.DEBUG.LOWRES;
   const resolution = lowres ? g.SCREEN.RESOLUTION : { x: window.innerWidth, y: window.innerHeight };
   g.RENDERER.setSize(resolution.x, resolution.y, false);
   g.POSTPROCESSING_COMPOSERS.MAIN.setSize(resolution.x, resolution.y);
   g.SCREEN.WINDOW_RESOLUTION.set(width, height);
   resizeUI();
+
+  
 }
 window.onresize = updateViewport;

@@ -3,10 +3,19 @@ import backgroundShader from "../resources/shaders/music_background.glsl?raw";
 import WebGL from "three/addons/capabilities/WebGL.js";
 
 // tracks
-import sirene2 from "/resources/sound/sirene2.mp3";
-import grimy_sheet_gonges from "/resources/sound/grimy_sheet_gonges.mp3";
-import nights_kurafiia from "/resources/sound/nights_kurafiia.mp3";
-import turetibrek from "/resources/sound/turetibrek.mp3";
+import sirene2 from "./files/sirene2.mp3";
+import grimy_sheet_gonges from "./files/grimy_sheet_gonges.mp3";
+import nights_kurafiia from "./files/nights_kurafiia.mp3";
+import turetibrek from "./files/turetibrek.mp3";
+
+import echoengeles from "./files/echoengeles.mp3";
+import footsteps_sand from "./files/footsteps_sand.mp3";
+import metroidlike from "./files/metroidlike.mp3";
+import plaza_radosna4 from "./files/plaza_radosna4.mp3";
+import silenthill from "./files/silenthill.mp3";
+import somsiadpuk from "./files/somsiadpuk.mp3";
+
+
 
 
 // if (matchMedia("(pointer:coarse)").matches) {
@@ -156,11 +165,22 @@ function initAudioPlayer(){
   // const playlist_tracks = document.querySelectorAll("#playlist ol li button");
   const tracks = [
     // [track_name, track_year, track_path]
+
+    ["silenthill", 2024, silenthill],
+    ["metroidlike", 2024, metroidlike],
+    ["echoengeles", 2024, echoengeles],
+    ["footsteps_sand", 2024, footsteps_sand],
+    ["plaza_radosna4", 2024, plaza_radosna4],
+    ["somsiadpuk", 2024, somsiadpuk],
+
     ["turetibrek", 2023, turetibrek],
     ["nights_kurafiia", 2023, nights_kurafiia],
     ["grimy_sheet_gonges", 2023, grimy_sheet_gonges],
     ["sirene2", 2023, sirene2],
+    
   ];
+
+
  
     
   const track_buttons = [];

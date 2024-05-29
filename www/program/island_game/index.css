@@ -1,0 +1,78 @@
+#debugMouseDrawer {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    /* width: 300px; */
+    /* height: 100%; */
+    padding: 20px;
+    z-index: 1000;
+    /* text-align: left; */
+    color: white;
+    z-index: 100;
+    display:none;
+    /* pointer-events: none; */
+    background-color: rgba(0, 0, 0, 0.2);
+    font-family:monospace;
+
+    /* enable vertical scrolling */
+    overflow-y: auto;
+    max-height: 100%;
+
+  }
+
+  h1 {
+    /* font-size: 20px; */
+    color: rgb(255, 145, 0);
+    margin: 0;
+    padding: 0;
+  }
+  td:nth-child(1) {
+    padding-right: 10px;
+    color: aquamarine;
+  }
+
+  #cursor-custom {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    z-index: 1000;
+    pointer-events: none;        
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    
+    /* blend mode */
+    opacity: 0.1;
+
+    image-rendering: pixelated  ;
+    /* display: none; */
+  }
+
+  #debugTriangle_a, #debugTriangle_b, #debugTriangle_c {
+    position: absolute;
+    /* width: 10px;
+    height: 10px; */
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    z-index: 1000;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    left: 50%;
+    top: 50%;
+    display: none;
+    padding: 2px;
+    line-height: 1;
+  }
+
+  #blackScreen {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    background-color: rgb(0, 0, 0);
+    z-index: 1000;
+    pointer-events: none;
+    transition: linear 1s;
+    display: none;
+  }

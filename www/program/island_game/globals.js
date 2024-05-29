@@ -8,6 +8,7 @@ export const g = {
     GUI: null,
     TRIANGLE: null,
     CAMERA_GIZMO: null,
+    LOWRES: true,
   },
 
   IS_START_SCREEN: true,

@@ -10,6 +10,7 @@ const DEFAULT_NONDEBUG_STATES = {
   worldAxes: false,
   cutscene: false,
   debug_material: false,
+  lowres: true,
 };
 
 const DEFAULT_DEBUG_STATES = {
@@ -24,6 +25,8 @@ const DEFAULT_DEBUG_STATES = {
   worldAxes: false,
   cutscene: false,
   debug_material: false,
+  lowres: false,
+
 };
 
 let CURRENT_DEBUG_STATES = { ...DEFAULT_NONDEBUG_STATES };

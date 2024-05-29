@@ -60,16 +60,16 @@ async function animate() {
   playerUpdate(g.DELTA_TIME);
   snowflakesUpdate(g.DELTA_TIME);
 
-  let intersection = screenspaceRaycast(g.MOUSE, g.OBJECT_GROUPS.INTERACTABLES);
-  if (intersection && intersection.distance < 2) {
-    // change pointer image
-    console.log("hovering over interactable");
-    document.getElementById("cursor-custom").style.opacity =
-      g.CURSOR_HOVER_OPACITY;
-  } else {
-    document.getElementById("cursor-custom").style.opacity =
-      g.CURSOR_DEFAUTL_OPACITY;
-  }
+  // let intersection = screenspaceRaycast(g.MOUSE, g.OBJECT_GROUPS.INTERACTABLES);
+  // if (intersection && intersection.distance < 2) {
+  //   // change pointer image
+  //   console.log("hovering over interactable");
+  //   document.getElementById("cursor-custom").style.opacity =
+  //     g.CURSOR_HOVER_OPACITY;
+  // } else {
+  //   document.getElementById("cursor-custom").style.opacity =
+  //     g.CURSOR_DEFAUTL_OPACITY;
+  // }
 
   // call all main loop callbacks (its a dict of functions)
   for (let key in g.MAIN_LOOP_CALLBACKS) {

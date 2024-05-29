@@ -232,15 +232,18 @@ export function initDebugHelpers() {
     // on press "`"  toggle debug mode
     if (event.code === "Backquote") {
       g.DEBUG_MODE = !g.DEBUG_MODE;
+      const debugScreen = document.getElementById("debugScreen");
       if (g.DEBUG_MODE) {
         DEBUG_STATES.CURRENT = DEBUG_STATES.DEFAULT_DEBUG;
         g.RENDERER.domElement.style.cursor = "";
-        g.RENDERER.setSize(window.innerWidth, window.innerHeight, false);
+        debugScreen.style.display = "block";
+        // g.RENDERER.setSize(window.innerWidth, window.innerHeight, false);
         g.DEBUG.GUI.show();
       } else {
         DEBUG_STATES.CURRENT = DEBUG_STATES.DEFAULT_NONDEBUG;
         g.RENDERER.domElement.style.cursor = "none";
-        g.RENDERER.setSize(g.SCREEN.RESOLUTION.x, g.SCREEN.RESOLUTION.y,false);
+        debugScreen.style.display = "none";
+        // g.RENDERER.setSize(g.SCREEN.RESOLUTION.x, g.SCREEN.RESOLUTION.y,false);
         g.DEBUG.GUI.hide();
       }
       updateViewport();
